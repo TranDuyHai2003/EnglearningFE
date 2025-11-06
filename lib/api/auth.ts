@@ -1,5 +1,5 @@
 import api from "@/lib/api"; // ✅ Giờ sẽ tìm thấy
-import { AuthResponse, LoginRequest, RegisterRequest } from "@/types";
+import { AuthResponse, LoginRequest, RegisterRequest } from "@/lib/types";
 
 /**
  * Gọi API login

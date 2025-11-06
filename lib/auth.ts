@@ -1,4 +1,4 @@
-import { User } from "@/types";
+import { User } from "@/lib/types";
 
 const USER_KEY = "user";
 const TOKEN_KEY = "token";

@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { ApiErrorResponse, User } from "@/types";
+import { ApiErrorResponse, User } from "@/lib/types";
 import { setAuthData, getRoleDashboard } from "@/lib/auth";
 
 const registerSchema = z

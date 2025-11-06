@@ -2,8 +2,9 @@
 
 import { ReactNode } from "react";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 import { getStoredUser } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
