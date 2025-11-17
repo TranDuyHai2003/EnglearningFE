@@ -1,4 +1,6 @@
-//ENUMS
+// ===================================================================
+// ENUM TYPES (Dựa trên schema CSDL)
+// ===================================================================
 
 export type UserRole =
   | "student"
@@ -20,75 +22,80 @@ export type ProgressStatus = "not_started" | "in_progress" | "completed";
 export type QuestionType = "multiple_choice" | "true_false" | "fill_blank";
 export type PaymentMethod = "bank_card" | "e_wallet" | "bank_transfer";
 export type TransactionStatus = "pending" | "completed" | "failed" | "refunded";
-export type ReviewStatus = "pending" | "approved" | "rejected";
 export type NotificationType = "course" | "payment" | "message" | "system";
-export type TicketCategory = "technical" | "payment" | "content" | "other";
-export type TicketPriority = "low" | "medium" | "high" | "urgent";
-export type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
+export type SupportCategory = "technical" | "payment" | "content" | "other";
+export type SupportPriority = "low" | "medium" | "high" | "urgent";
+export type SupportStatus = "open" | "in_progress" | "resolved" | "closed";
 
-//USER & AUTH
+// ===================================================================
+// DATABASE TABLE INTERFACES (tuân thủ snake_case của CSDL)
+// ===================================================================
 
 export interface User {
   user_id: number;
   email: string;
-  password_hash?: string; // Don't send to frontend
+  password_hash: string;
   full_name: string;
-  phone?: string;
-  avatar_url?: string;
+  phone?: string | null;
+  avatar_url?: string | null;
   role: UserRole;
   status: UserStatus;
   created_at: string;
   updated_at: string;
-  last_login?: string;
+  last_login?: string | null;
 }
 
 export interface InstructorProfile {
   profile_id: number;
   user_id: number;
-  bio?: string;
-  education?: string;
-  experience?: string;
-  certificates?: string;
+  bio?: string | null;
+  education?: string | null;
+  experience?: string | null;
+  certificates?: string | null;
   approval_status: ApprovalStatus;
-  approved_by?: number;
-  approved_at?: string;
-  rejection_reason?: string;
+  approved_by?: number | null;
+  approved_at?: string | null;
+  rejection_reason?: string | null;
+  user?: AuthenticatedUser; // `user` lồng vào từ API listProfiles
 }
-
-//COURSES
 
 export interface Category {
   category_id: number;
   name: string;
   slug: string;
-  description?: string;
-  parent_id?: number;
+  description?: string | null;
+  parent_id?: number | null;
   display_order: number;
 }
 
 export interface Course {
   course_id: number;
   instructor_id: number;
-  category_id?: number;
+  category_id?: number | null;
   title: string;
   slug: string;
-  description?: string;
-  thumbnail_url?: string;
+  description?: string | null;
+  thumbnail_url?: string | null;
   level: CourseLevel;
   language: string;
   price: number;
-  discount_price?: number;
+  discount_price?: number | null;
   duration_hours: number;
   status: CourseStatus;
   approval_status: ApprovalStatus;
-  reviewed_by?: number;
-  reviewed_at?: string;
-  rejection_reason?: string;
+  reviewed_by?: number | null;
+  reviewed_at?: string | null;
+  rejection_reason?: string | null;
   total_students: number;
   average_rating: number;
   created_at: string;
   updated_at: string;
-  published_at?: string;
+  published_at?: string | null;
+
+  instructor?: AuthenticatedUser;
+  category?: Category;
+  sections?: Section[];
+  tags?: CourseTag[];
 }
 
 export interface CourseTag {
@@ -97,35 +104,30 @@ export interface CourseTag {
   slug: string;
 }
 
-export interface CourseTagMapping {
-  course_id: number;
-  tag_id: number;
-}
-
-//LESSONS
-
 export interface Section {
   section_id: number;
   course_id: number;
   title: string;
-  description?: string;
+  description?: string | null;
   display_order: number;
   created_at: string;
+  lessons?: Lesson[]; // Quan hệ lồng nhau
 }
 
 export interface Lesson {
   lesson_id: number;
   section_id: number;
   title: string;
-  description?: string;
+  description?: string | null;
   lesson_type: LessonType;
-  video_url?: string;
+  video_url?: string | null;
   video_duration: number;
-  content?: string;
+  content?: string | null;
   allow_preview: boolean;
   display_order: number;
   created_at: string;
   updated_at: string;
+  resources?: LessonResource[]; // Quan hệ lồng nhau
 }
 
 export interface LessonResource {
@@ -133,19 +135,53 @@ export interface LessonResource {
   lesson_id: number;
   title: string;
   file_url: string;
-  file_type?: string;
-  file_size?: number;
+  file_type?: string | null;
+  file_size?: number | null;
   uploaded_at: string;
 }
 
-//QUIZZES
+export interface CourseForm {
+  title: string;
+  description: string;
+  category_id: number;
+  level: CourseLevel;
+  language: string;
+  price: number;
+  discount_price?: number;
+  thumbnail_url?: string;
+  duration_hours: number;
+  tag_ids?: number[];
+}
+
+/**
+ * Dữ liệu cho form tạo/cập nhật Section
+ */
+export interface SectionForm {
+  title: string;
+  description?: string;
+  display_order: number;
+}
+
+/**
+ * Dữ liệu cho form tạo/cập nhật Lesson
+ */
+export interface LessonForm {
+  title: string;
+  description?: string;
+  lesson_type: LessonType;
+  video_url?: string;
+  video_duration?: number;
+  content?: string;
+  allow_preview: boolean;
+  display_order: number;
+}
 
 export interface Quiz {
   quiz_id: number;
   lesson_id: number;
   title: string;
-  description?: string;
-  time_limit?: number;
+  description?: string | null;
+  time_limit?: number | null;
   passing_score: number;
   max_attempts: number;
   shuffle_questions: boolean;
@@ -160,7 +196,7 @@ export interface Question {
   question_type: QuestionType;
   points: number;
   display_order: number;
-  explanation?: string;
+  explanation?: string | null;
 }
 
 export interface AnswerOption {
@@ -171,8 +207,6 @@ export interface AnswerOption {
   display_order: number;
 }
 
-//ENROLLMENTS
-
 export interface Enrollment {
   enrollment_id: number;
   student_id: number;
@@ -180,8 +214,12 @@ export interface Enrollment {
   enrolled_at: string;
   completion_percentage: number;
   status: EnrollmentStatus;
-  completed_at?: string;
+  completed_at?: string | null;
   certificate_issued: boolean;
+  // === THÊM CÁC DÒNG SAU ===
+  course: Course;
+  lessonProgress: LessonProgress[];
+  // === KẾT THÚC PHẦN THÊM ===
 }
 
 export interface LessonProgress {
@@ -190,8 +228,8 @@ export interface LessonProgress {
   lesson_id: number;
   status: ProgressStatus;
   video_progress: number;
-  started_at?: string;
-  completed_at?: string;
+  started_at?: string | null;
+  completed_at?: string | null;
 }
 
 export interface QuizAttempt {
@@ -199,23 +237,21 @@ export interface QuizAttempt {
   student_id: number;
   quiz_id: number;
   started_at: string;
-  submitted_at?: string;
-  score?: number;
-  passed?: boolean;
-  time_taken?: number;
+  submitted_at?: string | null;
+  score?: number | null;
+  passed?: boolean | null;
+  time_taken?: number | null;
 }
 
 export interface StudentAnswer {
   answer_id: number;
   attempt_id: number;
   question_id: number;
-  selected_option_id?: number;
-  answer_text?: string;
-  is_correct?: boolean;
+  selected_option_id?: number | null;
+  answer_text?: string | null;
+  is_correct?: boolean | null;
   points_earned: number;
 }
-
-//TRANSACTIONS
 
 export interface Transaction {
   transaction_id: number;
@@ -224,11 +260,11 @@ export interface Transaction {
   total_amount: number;
   discount_amount: number;
   final_amount: number;
-  payment_method?: PaymentMethod;
-  payment_gateway?: string;
+  payment_method?: PaymentMethod | null;
+  payment_gateway?: string | null;
   status: TransactionStatus;
-  payment_at?: string;
-  refunded_at?: string;
+  payment_at?: string | null;
+  refunded_at?: string | null;
   created_at: string;
 }
 
@@ -241,22 +277,18 @@ export interface TransactionDetail {
   final_price: number;
 }
 
-//REVIEWS
-
 export interface Review {
   review_id: number;
   course_id: number;
   student_id: number;
-  rating: number; // 1-5
-  comment?: string;
-  status: ReviewStatus;
+  rating: number;
+  comment?: string | null;
+  status: ApprovalStatus;
   created_at: string;
   updated_at: string;
 }
 
-//Q&A
-
-export interface QADiscussion {
+export interface QaDiscussion {
   discussion_id: number;
   lesson_id: number;
   student_id: number;
@@ -265,7 +297,7 @@ export interface QADiscussion {
   updated_at: string;
 }
 
-export interface QAReply {
+export interface QaReply {
   reply_id: number;
   discussion_id: number;
   user_id: number;
@@ -274,43 +306,39 @@ export interface QAReply {
   updated_at: string;
 }
 
-//MESSAGES
-
 export interface Message {
   message_id: number;
   sender_id: number;
   receiver_id: number;
-  course_id?: number;
+  course_id?: number | null;
   message_text: string;
   is_read: boolean;
   sent_at: string;
 }
-
-//NOTIFICATIONS
 
 export interface Notification {
   notification_id: number;
   user_id: number;
   type: NotificationType;
   title: string;
-  content?: string;
+  content?: string | null;
   is_read: boolean;
   created_at: string;
 }
 
-//SUPPORT
-
 export interface SupportTicket {
   ticket_id: number;
   user_id: number;
-  category: TicketCategory;
+  category: SupportCategory;
   subject: string;
   description: string;
-  priority: TicketPriority;
-  status: TicketStatus;
-  assigned_to?: number;
+  priority: SupportPriority;
+  status: SupportStatus;
+  assigned_to?: number | null;
   created_at: string;
-  resolved_at?: string;
+  resolved_at?: string | null;
+  user?: User;
+  replies?: SupportReply[];
 }
 
 export interface SupportReply {
@@ -321,44 +349,65 @@ export interface SupportReply {
   created_at: string;
 }
 
-//SYSTEM
-
 export interface SystemSetting {
   setting_id: number;
   setting_key: string;
-  setting_value?: string;
-  description?: string;
+  setting_value?: string | null;
+  description?: string | null;
   updated_at: string;
 }
 
-//API RESPONSES
+// ===================================================================
+// API RESPONSE & FORM PAYLOAD INTERFACES
+// ===================================================================
 
-export interface ApiResponse<T = unknown> {
+/**
+ * Cấu trúc response chung từ API
+ */
+export interface ApiResponse<T> {
   success: boolean;
+  data: T;
   message: string;
-  data?: T;
-  error?: string;
 }
 
+/**
+ */
 export interface PaginatedResponse<T> {
-  success: boolean;
-  message: string;
   data: T[];
-  pagination: {
+  meta: {
+    total: number;
     page: number;
     limit: number;
-    total: number;
-    totalPages: number;
+    total_pages: number;
   };
 }
 
-//AUTH
+/**
+ * Dữ liệu người dùng trả về sau khi xác thực (không chứa password_hash)
+ * Thường được tạo bởi một hàm serialize ở backend.
+ */
+export interface AuthenticatedUser {
+  id: number;
+  user_id?: number;
+  email: string;
+  full_name: string;
+  phone?: string | null;
+  avatar_url?: string | null;
+  role: UserRole;
+  status: UserStatus;
+}
 
+/**
+ * Dữ liệu cho API đăng nhập
+ */
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
+/**
+ * Dữ liệu cho API đăng ký
+ */
 export interface RegisterRequest {
   full_name: string;
   email: string;
@@ -366,107 +415,29 @@ export interface RegisterRequest {
   role: "student" | "instructor";
 }
 
-export interface AuthResponse {
-  success: boolean;
-  message: string;
-  data: {
-    user: User;
-    token: string;
-  };
-}
-
-//COURSE WITH RELATIONS
-
-export interface CourseWithInstructor extends Course {
-  instructor: User;
-  category?: Category;
-  tags?: CourseTag[];
-}
-
-export interface CourseWithDetails extends Course {
-  instructor: User;
-  sections: SectionWithLessons[];
-  enrollments_count: number;
-  reviews_count: number;
-}
-
-export interface SectionWithLessons extends Section {
-  lessons: Lesson[];
-}
-
-export interface LessonWithResources extends Lesson {
-  resources: LessonResource[];
-  quiz?: Quiz;
-}
-
-//ENROLLMENT WITH PROGRESS
-
-export interface EnrollmentWithCourse extends Enrollment {
-  course: Course;
-  progress: LessonProgress[];
-}
-
-//TRANSACTION WITH DETAILS
-
-export interface TransactionWithDetails extends Transaction {
-  details: TransactionDetail[];
-  courses?: Course[];
-}
-
-//QUIZ WITH QUESTIONS
-
-export interface QuizWithQuestions extends Quiz {
-  questions: QuestionWithOptions[];
-}
-
-export interface QuestionWithOptions extends Question {
-  options: AnswerOption[];
-}
-
-//FORM TYPES
-
+/**
+ * Dữ liệu cho form cập nhật profile
+ */
 export interface UpdateProfileForm {
   full_name?: string;
   phone?: string;
-  bio?: string;
   avatar_url?: string;
 }
 
+/**
+ * Dữ liệu cho form đổi mật khẩu
+ */
 export interface ChangePasswordForm {
   current_password: string;
   new_password: string;
-  confirm_password: string;
 }
 
+/**
+ * Dữ liệu cho form ứng tuyển giảng viên
+ */
 export interface InstructorApplicationForm {
   bio: string;
   education: string;
   experience: string;
   certificates: string;
-}
-
-export interface CreateCourseForm {
-  title: string;
-  description: string;
-  category_id: number;
-  level: CourseLevel;
-  price: number;
-  discount_price?: number;
-  thumbnail_url?: string;
-}
-
-export interface CreateSectionForm {
-  title: string;
-  description?: string;
-  display_order: number;
-}
-
-export interface CreateLessonForm {
-  title: string;
-  description?: string;
-  lesson_type: LessonType;
-  video_url?: string;
-  content?: string;
-  allow_preview: boolean;
-  display_order: number;
 }

@@ -1,125 +1,101 @@
-import { apiRequest } from "./client";
+import apiClient from "./apiClient";
 import {
-  ApiResponse,
-  User,
+  AuthenticatedUser,
   UpdateProfileForm,
+  ApiResponse,
   ChangePasswordForm,
+  UserRole,
+  UserStatus,
 } from "@/lib/types";
-import { mockUsers } from "@/lib/mock/users.mock";
 
-const USE_MOCK = true;
+// Kiểu dữ liệu cho các tham số lọc/phân trang
+interface ListUsersParams {
+  limit?: number;
+  page?: number;
+  role?: UserRole;
+  status?: UserStatus;
+  keyword?: string;
+}
+
+interface ListUsersResponse {
+  success: boolean;
+  data: AuthenticatedUser[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    total_pages: number;
+  };
+  message?: string;
+}
 
 export const userService = {
-  async getProfile(userId: number): Promise<ApiResponse<User>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      const user = mockUsers.find((u) => u.user_id === userId);
-
-      if (!user) throw new Error("User not found");
-
-      return {
-        success: true,
-        message: "Profile retrieved",
-        data: user,
-      };
-    }
-
-    return apiRequest<ApiResponse<User>>({
-      method: "GET",
-      url: `/users/${userId}`,
+  async listUsers(params: ListUsersParams): Promise<ListUsersResponse> {
+    const response = await apiClient.get<ListUsersResponse>("/users", {
+      params,
     });
+    return response.data;
+  },
+  async getUser(userId: number): Promise<AuthenticatedUser> {
+    const response = await apiClient.get<ApiResponse<AuthenticatedUser>>(
+      `/users/${userId}`
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(
+      response.data.message || "Không thể tải thông tin người dùng."
+    );
   },
 
-  async updateProfile(
+  /**
+   * Cập nhật thông tin profile (cho cả user tự cập nhật và admin cập nhật).
+   * Backend dùng PATCH, nên đây cũng là PATCH.
+   */
+  async updateUser(
     userId: number,
     data: UpdateProfileForm
-  ): Promise<ApiResponse<User>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const user = mockUsers.find((u) => u.user_id === userId);
-      if (!user) throw new Error("User not found");
-
-      const updatedUser = { ...user, ...data };
-
-      return {
-        success: true,
-        message: "Profile updated successfully",
-        data: updatedUser,
-      };
+  ): Promise<AuthenticatedUser> {
+    const response = await apiClient.patch<ApiResponse<AuthenticatedUser>>(
+      `/users/${userId}`,
+      data
+    );
+    if (response.data.success) {
+      return response.data.data;
     }
-
-    return apiRequest<ApiResponse<User>>({
-      method: "PUT",
-      url: `/users/${userId}`,
-      data,
-    });
+    throw new Error(response.data.message || "Cập nhật thông tin thất bại.");
   },
 
-  async changePassword(data: ChangePasswordForm): Promise<ApiResponse<void>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      if (data.current_password !== "password") {
-        throw new Error("Current password is incorrect");
-      }
-
-      if (data.new_password !== data.confirm_password) {
-        throw new Error("Passwords do not match");
-      }
-
-      return {
-        success: true,
-        message: "Password changed successfully",
-      };
-    }
-
-    return apiRequest<ApiResponse<void>>({
-      method: "POST",
-      url: "/users/change-password",
-      data,
-    });
-  },
-
-  async getAllUsers(): Promise<ApiResponse<User[]>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      return {
-        success: true,
-        message: "Users retrieved",
-        data: mockUsers,
-      };
-    }
-
-    return apiRequest<ApiResponse<User[]>>({
-      method: "GET",
-      url: "/users",
-    });
-  },
-
-  async toggleUserStatus(
+  /**
+   * Cập nhật vai trò của người dùng (cho Admin).
+   */
+  async updateUserRole(
     userId: number,
-    status: "active" | "locked"
-  ): Promise<ApiResponse<User>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const user = mockUsers.find((u) => u.user_id === userId);
-      if (!user) throw new Error("User not found");
-
-      user.status = status;
-
-      return {
-        success: true,
-        message: `User ${status === "active" ? "activated" : "locked"}`,
-        data: user,
-      };
+    role: UserRole
+  ): Promise<AuthenticatedUser> {
+    const response = await apiClient.patch<ApiResponse<AuthenticatedUser>>(
+      `/users/${userId}/role`,
+      { role }
+    );
+    if (response.data.success) {
+      return response.data.data;
     }
+    throw new Error(response.data.message || "Cập nhật vai trò thất bại.");
+  },
 
-    return apiRequest<ApiResponse<User>>({
-      method: "PATCH",
-      url: `/users/${userId}/status`,
-      data: { status },
-    });
+  /**
+   * Thay đổi mật khẩu.
+   */
+  async changePassword(
+    userId: number,
+    data: ChangePasswordForm
+  ): Promise<void> {
+    const response = await apiClient.patch<ApiResponse<null>>(
+      `/users/${userId}/password`,
+      data
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Đổi mật khẩu thất bại.");
+    }
   },
 };

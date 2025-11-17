@@ -1,142 +1,113 @@
-import { apiRequest } from "./client";
+import apiClient from "./apiClient";
 import {
-  ApiResponse,
   InstructorProfile,
+  ApiResponse,
   InstructorApplicationForm,
+  ApprovalStatus,
+  PaginatedResponse,
 } from "@/lib/types";
-import {
-  mockInstructorProfiles,
-  mockPendingApplications,
-} from "@/lib/mock/users.mock";
+import { AxiosError } from "axios";
 
-const USE_MOCK = true;
-
+interface ListProfilesParams {
+  limit?: number;
+  page?: number;
+  status?: ApprovalStatus;
+}
+interface ListProfilesApiResponse {
+  success: boolean;
+  data: InstructorProfile[];
+  meta: PaginatedResponse<unknown>["meta"];
+  message?: string;
+}
 export const instructorService = {
-  async submitApplication(
+  /**
+   * Lấy hồ sơ của giảng viên đang đăng nhập.
+   */
+  async getMyProfile(): Promise<InstructorProfile | null> {
+    try {
+      const response = await apiClient.get<ApiResponse<InstructorProfile>>(
+        "/instructors/profiles/my-profile"
+      );
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+      return null;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        return null; // Trả về null nếu chưa có hồ sơ (404 Not Found)
+      }
+      throw error; // Ném các lỗi khác
+    }
+  },
+
+  /**
+   * Nộp hồ sơ ứng tuyển (chỉ tạo mới).
+   */
+  async createProfile(
     data: InstructorApplicationForm
-  ): Promise<ApiResponse<InstructorProfile>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      const newProfile: InstructorProfile = {
-        profile_id: Math.floor(Math.random() * 10000),
-        user_id: 1, // Current user
-        ...data,
-        approval_status: "pending",
-      };
-
-      return {
-        success: true,
-        message: "Application submitted successfully",
-        data: newProfile,
-      };
+  ): Promise<InstructorProfile> {
+    const response = await apiClient.post<ApiResponse<InstructorProfile>>(
+      "/instructors/profiles",
+      data
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
     }
-
-    return apiRequest<ApiResponse<InstructorProfile>>({
-      method: "POST",
-      url: "/instructors/apply",
-      data,
-    });
+    throw new Error(response.data.message || "Nộp hồ sơ thất bại.");
   },
 
-  async getApplicationStatus(
-    userId: number
-  ): Promise<ApiResponse<InstructorProfile>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      const profile = [
-        ...mockInstructorProfiles,
-        ...mockPendingApplications,
-      ].find((p) => p.user_id === userId);
-
-      if (!profile) throw new Error("Application not found");
-
-      return {
-        success: true,
-        message: "Application status retrieved",
-        data: profile,
-      };
+  /**
+   * Cập nhật hồ sơ ứng tuyển đã có.
+   */
+  async updateProfile(
+    data: InstructorApplicationForm
+  ): Promise<InstructorProfile> {
+    const response = await apiClient.patch<ApiResponse<InstructorProfile>>(
+      "/instructors/profiles",
+      data
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
     }
-
-    return apiRequest<ApiResponse<InstructorProfile>>({
-      method: "GET",
-      url: `/instructors/application/${userId}`,
-    });
+    throw new Error(response.data.message || "Cập nhật hồ sơ thất bại.");
   },
 
-  async getPendingApplications(): Promise<ApiResponse<InstructorProfile[]>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
+  /**
+   * Lấy danh sách hồ sơ giảng viên (cho Admin).
+   */
+  async listProfiles(
+    params: ListProfilesParams
+  ): Promise<PaginatedResponse<InstructorProfile>> {
+    // ✅ SỬA LỖI Ở ĐÂY:
+    const response = await apiClient.get<ListProfilesApiResponse>(
+      "/instructors/profiles",
+      { params }
+    );
+    const apiData = response.data;
 
+    if (apiData.success && apiData.data && apiData.meta) {
       return {
-        success: true,
-        message: "Pending applications retrieved",
-        data: mockPendingApplications,
+        data: apiData.data,
+        meta: apiData.meta,
       };
     }
-
-    return apiRequest<ApiResponse<InstructorProfile[]>>({
-      method: "GET",
-      url: "/instructors/pending",
-    });
+    throw new Error(response.data.message || "Không thể tải danh sách hồ sơ.");
   },
-
-  async approveApplication(
-    profileId: number
-  ): Promise<ApiResponse<InstructorProfile>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const profile = mockPendingApplications.find(
-        (p) => p.profile_id === profileId
-      );
-
-      if (!profile) throw new Error("Application not found");
-
-      profile.approval_status = "approved";
-      profile.approved_at = new Date().toISOString();
-
-      return {
-        success: true,
-        message: "Application approved successfully",
-        data: profile,
-      };
-    }
-
-    return apiRequest<ApiResponse<InstructorProfile>>({
-      method: "POST",
-      url: `/instructors/${profileId}/approve`,
-    });
-  },
-
-  async rejectApplication(
+  /**
+   * Duyệt một hồ sơ giảng viên (cho Admin).
+   */
+  async reviewProfile(
     profileId: number,
-    reason: string
-  ): Promise<ApiResponse<InstructorProfile>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const profile = mockPendingApplications.find(
-        (p) => p.profile_id === profileId
-      );
-
-      if (!profile) throw new Error("Application not found");
-
-      profile.approval_status = "rejected";
-      profile.rejection_reason = reason;
-
-      return {
-        success: true,
-        message: "Application rejected",
-        data: profile,
-      };
+    status: "approved" | "rejected",
+    reason?: string
+  ): Promise<InstructorProfile> {
+    const response = await apiClient.patch<ApiResponse<InstructorProfile>>(
+      `/instructors/profiles/${profileId}/review`,
+      { status, reason }
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
     }
-
-    return apiRequest<ApiResponse<InstructorProfile>>({
-      method: "POST",
-      url: `/instructors/${profileId}/reject`,
-      data: { reason },
-    });
+    throw new Error(response.data.message || "Duyệt hồ sơ thất bại.");
   },
 };

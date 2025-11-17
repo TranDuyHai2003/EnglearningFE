@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { AxiosError } from "axios";
+// ❌ Không cần import Zod
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,71 +22,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { ApiErrorResponse, User } from "@/lib/types";
-import { setAuthData, getRoleDashboard } from "@/lib/auth";
+import { authService } from "@/lib/api/authService";
+import { setAuthData } from "@/lib/auth/utils";
+import { UserPlus, Loader2 } from "lucide-react";
+import { RegisterRequest } from "@/lib/types"; // ✅ Sử dụng RegisterRequest từ types
 
-const registerSchema = z
-  .object({
-    full_name: z.string().min(3, "Họ tên tối thiểu 3 ký tự"),
-    email: z.string().email("Email không hợp lệ"),
-    password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
-    confirm_password: z.string(),
-    role: z.enum(["student", "instructor", "admin"]),
-  })
-  .refine((data) => data.password === data.confirm_password, {
-    message: "Mật khẩu không khớp",
-    path: ["confirm_password"],
-  });
-
-type RegisterFormData = z.infer<typeof registerSchema>;
+// ✅ Định nghĩa lại kiểu dữ liệu cho form (thay thế z.infer)
+type RegisterFormData = RegisterRequest;
 
 export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+    // ❌ Bỏ zodResolver
     defaultValues: {
       full_name: "",
       email: "",
       password: "",
-      confirm_password: "",
-      role: "student",
+      role: "student", // Mặc định là student
     },
   });
-
-  const role = form.watch("role");
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      const mockUser: User = {
-        id: Math.floor(Math.random() * 1000),
-        email: data.email,
-        full_name: data.full_name,
-        role: data.role,
-        status: "active",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+      const authData = await authService.register(data);
+      setAuthData(authData.token, authData.user);
+      toast.success(`Đăng ký thành công! Chào ${authData.user.full_name}`);
 
-      const mockToken = "mock_jwt_token_" + Date.now();
-      setAuthData(mockUser, mockToken);
-
-      toast.success(`Đăng ký thành công! Chào ${mockUser.full_name}`);
-      router.push(getRoleDashboard(mockUser.role));
-    } catch (error) {
-      // Cải thiện type-safety cho error handling
-      if (error instanceof AxiosError) {
-        const message = error.response?.data?.message || "Đăng ký thất bại";
-        toast.error(message);
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Đăng ký thất bại");
+      const { role } = authData.user;
+      if (role === "student") {
+        router.replace("/student/dashboard");
+      } else if (role === "instructor") {
+        router.replace("/instructor/dashboard");
       }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Đăng ký thất bại. Vui lòng thử lại.";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -105,6 +80,14 @@ export default function RegisterPage() {
           <FormField
             control={form.control}
             name="full_name"
+            // ✅ Thêm rules validation
+            rules={{
+              required: "Họ tên không được để trống.",
+              minLength: {
+                value: 3,
+                message: "Họ tên phải có ít nhất 3 ký tự.",
+              },
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Họ và tên</FormLabel>
@@ -123,6 +106,13 @@ export default function RegisterPage() {
           <FormField
             control={form.control}
             name="email"
+            rules={{
+              required: "Email không được để trống.",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Email không hợp lệ.",
+              },
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -142,6 +132,13 @@ export default function RegisterPage() {
           <FormField
             control={form.control}
             name="password"
+            rules={{
+              required: "Mật khẩu không được để trống.",
+              minLength: {
+                value: 6,
+                message: "Mật khẩu phải có ít nhất 6 ký tự.",
+              },
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Mật khẩu</FormLabel>
@@ -160,29 +157,11 @@ export default function RegisterPage() {
 
           <FormField
             control={form.control}
-            name="confirm_password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Xác nhận mật khẩu</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="••••••••"
-                    type="password"
-                    disabled={isLoading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="role"
+            rules={{ required: "Vui lòng chọn vai trò." }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Vai trò</FormLabel>
+                <FormLabel>Bạn là?</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -194,9 +173,10 @@ export default function RegisterPage() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="student">👨‍🎓 Học viên</SelectItem>
-                    <SelectItem value="instructor">👨‍🏫 Giảng viên</SelectItem>
-                    <SelectItem value="admin">⚙️ Admin</SelectItem>
+                    <SelectItem value="student">👨‍🎓 Tôi là học viên</SelectItem>
+                    <SelectItem value="instructor">
+                      👨‍🏫 Tôi là giảng viên
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -204,30 +184,22 @@ export default function RegisterPage() {
             )}
           />
 
-          {role === "instructor" && (
-            <Alert className="bg-blue-50 border-blue-200">
-              <AlertDescription className="text-blue-700 text-sm">
-                ⓘ Hồ sơ giảng viên sẽ cần được duyệt trước khi có thể tạo khóa
-                học
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {role === "admin" && (
-            <Alert className="bg-orange-50 border-orange-200">
-              <AlertDescription className="text-orange-700 text-sm">
-                ⚠️ Admin account - Bạn sẽ có quyền quản trị hệ thống toàn bộ
-              </AlertDescription>
-            </Alert>
-          )}
-
           <Button
             type="submit"
             disabled={isLoading}
             className="w-full"
             size="lg"
           >
-            {isLoading ? "Đang đăng ký..." : "Đăng ký"}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang đăng ký...
+              </>
+            ) : (
+              <>
+                <UserPlus className="mr-2 h-4 w-4" /> Đăng ký
+              </>
+            )}
           </Button>
         </form>
       </Form>

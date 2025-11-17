@@ -1,0 +1,3578 @@
+﻿//globals.css
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    --background: 210 40% 96%;
+    --foreground: 210 40% 3%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 40% 3%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md font-medium transition-colors;
+  }
+
+  .card {
+    @apply rounded-lg border border-gray-200 bg-white shadow-sm;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+//layout.tsx
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "sonner";
+
+const inter = Inter({ subsets: ["latin", "vietnamese"] });
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="vi">
+      <body className={inter.className}>
+        {children}
+        <Toaster position="top-right" />
+      </body>
+    </html>
+  );
+}
+
+
+//page.tsx
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { getStoredUser } from "@/lib/auth/utils";
+
+export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const user = getStoredUser();
+    if (user) {
+      router.push(`/${user.role}/dashboard`);
+    }
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+      <div className="text-center">
+        <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          ðŸ“š E-Learning Platform
+        </h1>
+        <p className="text-xl text-gray-600 mb-2">Trung tÃ¢m Anh Ngá»¯</p>
+        <p className="text-gray-600 mb-8">
+          Ná»n táº£ng há»c táº­p trá»±c tuyáº¿n chuyÃªn nghiá»‡p
+        </p>
+
+        <div className="flex gap-4 justify-center">
+          <Link href="/login">
+            <Button size="lg">ÄÄƒng nháº­p</Button>
+          </Link>
+          <Link href="/register">
+            <Button variant="outline" size="lg">
+              ÄÄƒng kÃ½
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+//(auth)\layout.tsx
+"use client";
+
+import { ReactNode } from "react";
+import { useEffect } from "react";
+
+import { getStoredUser } from "@/lib/auth/utils";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/hooks/useAuth";
+
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace(`/${user.role}/dashboard`);
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading || user) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="inline-block bg-blue-600 text-white rounded-lg p-3 mb-4">
+            <span className="text-2xl">ðŸ“š</span>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900">E-Learning</h1>
+          <p className="text-gray-600 mt-2">Trung tÃ¢m Anh Ngá»¯</p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-xl p-8">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+
+//(auth)\login\page.tsx
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+// âŒ KhÃ´ng cáº§n import Zod
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
+import { authService } from "@/lib/api/authService";
+import { setAuthData } from "@/lib/auth/utils";
+import { LogIn, Loader2 } from "lucide-react";
+import { LoginRequest } from "@/lib/types";
+
+type LoginFormData = LoginRequest;
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<LoginFormData>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    try {
+      const authData = await authService.login(data);
+      setAuthData(authData.token, authData.user);
+      toast.success(`ÄÄƒng nháº­p thÃ nh cÃ´ng! ChÃ o ${authData.user.full_name}`);
+
+      const { role } = authData.user;
+      if (role === "student") {
+        router.replace("/student/dashboard");
+      } else if (role === "instructor") {
+        router.replace("/instructor/dashboard");
+      } else {
+        router.replace("/admin/dashboard");
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "ÄÄƒng nháº­p tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i.";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        ÄÄƒng nháº­p
+      </h2>
+
+      <Alert className="mb-6 bg-blue-50 border-blue-200">
+        <AlertDescription className="text-sm text-blue-700">
+          <p className="font-medium mb-2">Sá»­ dá»¥ng cÃ¡c tÃ i khoáº£n sau:</p>
+          <p>ðŸ‘¨â€ðŸŽ“ Student: student@gmail.com / password</p>
+          <p>ðŸ‘¨â€ðŸ« Instructor: teacher@gmail.com / password</p>
+          <p>âš™ï¸ SysAdmin: sysadmin@englearning.test / Password123!</p>
+          <p>âš™ï¸ SupAdmin: support@englearning.test / Password123!</p>
+        </AlertDescription>
+      </Alert>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            // âœ… ThÃªm rules validation
+            rules={{
+              required: "Email khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Email khÃ´ng há»£p lá»‡.",
+              },
+            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="your@email.com"
+                    type="email"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            rules={{
+              required: "Máº­t kháº©u khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+              minLength: { value: 1, message: "Vui lÃ²ng nháº­p máº­t kháº©u." },
+            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Máº­t kháº©u</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    type="password"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full"
+            size="lg"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Äang Ä‘Äƒng nháº­p...
+              </>
+            ) : (
+              <>
+                <LogIn className="mr-2 h-4 w-4" /> ÄÄƒng nháº­p
+              </>
+            )}
+          </Button>
+        </form>
+      </Form>
+
+      <p className="text-center mt-6 text-sm text-gray-600">
+        ChÆ°a cÃ³ tÃ i khoáº£n?{" "}
+        <Link
+          href="/register"
+          className="text-blue-600 hover:underline font-medium"
+        >
+          ÄÄƒng kÃ½ ngay
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+
+//(auth)\register\page.tsx
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+// âŒ KhÃ´ng cáº§n import Zod
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { authService } from "@/lib/api/authService";
+import { setAuthData } from "@/lib/auth/utils";
+import { UserPlus, Loader2 } from "lucide-react";
+import { RegisterRequest } from "@/lib/types"; // âœ… Sá»­ dá»¥ng RegisterRequest tá»« types
+
+// âœ… Äá»‹nh nghÄ©a láº¡i kiá»ƒu dá»¯ liá»‡u cho form (thay tháº¿ z.infer)
+type RegisterFormData = RegisterRequest;
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<RegisterFormData>({
+    // âŒ Bá» zodResolver
+    defaultValues: {
+      full_name: "",
+      email: "",
+      password: "",
+      role: "student", // Máº·c Ä‘á»‹nh lÃ  student
+    },
+  });
+
+  const onSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true);
+    try {
+      const authData = await authService.register(data);
+      setAuthData(authData.token, authData.user);
+      toast.success(`ÄÄƒng kÃ½ thÃ nh cÃ´ng! ChÃ o ${authData.user.full_name}`);
+
+      const { role } = authData.user;
+      if (role === "student") {
+        router.replace("/student/dashboard");
+      } else if (role === "instructor") {
+        router.replace("/instructor/dashboard");
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "ÄÄƒng kÃ½ tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i.";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        ÄÄƒng kÃ½ tÃ i khoáº£n
+      </h2>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="full_name"
+            // âœ… ThÃªm rules validation
+            rules={{
+              required: "Há» tÃªn khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+              minLength: {
+                value: 3,
+                message: "Há» tÃªn pháº£i cÃ³ Ã­t nháº¥t 3 kÃ½ tá»±.",
+              },
+            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Há» vÃ  tÃªn</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Nguyá»…n VÄƒn A"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="email"
+            rules={{
+              required: "Email khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Email khÃ´ng há»£p lá»‡.",
+              },
+            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="your@email.com"
+                    type="email"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            rules={{
+              required: "Máº­t kháº©u khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+              minLength: {
+                value: 6,
+                message: "Máº­t kháº©u pháº£i cÃ³ Ã­t nháº¥t 6 kÃ½ tá»±.",
+              },
+            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Máº­t kháº©u</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    type="password"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="role"
+            rules={{ required: "Vui lÃ²ng chá»n vai trÃ²." }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Báº¡n lÃ ?</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={isLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chá»n vai trÃ²" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="student">ðŸ‘¨â€ðŸŽ“ TÃ´i lÃ  há»c viÃªn</SelectItem>
+                    <SelectItem value="instructor">
+                      ðŸ‘¨â€ðŸ« TÃ´i lÃ  giáº£ng viÃªn
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full"
+            size="lg"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Äang Ä‘Äƒng kÃ½...
+              </>
+            ) : (
+              <>
+                <UserPlus className="mr-2 h-4 w-4" /> ÄÄƒng kÃ½
+              </>
+            )}
+          </Button>
+        </form>
+      </Form>
+
+      <p className="text-center mt-6 text-sm text-gray-600">
+        ÄÃ£ cÃ³ tÃ i khoáº£n?{" "}
+        <Link
+          href="/login"
+          className="text-blue-600 hover:underline font-medium"
+        >
+          ÄÄƒng nháº­p
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+
+//(protected)\admin\courses\page.tsx
+export default function AdminCoursesPage() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold">Admin: Manage Courses</h1>
+      <p>
+        This is a placeholder page for administrators to manage all courses.
+      </p>
+    </div>
+  );
+}
+
+
+//(protected)\admin\dashboard\page.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Users,
+  BookOpen,
+  CreditCard,
+  UserCheck,
+  FileClock,
+  BarChart3,
+  AlertCircle,
+} from "lucide-react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { adminService } from "@/lib/api/adminService";
+
+interface DashboardSummary {
+  total_users: number;
+  total_courses: number;
+  pending_courses: number;
+  pending_instructors: number;
+  total_enrollments: number;
+  total_revenue: number;
+}
+
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  isLoading,
+  formatAsCurrency = false,
+}: {
+  title: string;
+  value: string | number;
+  icon: React.ElementType;
+  isLoading: boolean;
+  formatAsCurrency?: boolean;
+}) => {
+  const displayValue =
+    formatAsCurrency && typeof value === "number"
+      ? new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(value)
+      : value;
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <Skeleton className="h-8 w-3/4" />
+        ) : (
+          <div className="text-2xl font-bold">{displayValue}</div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default function AdminDashboardPage() {
+  const { user } = useAuth();
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const data = await adminService.getDashboardSummary();
+        setSummary(data);
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u dashboard."
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSummary();
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200 p-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          ChÃ o má»«ng, {user?.full_name || "Admin"}! ðŸ‘‹
+        </h1>
+        <p className="text-lg text-gray-600">
+          ÄÃ¢y lÃ  trang tá»•ng quan quáº£n lÃ½ há»‡ thá»‘ng EngBreaking.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StatCard
+          title="Tá»•ng Doanh thu"
+          value={summary?.total_revenue || 0}
+          icon={CreditCard}
+          isLoading={isLoading}
+          formatAsCurrency={true}
+        />
+        <StatCard
+          title="Tá»•ng NgÆ°á»i dÃ¹ng"
+          value={summary?.total_users || 0}
+          icon={Users}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Tá»•ng KhÃ³a há»c"
+          value={summary?.total_courses || 0}
+          icon={BookOpen}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Tá»•ng LÆ°á»£t ghi danh"
+          value={summary?.total_enrollments || 0}
+          icon={BarChart3}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="GV Chá» duyá»‡t"
+          value={summary?.pending_instructors || 0}
+          icon={UserCheck}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="KhÃ³a há»c Chá» duyá»‡t"
+          value={summary?.pending_courses || 0}
+          icon={FileClock}
+          isLoading={isLoading}
+        />
+      </div>
+    </div>
+  );
+}
+
+
+//(protected)\admin\instructors\page.tsx
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { instructorService } from "@/lib/api/instructorService";
+import { InstructorProfile } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CheckCircle2, XCircle } from "lucide-react";
+
+const InstructorSkeleton = () => (
+  <div className="space-y-4">
+    {[...Array(3)].map((_, i) => (
+      <Card key={i}>
+        <CardHeader>
+          <Skeleton className="h-6 w-1/3" />
+          <Skeleton className="h-4 w-1/2 mt-2" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+);
+
+export default function AdminInstructorsPage() {
+  const [profiles, setProfiles] = useState<InstructorProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMutating, setIsMutating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // âœ… ThÃªm state phÃ¢n trang
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  // âœ… Fetch API
+  const fetchPendingProfiles = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await instructorService.listProfiles({
+        page,
+        limit: 5, // giá»›i háº¡n má»—i trang 5 há»“ sÆ¡
+        status: "pending",
+      });
+
+      // âœ… Dá»¯ liá»‡u láº¥y tá»« API Ä‘Ã£ sá»­a trong instructorService
+      setProfiles(response.data);
+      setTotal(response.meta.total || 0);
+      setTotalPages(response.meta.total_pages || 1);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "KhÃ´ng thá»ƒ táº£i danh sÃ¡ch.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setProfiles([]);
+      setTotal(0);
+      setTotalPages(1);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    fetchPendingProfiles();
+  }, [fetchPendingProfiles]);
+
+  // âœ… Duyá»‡t vÃ  tá»« chá»‘i
+  const handleApprove = async (profileId: number) => {
+    setIsMutating(true);
+    try {
+      await instructorService.reviewProfile(profileId, "approved");
+      toast.success("Há»“ sÆ¡ Ä‘Ã£ Ä‘Æ°á»£c cháº¥p thuáº­n!");
+      fetchPendingProfiles();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "CÃ³ lá»—i xáº£y ra.");
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleReject = async (profileId: number) => {
+    const reason = prompt("Vui lÃ²ng nháº­p lÃ½ do tá»« chá»‘i:");
+    if (!reason) {
+      toast.info("HÃ nh Ä‘á»™ng Ä‘Ã£ Ä‘Æ°á»£c há»§y.");
+      return;
+    }
+    setIsMutating(true);
+    try {
+      await instructorService.reviewProfile(profileId, "rejected", reason);
+      toast.success("Há»“ sÆ¡ Ä‘Ã£ bá»‹ tá»« chá»‘i.");
+      fetchPendingProfiles();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "CÃ³ lá»—i xáº£y ra.");
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  // âœ… Render danh sÃ¡ch
+  const renderContent = () => {
+    if (isLoading && profiles.length === 0) {
+      return <InstructorSkeleton />;
+    }
+
+    if (error) {
+      return (
+        <div className="text-red-600 text-center py-10 bg-red-50 rounded-md">
+          {error}
+        </div>
+      );
+    }
+
+    if (!profiles || profiles.length === 0) {
+      return (
+        <div className="text-center py-16 border rounded-lg bg-gray-50">
+          <h3 className="text-xl font-semibold">
+            KhÃ´ng cÃ³ há»“ sÆ¡ nÃ o chá» duyá»‡t
+          </h3>
+          <p className="text-muted-foreground mt-2">
+            Má»i thá»© Ä‘á»u Ä‘Ã£ Ä‘Æ°á»£c xá»­ lÃ½!
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {profiles.map((profile) => (
+          <Card key={profile.profile_id}>
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-xl">
+                    {profile.user?.full_name}
+                  </CardTitle>
+                  <CardDescription>{profile.user?.email}</CardDescription>
+                </div>
+                <Badge variant="secondary">{profile.approval_status}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-sm">Bio</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {profile.bio || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm">Há»c váº¥n</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {profile.education || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm">Kinh nghiá»‡m</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {profile.experience || "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4 mt-6 pt-4 border-t">
+                <Button
+                  size="sm"
+                  onClick={() => handleApprove(profile.profile_id)}
+                  disabled={isMutating}
+                >
+                  <CheckCircle2 className="mr-2 h-4 w-4" /> Cháº¥p thuáº­n
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleReject(profile.profile_id)}
+                  disabled={isMutating}
+                >
+                  <XCircle className="mr-2 h-4 w-4" /> Tá»« chá»‘i
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-2">Duyá»‡t há»“ sÆ¡ Giáº£ng viÃªn</h1>
+      <p className="text-muted-foreground mb-6">
+        CÃ¡c há»“ sÆ¡ Ä‘ang chá» Ä‘Æ°á»£c xem xÃ©t.
+      </p>
+
+      {renderContent()}
+
+      {/* âœ… PhÃ¢n trang */}
+      {!isLoading && (
+        <div className="flex items-center justify-between py-6 mt-8 border-t">
+          <span className="text-sm text-muted-foreground">
+            Tá»•ng cá»™ng: {total} há»“ sÆ¡
+          </span>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">
+              Trang {page} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1 || isLoading}
+            >
+              TrÆ°á»›c
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages || isLoading}
+            >
+              Sau
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+//(protected)\admin\profile\page.tsx
+"use client";
+
+import { useAuth } from "@/lib/hooks/useAuth";
+import { UserProfile } from "@/components/shared/UserProfile";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ProfilePageSkeleton } from "@/components/skeleton/ProfilePageSkeleton";
+
+export default function AdminProfilePage() {
+  const { user, isLoading } = useAuth({ redirectToLoginIfFail: true });
+  console.log(user, "user");
+  if (isLoading) return <ProfilePageSkeleton />;
+  if (!user) return null;
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8 text-center">
+        Trang cÃ¡ nhÃ¢n Admin
+      </h1>
+      <UserProfile user={user} />
+    </div>
+  );
+}
+
+
+//(protected)\admin\settings\page.tsx
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { adminService } from "@/lib/api/adminService";
+import { SystemSetting } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Trash2, PlusCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
+
+const SettingsSkeleton = () => (
+  // Sá»­a láº¡i skeleton Ä‘á»ƒ khá»›p vá»›i sá»‘ cá»™t
+  <TableBody>
+    {[...Array(3)].map((_, i) => (
+      <TableRow key={`skeleton-${i}`}>
+        <TableCell>
+          <Skeleton className="h-5 w-32" />
+        </TableCell>
+        <TableCell>
+          <Skeleton className="h-5 w-48" />
+        </TableCell>
+        <TableCell>
+          <Skeleton className="h-5 w-full" />
+        </TableCell>
+        <TableCell className="text-right">
+          <Skeleton className="h-8 w-8 ml-auto" />
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+);
+
+export default function AdminSettingsPage() {
+  const { register, handleSubmit, reset } = useForm<{
+    key: string;
+    value: string;
+    description: string;
+  }>();
+  const [settings, setSettings] = useState<SystemSetting[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMutating, setIsMutating] = useState(false);
+
+  const fetchSettings = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await adminService.listSettings();
+      setSettings(data);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "KhÃ´ng thá»ƒ táº£i cÃ i Ä‘áº·t."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  const onSubmit = async (data: {
+    key: string;
+    value: string;
+    description: string;
+  }) => {
+    setIsMutating(true);
+    try {
+      await adminService.upsertSetting(data.key, data.value, data.description);
+      toast.success("CÃ i Ä‘áº·t Ä‘Ã£ Ä‘Æ°á»£c lÆ°u.");
+      fetchSettings();
+      reset({ key: "", value: "", description: "" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "LÆ°u tháº¥t báº¡i.");
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleDelete = async (key: string) => {
+    if (!confirm(`Báº¡n cÃ³ cháº¯c muá»‘n xÃ³a cÃ i Ä‘áº·t "${key}"?`)) return;
+    setIsMutating(true);
+    try {
+      await adminService.deleteSetting(key);
+      toast.success("CÃ i Ä‘áº·t Ä‘Ã£ Ä‘Æ°á»£c xÃ³a.");
+      fetchSettings();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "XÃ³a tháº¥t báº¡i.");
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">CÃ i Ä‘áº·t há»‡ thá»‘ng</h1>
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 p-4 border rounded-lg bg-card"
+      >
+        <Input
+          {...register("key")}
+          placeholder="Key"
+          required
+          disabled={isMutating}
+        />
+        <Input
+          {...register("value")}
+          placeholder="Value"
+          disabled={isMutating}
+        />
+        <Input
+          {...register("description")}
+          placeholder="MÃ´ táº£"
+          className="md:col-span-2"
+          disabled={isMutating}
+        />
+        <Button type="submit" disabled={isMutating} className="md:col-start-4">
+          <PlusCircle className="mr-2 h-4 w-4" />
+          {isMutating ? "Äang lÆ°u..." : "ThÃªm/Cáº­p nháº­t"}
+        </Button>
+      </form>
+
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Key</TableHead>
+              <TableHead>Value</TableHead>
+              <TableHead>MÃ´ táº£</TableHead>
+              <TableHead className="text-right">HÃ nh Ä‘á»™ng</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          {isLoading ? (
+            // âœ… Sá»¬A Lá»–I á»ž ÄÃ‚Y: DÃ¹ng component Skeleton riÃªng
+            <SettingsSkeleton />
+          ) : (
+            <TableBody>
+              {settings?.length > 0 ? (
+                settings.map((setting) => (
+                  <TableRow key={setting.setting_id}>
+                    <TableCell className="font-mono">
+                      {setting.setting_key}
+                    </TableCell>
+                    <TableCell>{setting.setting_value}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {setting.description}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(setting.setting_key)}
+                        disabled={isMutating}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    KhÃ´ng cÃ³ cÃ i Ä‘áº·t nÃ o.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          )}
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+
+//(protected)\admin\support\page.tsx
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { adminService } from "@/lib/api/adminService";
+import { SupportTicket } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
+
+const SupportTicketsSkeleton = () => (
+  <TableBody>
+    {[...Array(5)].map((_, i) => (
+      <TableRow key={`skeleton-${i}`}>
+        <TableCell>
+          <Skeleton className="h-5 w-10" />
+        </TableCell>
+        <TableCell>
+          <Skeleton className="h-5 w-48" />
+        </TableCell>
+        <TableCell>
+          <Skeleton className="h-5 w-24" />
+        </TableCell>
+        <TableCell>
+          <Skeleton className="h-5 w-20" />
+        </TableCell>
+        <TableCell>
+          <Skeleton className="h-5 w-32" />
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+);
+
+export default function AdminSupportPage() {
+  const [tickets, setTickets] = useState<SupportTicket[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchTickets = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await adminService.listSupportTickets(page);
+      setTickets(data.data); // âœ… láº¥y tá»« PaginatedResponse
+      setTotalPages(data.meta.total_pages); // âœ… meta tá»« server
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "KhÃ´ng thá»ƒ táº£i danh sÃ¡ch ticket.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setTickets([]); // fallback máº£ng rá»—ng
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
+
+  const renderTableBody = () => {
+    if (isLoading && tickets === null) {
+      return <SupportTicketsSkeleton />;
+    }
+
+    if (error) {
+      return (
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={5} className="text-center h-24 text-red-600">
+              {error}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      );
+    }
+
+    if (!tickets || tickets.length === 0) {
+      return (
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={5} className="text-center h-24">
+              KhÃ´ng cÃ³ ticket há»— trá»£ nÃ o.
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      );
+    }
+
+    return (
+      <TableBody>
+        {tickets.map((ticket) => (
+          <TableRow key={ticket.ticket_id}>
+            <TableCell>{ticket.ticket_id}</TableCell>
+            <TableCell className="font-medium">{ticket.subject}</TableCell>
+            <TableCell>{ticket.user?.full_name || "N/A"}</TableCell>
+            <TableCell>
+              <Badge>{ticket.status}</Badge>
+            </TableCell>
+            <TableCell>
+              {format(new Date(ticket.created_at), "dd/MM/yyyy HH:mm")}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    );
+  };
+
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">Quáº£n lÃ½ Há»— trá»£</h1>
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>TiÃªu Ä‘á»</TableHead>
+              <TableHead>NgÆ°á»i gá»­i</TableHead>
+              <TableHead>Tráº¡ng thÃ¡i</TableHead>
+              <TableHead>NgÃ y táº¡o</TableHead>
+            </TableRow>
+          </TableHeader>
+          {renderTableBody()}
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+
+//(protected)\admin\transactions\page.tsx
+export default function AdminTransactionsPage() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold">Admin: Manage Transactions</h1>
+      <p>This is a placeholder page for administrators to view transactions.</p>
+    </div>
+  );
+}
+
+
+//(protected)\admin\users\page.tsx
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { AuthenticatedUser, UserRole, UserStatus } from "@/lib/types";
+import { userService } from "@/lib/api/userService";
+import { useDebounce } from "use-debounce";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// ----------------- Skeleton Table -----------------
+const UsersTableSkeleton = () => (
+  <TableBody>
+    {[...Array(5)].map((_, i) => (
+      <TableRow key={`skeleton-${i}`}>
+        {[...Array(6)].map((_, j) => (
+          <TableCell key={j}>
+            <Skeleton className="h-5 w-full" />
+          </TableCell>
+        ))}
+      </TableRow>
+    ))}
+  </TableBody>
+);
+
+// ----------------- Component chÃ­nh -----------------
+export default function AdminUsersPage() {
+  const [users, setUsers] = useState<AuthenticatedUser[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  const [filters, setFilters] = useState({
+    keyword: "",
+    role: undefined as UserRole | undefined,
+    status: undefined as UserStatus | undefined,
+  });
+
+  const [debouncedKeyword] = useDebounce(filters.keyword, 500);
+
+  const fetchUsers = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await userService.listUsers({
+        page,
+        limit: 10,
+        keyword: debouncedKeyword,
+        role: filters.role,
+        status: filters.status,
+      });
+
+      const usersData = res.data || [];
+      const meta = res.meta;
+
+      setUsers(usersData);
+      setTotal(meta.total || 0);
+      setTotalPages(meta.total_pages || 1);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "KhÃ´ng thá»ƒ táº£i danh sÃ¡ch ngÆ°á»i dÃ¹ng.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setUsers([]);
+      setTotalPages(1);
+      setTotal(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, debouncedKeyword, filters.role, filters.status]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  // ----------------- Xá»­ lÃ½ thay Ä‘á»•i bá»™ lá»c -----------------
+  const handleFilterChange = (key: "role" | "status", value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value === "all" ? undefined : (value as UserRole | UserStatus),
+    }));
+    setPage(1);
+  };
+
+  // ----------------- Hiá»ƒn thá»‹ báº£ng -----------------
+  const renderTableBody = () => {
+    if (isLoading && users.length === 0) return <UsersTableSkeleton />;
+
+    if (error) {
+      return (
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={6} className="text-center h-24 text-red-600">
+              {error}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      );
+    }
+
+    if (!users || users.length === 0) {
+      return (
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={6} className="text-center h-24">
+              KhÃ´ng tÃ¬m tháº¥y ngÆ°á»i dÃ¹ng nÃ o.
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      );
+    }
+
+    return (
+      <TableBody>
+        {users.map((user) => (
+          <TableRow key={user.id}>
+            <TableCell>{user.id}</TableCell>
+            <TableCell className="font-medium">{user.full_name}</TableCell>
+            <TableCell>{user.email}</TableCell>
+            <TableCell>
+              <Badge
+                variant={
+                  user.role.includes("admin") ? "destructive" : "secondary"
+                }
+              >
+                {user.role}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <Badge variant={user.status === "active" ? "default" : "outline"}>
+                {user.status}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <Button variant="outline" size="sm">
+                Xem
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    );
+  };
+
+  // ----------------- Render chÃ­nh -----------------
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">Quáº£n lÃ½ NgÆ°á»i dÃ¹ng</h1>
+
+      {/* Bá»™ lá»c */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <Input
+          placeholder="TÃ¬m kiáº¿m theo email, há» tÃªn..."
+          value={filters.keyword}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, keyword: e.target.value }))
+          }
+          className="max-w-sm"
+        />
+        <Select
+          value={filters.role || "all"}
+          onValueChange={(value) => handleFilterChange("role", value)}
+        >
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Lá»c theo vai trÃ²" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Táº¥t cáº£ vai trÃ²</SelectItem>
+            <SelectItem value="student">Há»c viÃªn</SelectItem>
+            <SelectItem value="instructor">Giáº£ng viÃªn</SelectItem>
+            <SelectItem value="support_admin">Support Admin</SelectItem>
+            <SelectItem value="system_admin">System Admin</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={filters.status || "all"}
+          onValueChange={(value) => handleFilterChange("status", value)}
+        >
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Lá»c theo tráº¡ng thÃ¡i" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Táº¥t cáº£ tráº¡ng thÃ¡i</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="locked">Locked</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Báº£ng hiá»ƒn thá»‹ */}
+      <div className="rounded-lg border shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Há» vÃ  TÃªn</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Vai trÃ²</TableHead>
+              <TableHead>Tráº¡ng thÃ¡i</TableHead>
+              <TableHead>HÃ nh Ä‘á»™ng</TableHead>
+            </TableRow>
+          </TableHeader>
+          {renderTableBody()}
+        </Table>
+      </div>
+
+      {/* PhÃ¢n trang */}
+      <div className="flex items-center justify-between py-4">
+        <span className="text-sm text-muted-foreground">
+          Tá»•ng cá»™ng: {total} ngÆ°á»i dÃ¹ng
+        </span>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">
+            Trang {page} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1 || isLoading}
+          >
+            TrÆ°á»›c
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages || isLoading}
+          >
+            Sau
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+//(protected)\instructor\layout.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { User as UserIcon, LogOut, Loader2, AlertTriangle } from "lucide-react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { instructorService } from "@/lib/api/instructorService";
+import { InstructorProfile } from "@/lib/types";
+import { usePathname, useRouter } from "next/navigation";
+import { clearAuthData } from "@/lib/auth/utils";
+
+// --- Component con cho mÃ n hÃ¬nh chá» duyá»‡t / yÃªu cáº§u ná»™p há»“ sÆ¡ ---
+// Äá»‹nh nghÄ©a kiá»ƒu cho prop `status` má»™t cÃ¡ch cháº·t cháº½
+type PromptStatus = "pending" | "rejected" | "no_profile";
+
+const ApplicationPrompt = ({
+  status,
+  reason,
+}: {
+  status: PromptStatus;
+  reason?: string | null;
+}) => {
+  const handleLogoutAndRedirectHome = () => {
+    clearAuthData();
+    window.location.href = "/";
+  };
+
+  const getStatusMessage = () => {
+    switch (status) {
+      case "pending":
+        return {
+          title: "Há»“ sÆ¡ cá»§a báº¡n Ä‘ang chá» duyá»‡t",
+          description:
+            "ChÃºng tÃ´i Ä‘ang xem xÃ©t há»“ sÆ¡ cá»§a báº¡n. Vui lÃ²ng quay láº¡i sau. Báº¡n cÃ³ thá»ƒ chá»‰nh sá»­a há»“ sÆ¡ náº¿u cáº§n.",
+        };
+      case "rejected":
+        return {
+          title: "Há»“ sÆ¡ cá»§a báº¡n Ä‘Ã£ bá»‹ tá»« chá»‘i",
+          description: `LÃ½ do: ${
+            reason || "KhÃ´ng cÃ³ lÃ½ do cá»¥ thá»ƒ"
+          }. Vui lÃ²ng cáº­p nháº­t láº¡i há»“ sÆ¡ vÃ  gá»­i láº¡i Ä‘á»ƒ chÃºng tÃ´i xem xÃ©t.`,
+        };
+      default: // 'no_profile'
+        return {
+          title: "HoÃ n thÃ nh há»“ sÆ¡ cá»§a báº¡n",
+          description:
+            "Äá»ƒ báº¯t Ä‘áº§u giáº£ng dáº¡y, báº¡n cáº§n táº¡o vÃ  gá»­i há»“ sÆ¡ Ä‘á»ƒ chÃºng tÃ´i xem xÃ©t. Sau khi Ä‘Æ°á»£c phÃª duyá»‡t, báº¡n sáº½ cÃ³ quyá»n truy cáº­p Ä‘áº§y Ä‘á»§ vÃ o cÃ¡c cÃ´ng cá»¥ dÃ nh cho giáº£ng viÃªn.",
+        };
+    }
+  };
+
+  const { title, description } = getStatusMessage();
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
+      <AlertTriangle className="h-12 w-12 text-yellow-500 mb-4" />
+      <h1 className="text-2xl font-bold mb-2">{title}</h1>
+      <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Link href="/instructor/profile">
+          <Button>Äáº¿n trang há»“ sÆ¡</Button>
+        </Link>
+        <Button variant="outline" onClick={handleLogoutAndRedirectHome}>
+          ÄÄƒng xuáº¥t & Vá» trang chá»§
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// --- Component Layout chÃ­nh ---
+export default function InstructorLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  const [profile, setProfile] = useState<InstructorProfile | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+
+  useEffect(() => {
+    if (isAuthLoading || !user) return;
+    if (user.role !== "instructor") {
+      router.replace(`/${user.role}/dashboard`);
+      return;
+    }
+    const fetchProfile = async () => {
+      setIsProfileLoading(true);
+      try {
+        const myProfile = await instructorService.getMyProfile();
+        setProfile(myProfile);
+      } catch (error) {
+        console.error("Failed to fetch instructor profile:", error);
+        setProfile(null);
+      } finally {
+        setIsProfileLoading(false);
+      }
+    };
+    fetchProfile();
+  }, [user, isAuthLoading, router]);
+
+  const handleLogout = () => {
+    clearAuthData();
+    router.push("/login");
+  };
+
+  const isLoading = isAuthLoading || isProfileLoading;
+
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-4 text-muted-foreground">
+          Äang táº£i dá»¯ liá»‡u giáº£ng viÃªn...
+        </p>
+      </div>
+    );
+  }
+
+  // --- RENDER LOGIC (ÄÃƒ Sá»¬A) ---
+  const approvalStatus = profile?.approval_status;
+
+  // TrÆ°á»ng há»£p 1: Instructor Ä‘Ã£ Ä‘Æ°á»£c duyá»‡t
+  if (approvalStatus === "approved") {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav /* ... JSX navbar Ä‘áº§y Ä‘á»§ ... */>
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="text-2xl">ðŸ‘¨â€ðŸ«</div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">E-Learning</h1>
+                <p className="text-xs text-gray-600">Giáº£ng viÃªn</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link
+                href="/instructor/dashboard"
+                className="text-gray-700 hover:text-gray-900 font-medium"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/instructor/my-courses"
+                className="text-gray-700 hover:text-gray-900 font-medium"
+              >
+                KhÃ³a há»c cá»§a tÃ´i
+              </Link>
+              <Link
+                href="/instructor/create-course"
+                className="text-gray-700 hover:text-gray-900 font-medium"
+              >
+                Táº¡o khÃ³a há»c
+              </Link>
+              <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
+                <Link
+                  href="/instructor/profile"
+                  className="flex items-center gap-2"
+                >
+                  <UserIcon className="w-5 h-5 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">
+                    {user.full_name}
+                  </span>
+                </Link>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  ÄÄƒng xuáº¥t
+                </Button>
+              </div>
+            </div>
+          </div>
+        </nav>
+        <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
+        <footer className="bg-gray-900 text-gray-400 mt-12 py-8 text-center text-sm">
+          <p>&copy; 2025 E-Learning Platform. Developed by Team.</p>
+        </footer>
+      </div>
+    );
+  }
+
+  // TrÆ°á»ng há»£p 2: Instructor chÆ°a Ä‘Æ°á»£c duyá»‡t VÃ€ Ä‘ang á»Ÿ trang profile
+  if (pathname === "/instructor/profile") {
+    return <div className="min-h-screen bg-gray-50">{children}</div>;
+  }
+
+  // TrÆ°á»ng há»£p 3: Instructor chÆ°a Ä‘Æ°á»£c duyá»‡t VÃ€ Ä‘ang á»Ÿ cÃ¡c trang khÃ¡c
+  // á»ž Ä‘Ã¢y, chÃºng ta biáº¿t cháº¯c cháº¯n `approvalStatus` khÃ´ng pháº£i lÃ  'approved'
+  return (
+    <ApplicationPrompt
+      status={approvalStatus || "no_profile"}
+      reason={profile?.rejection_reason}
+    />
+  );
+}
+
+
+//(protected)\instructor\apply\page.tsx
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { instructorService } from "@/lib/api/instructorService";
+import { InstructorApplicationForm } from "@/lib/types";
+
+export default function InstructorApplyPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit } = useForm<InstructorApplicationForm>();
+
+  const onSubmit = async (data: InstructorApplicationForm) => {
+    setIsLoading(true);
+    try {
+      await instructorService.createProfile(data);
+      toast.success("Application submitted!");
+      router.push("/instructor/dashboard");
+    } catch (error) {
+      toast.error("Failed to submit application");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow p-6">
+        <h1 className="text-2xl font-bold mb-6">Apply as Instructor</h1>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Bio</label>
+            <textarea
+              {...register("bio")}
+              rows={3}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Education</label>
+            <textarea
+              {...register("education")}
+              rows={2}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Experience</label>
+            <textarea
+              {...register("experience")}
+              rows={2}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Certificates
+            </label>
+            <textarea
+              {...register("certificates")}
+              rows={2}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            {isLoading ? "Submitting..." : "Submit Application"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+
+//(protected)\instructor\create-course\page.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { courseService } from "@/lib/api/courseService";
+import { Category, CourseForm, CourseTag } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader2, PlusCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+
+export default function CreateCoursePage() {
+  const router = useRouter();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<CourseTag[]>([]);
+  const [isLoadingMeta, setIsLoadingMeta] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<CourseForm>({
+    // KhÃ´ng dÃ¹ng zodResolver
+    defaultValues: {
+      title: "",
+      description: "",
+      language: "Tiáº¿ng Viá»‡t",
+      level: "beginner",
+      price: 0,
+      duration_hours: 1,
+      tag_ids: [],
+    },
+  });
+
+  // Fetch dá»¯ liá»‡u meta (categories, tags)
+  useEffect(() => {
+    async function fetchMetaData() {
+      setIsLoadingMeta(true);
+      try {
+        const [categoriesData, tagsData] = await Promise.all([
+          courseService.listCategories(),
+          courseService.listTags(),
+        ]);
+        setCategories(categoriesData);
+        setTags(tagsData);
+      } catch (error) {
+        toast.error("Lá»—i khi táº£i dá»¯ liá»‡u cho form. Vui lÃ²ng thá»­ láº¡i.");
+      } finally {
+        setIsLoadingMeta(false);
+      }
+    }
+    fetchMetaData();
+  }, []);
+
+  const onSubmit = async (data: CourseForm) => {
+    setIsSubmitting(true);
+    try {
+      // Ã‰p kiá»ƒu cÃ¡c giÃ¡ trá»‹ tá»« input (string) sang number trÆ°á»›c khi gá»­i Ä‘i
+      const payload: CourseForm = {
+        ...data,
+        category_id: Number(data.category_id),
+        price: Number(data.price),
+        duration_hours: Number(data.duration_hours),
+        discount_price: data.discount_price
+          ? Number(data.discount_price)
+          : undefined,
+      };
+
+      const newCourse = await courseService.createCourse(payload);
+      toast.success("Táº¡o khÃ³a há»c thÃ nh cÃ´ng!");
+      router.push(`/instructor/my-courses`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Táº¡o khÃ³a há»c tháº¥t báº¡i."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoadingMeta) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="mr-2 h-8 w-8 animate-spin" />
+        <span>Äang táº£i dá»¯ liá»‡u form...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-8">
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl">Táº¡o khÃ³a há»c má»›i</CardTitle>
+          <CardDescription>
+            Äiá»n cÃ¡c thÃ´ng tin cÆ¡ báº£n vá» khÃ³a há»c cá»§a báº¡n.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="title"
+                rules={{
+                  required: "TiÃªu Ä‘á» khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+                  minLength: {
+                    value: 5,
+                    message: "TiÃªu Ä‘á» pháº£i cÃ³ Ã­t nháº¥t 5 kÃ½ tá»±.",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>TiÃªu Ä‘á» khÃ³a há»c</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="VÃ­ dá»¥: Luyá»‡n thi IELTS 7.0 cáº¥p tá»‘c"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                rules={{
+                  required: "MÃ´ táº£ khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+                  minLength: {
+                    value: 20,
+                    message: "MÃ´ táº£ pháº£i cÃ³ Ã­t nháº¥t 20 kÃ½ tá»±.",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>MÃ´ táº£ chi tiáº¿t</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        rows={5}
+                        placeholder="MÃ´ táº£ vá» nhá»¯ng gÃ¬ há»c viÃªn sáº½ há»c Ä‘Æ°á»£c..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="category_id"
+                  rules={{ required: "Vui lÃ²ng chá»n danh má»¥c." }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Danh má»¥c</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={String(field.value)}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chá»n danh má»¥c" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories.map((c) => (
+                            <SelectItem
+                              key={c.category_id}
+                              value={String(c.category_id)}
+                            >
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="level"
+                  rules={{ required: "Vui lÃ²ng chá»n trÃ¬nh Ä‘á»™." }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>TrÃ¬nh Ä‘á»™</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chá»n trÃ¬nh Ä‘á»™" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="beginner">
+                            NgÆ°á»i má»›i báº¯t Ä‘áº§u
+                          </SelectItem>
+                          <SelectItem value="intermediate">
+                            Trung cáº¥p
+                          </SelectItem>
+                          <SelectItem value="advanced">NÃ¢ng cao</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  rules={{
+                    required: "GiÃ¡ khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+                    min: { value: 0, message: "GiÃ¡ khÃ´ng thá»ƒ lÃ  sá»‘ Ã¢m." },
+                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>GiÃ¡ (VND)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="0" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="duration_hours"
+                  rules={{
+                    required: "Thá»i lÆ°á»£ng khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng.",
+                    min: { value: 1, message: "Thá»i lÆ°á»£ng pháº£i lá»›n hÆ¡n 0." },
+                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thá»i lÆ°á»£ng (giá»)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="1" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="language"
+                rules={{ required: "NgÃ´n ngá»¯ khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng." }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>NgÃ´n ngá»¯</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Tiáº¿ng Viá»‡t" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tag_ids"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Tags</FormLabel>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 rounded-md border p-4">
+                      {tags.map((tag) => (
+                        <FormField
+                          key={tag.tag_id}
+                          control={form.control}
+                          name="tag_ids"
+                          render={({ field }) => {
+                            const currentValue = field.value || [];
+                            return (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={currentValue.includes(tag.tag_id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        field.onChange([
+                                          ...currentValue,
+                                          tag.tag_id,
+                                        ]);
+                                      } else {
+                                        field.onChange(
+                                          currentValue.filter(
+                                            (value) => value !== tag.tag_id
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {tag.name}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" disabled={isSubmitting} size="lg">
+                {isSubmitting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                )}
+                Táº¡o khÃ³a há»c
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
+//(protected)\instructor\dashboard\page.tsx
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Users,
+  BookOpen,
+  CreditCard,
+  TrendingUp,
+  AlertCircle,
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getStoredUser } from "@/lib/auth/utils";
+
+export default function AdminDashboard() {
+  // âœ… Get user directly - no useState
+  const user = getStoredUser();
+
+  if (!user) return null;
+
+  return (
+    <div className="space-y-8">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          ChÃ o má»«ng, {user.full_name}! ðŸ‘‹
+        </h1>
+        <p className="text-lg text-gray-600">Quáº£n lÃ½ há»‡ thá»‘ng e-learning</p>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Tá»•ng ngÆ°á»i dÃ¹ng
+            </CardTitle>
+            <Users className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-blue-600">0</p>
+            <p className="text-xs text-gray-600 mt-1">ngÆ°á»i dÃ¹ng</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">KhÃ³a há»c</CardTitle>
+            <BookOpen className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-green-600">0</p>
+            <p className="text-xs text-gray-600 mt-1">khÃ³a há»c</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Tá»•ng doanh thu
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-purple-600">$0</p>
+            <p className="text-xs text-gray-600 mt-1">doanh thu</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">TÄƒng trÆ°á»Ÿng</CardTitle>
+            <TrendingUp className="h-4 w-4 text-orange-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-orange-600">0%</p>
+            <p className="text-xs text-gray-600 mt-1">thÃ¡ng nÃ y</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* System Status */}
+      <Alert className="bg-green-50 border-green-200">
+        <AlertCircle className="h-4 w-4 text-green-600" />
+        <AlertDescription className="text-green-700">
+          âœ“ Há»‡ thá»‘ng hoáº¡t Ä‘á»™ng bÃ¬nh thÆ°á»ng
+        </AlertDescription>
+      </Alert>
+
+      {/* Main sections */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Pending approvals */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Chá» duyá»‡t</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="text-center py-8">
+                <p className="text-sm text-gray-600">
+                  KhÃ´ng cÃ³ yÃªu cáº§u chá» duyá»‡t
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent activities */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Hoáº¡t Ä‘á»™ng gáº§n Ä‘Ã¢y</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="text-center py-8">
+                <p className="text-sm text-gray-600">ChÆ°a cÃ³ hoáº¡t Ä‘á»™ng</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Management sections */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quáº£n lÃ½ ngÆ°á»i dÃ¹ng</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 mb-4">
+              Xem vÃ  quáº£n lÃ½ táº¥t cáº£ ngÆ°á»i dÃ¹ng trong há»‡ thá»‘ng
+            </p>
+            <Button variant="outline" className="w-full">
+              Xem ngÆ°á»i dÃ¹ng
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quáº£n lÃ½ khÃ³a há»c</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 mb-4">
+              Duyá»‡t vÃ  quáº£n lÃ½ cÃ¡c khÃ³a há»c
+            </p>
+            <Button variant="outline" className="w-full">
+              Xem khÃ³a há»c
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quáº£n lÃ½ giao dá»‹ch</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 mb-4">
+              Xem vÃ  quáº£n lÃ½ cÃ¡c giao dá»‹ch thanh toÃ¡n
+            </p>
+            <Button variant="outline" className="w-full">
+              Xem giao dá»‹ch
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* System info */}
+      <Card>
+        <CardHeader>
+          <CardTitle>ThÃ´ng tin há»‡ thá»‘ng</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <p className="text-sm text-gray-600 mb-2">PhiÃªn báº£n</p>
+              <p className="text-lg font-semibold">1.0.0</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-2">NgÃ´n ngá»¯</p>
+              <p className="text-lg font-semibold">Tiáº¿ng Viá»‡t</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-2">Thá»i gian khá»Ÿi Ä‘á»™ng</p>
+              <p className="text-lg font-semibold">
+                {new Date().toLocaleDateString("vi-VN")}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
+//(protected)\instructor\my-courses\page.tsx
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { courseService } from "@/lib/api/courseService";
+import { Course } from "@/lib/types";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PlusCircle } from "lucide-react";
+import Image from "next/image";
+
+const CourseCardSkeleton = () => (
+  <Card>
+    <div className="flex flex-col space-y-3 p-4">
+      <Skeleton className="h-40 w-full" />
+      <Skeleton className="h-6 w-3/4" />
+      <Skeleton className="h-5 w-1/2" />
+    </div>
+  </Card>
+);
+
+export default function MyCoursesPage() {
+  const { user } = useAuth();
+  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMyCourses = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    try {
+      const response = await courseService.listCourses({
+        instructor_id: user.id,
+      });
+
+      setCourses(response.data);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "KhÃ´ng thá»ƒ táº£i danh sÃ¡ch khÃ³a há»c."
+      );
+      setCourses([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchMyCourses();
+  }, [fetchMyCourses]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">KhÃ³a há»c cá»§a tÃ´i</h1>
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <CourseCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">KhÃ³a há»c cá»§a tÃ´i</h1>
+        <Link href="/instructor/create-course">
+          <Button>
+            <PlusCircle className="mr-2 h-4 w-4" /> Táº¡o khÃ³a há»c má»›i
+          </Button>
+        </Link>
+      </div>
+
+      {courses && courses.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses.map((course) => (
+            <Link
+              href={`/instructor/courses/${course.course_id}`}
+              key={course.course_id}
+            >
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader className="p-0">
+                  <Image
+                    src={course.thumbnail_url || "/placeholder.png"}
+                    alt={course.title}
+                    width={400}
+                    height={200}
+                    className="rounded-t-lg w-full object-cover aspect-[16/9]"
+                  />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="line-clamp-2 mb-2">
+                    {course.title}
+                  </CardTitle>
+                  <div className="flex gap-2">
+                    <Badge variant="outline" className="capitalize">
+                      {course.status}
+                    </Badge>
+                    <Badge
+                      variant={
+                        course.approval_status === "approved"
+                          ? "default"
+                          : course.approval_status === "rejected"
+                          ? "destructive"
+                          : "secondary"
+                      }
+                    >
+                      {course.approval_status}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 border-2 border-dashed rounded-lg">
+          <h2 className="text-xl font-semibold">Báº¡n chÆ°a cÃ³ khÃ³a há»c nÃ o</h2>
+          <p className="text-muted-foreground mt-2 mb-4">
+            HÃ£y báº¯t Ä‘áº§u chia sáº» kiáº¿n thá»©c cá»§a báº¡n ngay hÃ´m nay!
+          </p>
+          <Link href="/instructor/create-course">
+            <Button>Táº¡o khÃ³a há»c Ä‘áº§u tiÃªn</Button>
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+//(protected)\instructor\profile\page.tsx
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { UserProfile } from "@/components/shared/UserProfile";
+import { instructorService } from "@/lib/api/instructorService";
+import { useForm } from "react-hook-form";
+import { InstructorApplicationForm, InstructorProfile } from "@/lib/types";
+import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
+import { ProfilePageSkeleton } from "@/components/skeleton/ProfilePageSkeleton";
+
+// Form ná»™p/cáº­p nháº­t há»“ sÆ¡
+const InstructorApplication = ({
+  profile,
+  onProfileUpdate,
+}: {
+  profile: InstructorProfile | null;
+  onProfileUpdate: () => void;
+}) => {
+  const isUpdate = !!profile; // Náº¿u cÃ³ profile lÃ  update, khÃ´ng thÃ¬ lÃ  create
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm<InstructorApplicationForm>({
+    defaultValues: {
+      bio: profile?.bio || "",
+      education: profile?.education || "",
+      experience: profile?.experience || "",
+      certificates: profile?.certificates || "",
+    },
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onSubmit = async (data: InstructorApplicationForm) => {
+    setIsSubmitting(true);
+    try {
+      if (isUpdate) {
+        await instructorService.updateProfile(data);
+      } else {
+        await instructorService.createProfile(data);
+      }
+      toast.success(
+        `Há»“ sÆ¡ Ä‘Ã£ Ä‘Æ°á»£c ${
+          isUpdate ? "cáº­p nháº­t" : "ná»™p"
+        } thÃ nh cÃ´ng vÃ  Ä‘ang chá» duyá»‡t láº¡i.`
+      );
+      onProfileUpdate(); // Táº£i láº¡i dá»¯ liá»‡u á»Ÿ component cha
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Thao tÃ¡c tháº¥t báº¡i."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {isUpdate ? "Cáº­p nháº­t há»“ sÆ¡ giáº£ng viÃªn" : "Ná»™p há»“ sÆ¡ giáº£ng viÃªn"}
+        </CardTitle>
+        <CardDescription>
+          Cung cáº¥p thÃ´ng tin Ä‘á»ƒ chÃºng tÃ´i cÃ³ thá»ƒ xem xÃ©t vÃ  phÃª duyá»‡t tÃ i khoáº£n
+          cá»§a báº¡n.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Bio</label>
+            <Textarea
+              {...register("bio")}
+              rows={3}
+              placeholder="Giá»›i thiá»‡u ngáº¯n vá» báº£n thÃ¢n vÃ  chuyÃªn mÃ´n cá»§a báº¡n..."
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Há»c váº¥n</label>
+            <Textarea
+              {...register("education")}
+              rows={2}
+              placeholder="CÃ¡c báº±ng cáº¥p, trÆ°á»ng Ä‘áº¡i há»c..."
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Kinh nghiá»‡m</label>
+            <Textarea
+              {...register("experience")}
+              rows={2}
+              placeholder="Kinh nghiá»‡m giáº£ng dáº¡y hoáº·c lÃ m viá»‡c liÃªn quan..."
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Chá»©ng chá»‰</label>
+            <Textarea
+              {...register("certificates")}
+              rows={2}
+              placeholder="CÃ¡c chá»©ng chá»‰ chuyÃªn mÃ´n (IELTS, TESOL...)"
+            />
+          </div>
+          <Button type="submit" disabled={isSubmitting || !isDirty}>
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            {isUpdate ? "Cáº­p nháº­t há»“ sÆ¡" : "Ná»™p há»“ sÆ¡"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Trang Profile chÃ­nh
+export default function InstructorProfilePage() {
+  const { user, isLoading: isAuthLoading } = useAuth({
+    redirectToLoginIfFail: true,
+  });
+  const [profile, setProfile] = useState<InstructorProfile | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+
+  const fetchProfile = useCallback(async () => {
+    setIsProfileLoading(true);
+    try {
+      const myProfile = await instructorService.getMyProfile();
+      setProfile(myProfile);
+    } catch (error) {
+      console.error("Failed to fetch instructor profile:", error);
+      setProfile(null);
+    } finally {
+      setIsProfileLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) fetchProfile();
+  }, [user, fetchProfile]);
+
+  if (isAuthLoading || (isProfileLoading && !profile && user)) {
+    return <ProfilePageSkeleton />;
+  }
+  if (!user) return null;
+
+  return (
+    <div className="container mx-auto py-8 space-y-8">
+      <UserProfile user={user} />
+      {profile?.approval_status === "approved" && (
+        <p className="text-center p-4 bg-green-100 rounded-md text-green-800 font-medium">
+          Há»“ sÆ¡ cá»§a báº¡n Ä‘Ã£ Ä‘Æ°á»£c phÃª duyá»‡t!
+        </p>
+      )}
+      {profile?.approval_status === "pending" && (
+        <p className="text-center p-4 bg-yellow-100 rounded-md text-yellow-800">
+          Há»“ sÆ¡ cá»§a báº¡n Ä‘ang chá» duyá»‡t.
+        </p>
+      )}
+      {profile?.approval_status === "rejected" && (
+        <p className="text-center p-4 bg-red-100 rounded-md text-red-800">
+          Há»“ sÆ¡ bá»‹ tá»« chá»‘i. LÃ½ do: {profile.rejection_reason}
+        </p>
+      )}
+
+      <InstructorApplication profile={profile} onProfileUpdate={fetchProfile} />
+    </div>
+  );
+}
+
+
+//(protected)\student\layout.tsx
+"use client";
+
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { User as UserIcon, LogOut, Menu, X, Loader2 } from "lucide-react";
+import { clearAuthData } from "@/lib/auth/utils";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { useEffect, useState } from "react";
+
+export default function StudentLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // 2. Di chuyá»ƒn logic chuyá»ƒn hÆ°á»›ng vÃ o useEffect
+  useEffect(() => {
+    // Chá»‰ thá»±c hiá»‡n kiá»ƒm tra khi Ä‘Ã£ háº¿t loading vÃ  Ä‘Ã£ cÃ³ thÃ´ng tin user
+    if (!isLoading && user) {
+      if (user.role !== "student") {
+        router.replace(`/${user.role}/dashboard`);
+      }
+    }
+    // Náº¿u khÃ´ng cÃ³ user sau khi loading xong, chuyá»ƒn vá» trang login
+    if (!isLoading && !user) {
+      router.replace("/login");
+    }
+  }, [isLoading, user, router]); // Dependency array: cháº¡y láº¡i khi cÃ¡c giÃ¡ trá»‹ nÃ y thay Ä‘á»•i
+
+  // 3. Hiá»ƒn thá»‹ loading trong khi chá» xÃ¡c thá»±c hoáº·c trong lÃºc chuyá»ƒn hÆ°á»›ng
+  // Äiá»u nÃ y ngÄƒn viá»‡c layout bá»‹ "nhÃ¡y" lÃªn mÃ n hÃ¬nh náº¿u user cÃ³ vai trÃ² khÃ´ng há»£p lá»‡
+  if (isLoading || !user || user.role !== "student") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const handleLogout = () => {
+    clearAuthData();
+    router.push("/login");
+  };
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Navbar */}
+      <nav className="sticky top-0 bg-white border-b border-gray-200 shadow-sm z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="text-3xl">ðŸ“š</div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">EngBreaking</h1>
+                <p className="text-xs text-gray-600">Ná»n táº£ng há»c tiáº¿ng Anh</p>
+              </div>
+            </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              <Link
+                href="/student/dashboard"
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                ðŸ“Š Dashboard
+              </Link>
+              <Link
+                href="/student/my-courses"
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                ðŸ“š KhÃ³a há»c cá»§a tÃ´i
+              </Link>
+              <Link
+                href="/student/transactions"
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                ðŸ’° Giao dá»‹ch
+              </Link>
+
+              {/* User Menu */}
+              <div className="flex items-center gap-4 pl-8 border-l border-gray-200">
+                <Link
+                  href="/student/profile"
+                  className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition"
+                >
+                  <UserIcon className="w-5 h-5 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700 truncate max-w-[120px]">
+                    {user.full_name}
+                  </span>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut size={16} />
+                  ÄÄƒng xuáº¥t
+                </Button>
+              </div>
+            </div>
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-4 space-y-2 pb-4">
+              <Link
+                href="/student/dashboard"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg"
+              >
+                ðŸ“Š Dashboard
+              </Link>
+              <Link
+                href="/student/my-courses"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg"
+              >
+                ðŸ“š KhÃ³a há»c cá»§a tÃ´i
+              </Link>
+              <Link
+                href="/student/transactions"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg"
+              >
+                ðŸ’° Giao dá»‹ch
+              </Link>
+              <Link
+                href="/student/profile"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg"
+              >
+                ðŸ‘¤ {user.full_name}
+              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 justify-center mt-2"
+              >
+                <LogOut size={16} />
+                ÄÄƒng xuáº¥t
+              </Button>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+        {children}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 mt-auto py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center text-sm">
+          <p>Â© 2025 EngBreaking. Ná»n táº£ng há»c tiáº¿ng Anh trá»±c tuyáº¿n.</p>
+          <div className="flex justify-center gap-4 mt-4 text-xs">
+            <Link href="#" className="hover:text-white">
+              Vá» chÃºng tÃ´i
+            </Link>
+            <Link href="#" className="hover:text-white">
+              LiÃªn há»‡
+            </Link>
+            <Link href="#" className="hover:text-white">
+              Äiá»u khoáº£n
+            </Link>
+            <Link href="#" className="hover:text-white">
+              Báº£o máº­t
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+
+//(protected)\student\dashboard\page.tsx
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Trophy, Clock } from "lucide-react";
+import { getStoredUser } from "@/lib/auth/utils";
+
+export default function StudentDashboard() {
+  const user = getStoredUser();
+
+  if (!user) return null;
+
+  return (
+    <div className="space-y-8">
+      {/* Welcome section */}
+      <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          ChÃ o má»«ng, {user.full_name}! ðŸ‘‹
+        </h1>
+        <p className="text-lg text-gray-600">
+          HÃ£y báº¯t Ä‘áº§u hÃ nh trÃ¬nh há»c táº­p cá»§a báº¡n hÃ´m nay
+        </p>
+      </div>
+
+      {/* Stats cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              KhÃ³a há»c Ä‘ang há»c
+            </CardTitle>
+            <BookOpen className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-blue-600">0</p>
+            <p className="text-xs text-gray-600 mt-1">khÃ³a há»c</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              KhÃ³a há»c hoÃ n thÃ nh
+            </CardTitle>
+            <Trophy className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-green-600">0</p>
+            <p className="text-xs text-gray-600 mt-1">khÃ³a há»c</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Tá»•ng thá»i gian há»c
+            </CardTitle>
+            <Clock className="h-4 w-4 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-purple-600">0</p>
+            <p className="text-xs text-gray-600 mt-1">giá»</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Featured courses */}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          KhÃ³a há»c ná»•i báº­t
+        </h2>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <BookOpen className="h-12 w-12 text-gray-300 mb-4" />
+              <p className="text-gray-600 mb-4">
+                ChÆ°a cÃ³ khÃ³a há»c nÃ o. HÃ£y khÃ¡m phÃ¡ cÃ¡c khÃ³a há»c má»›i!
+              </p>
+              <Button>Xem táº¥t cáº£ khÃ³a há»c</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* My courses section */}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          KhÃ³a há»c cá»§a tÃ´i
+        </h2>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <BookOpen className="h-12 w-12 text-gray-300 mb-4" />
+              <p className="text-gray-600 mb-4">
+                Báº¡n chÆ°a Ä‘Äƒng kÃ½ khÃ³a há»c nÃ o
+              </p>
+              <Button variant="outline">TÃ¬m kiáº¿m khÃ³a há»c</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+
+//(protected)\student\my-courses\page.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { toast } from "sonner";
+import { learningService } from "@/lib/api/learningService";
+import { Enrollment } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress"; // Component thanh tiáº¿n Ä‘á»™
+
+const MyCoursesSkeleton = () => (
+  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {[...Array(3)].map((_, i) => (
+      <Card key={i}>
+        <Skeleton className="h-64 w-full" />
+      </Card>
+    ))}
+  </div>
+);
+
+export default function MyCoursesPage() {
+  const [enrollments, setEnrollments] = useState<Enrollment[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      setIsLoading(true);
+      try {
+        const response = await learningService.getMyEnrollments();
+        // API cá»§a báº¡n tráº£ vá» data trong data ná»¯a, nÃªn lÃ  response.data.data
+        // Cáº§n kiá»ƒm tra láº¡i cáº¥u trÃºc API response cá»§a báº¡n náº¿u cáº§n
+        setEnrollments(response.data);
+      } catch (error) {
+        toast.error("KhÃ´ng thá»ƒ táº£i cÃ¡c khÃ³a há»c cá»§a báº¡n.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEnrollments();
+  }, []);
+
+  if (isLoading) {
+    return <MyCoursesSkeleton />;
+  }
+
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-8">KhÃ³a há»c cá»§a tÃ´i</h1>
+      {enrollments && enrollments.length > 0 ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {enrollments.map((enrollment) => (
+            <Card key={enrollment.enrollment_id} className="flex flex-col">
+              <CardHeader className="p-0">
+                <Image
+                  src={enrollment.course.thumbnail_url || "/placeholder.png"}
+                  alt={enrollment.course.title}
+                  width={400}
+                  height={200}
+                  className="rounded-t-lg w-full object-cover"
+                />
+              </CardHeader>
+              <CardContent className="p-4 flex flex-col grow">
+                <h3 className="font-semibold text-lg line-clamp-2 grow">
+                  {enrollment.course.title}
+                </h3>
+                <div className="mt-4">
+                  <div className="flex justify-between text-sm text-gray-500 mb-1">
+                    <span>Tiáº¿n Ä‘á»™</span>
+                    <span>{enrollment.completion_percentage}%</span>
+                  </div>
+                  <Progress value={enrollment.completion_percentage} />
+                </div>
+                <Link
+                  href={`/learn/courses/${enrollment.course_id}`}
+                  className="mt-4"
+                >
+                  <Button className="w-full">VÃ o há»c</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 border-2 border-dashed rounded-lg">
+          <h2 className="text-xl font-semibold">
+            Báº¡n chÆ°a tham gia khÃ³a há»c nÃ o
+          </h2>
+          <Link href="/courses" className="mt-4 inline-block">
+            <Button>KhÃ¡m phÃ¡ khÃ³a há»c</Button>
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+//(protected)\student\my-enrollments\page.tsx
+export default function MyEnrollmentsPage() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold">Student: My Enrollments</h1>
+      <p>This is a placeholder page for students to view their enrollments.</p>
+    </div>
+  );
+}
+
+
+//(protected)\student\profile\page.tsx
+"use client";
+
+import { useAuth } from "@/lib/hooks/useAuth";
+import { UserProfile } from "@/components/shared/UserProfile"; // Import component chung
+import { Skeleton } from "@/components/ui/skeleton"; // CÃ³ thá»ƒ dÃ¹ng láº¡i skeleton
+import { ProfilePageSkeleton } from "@/components/skeleton/ProfilePageSkeleton";
+
+export default function StudentProfilePage() {
+  const { user, isLoading } = useAuth({ redirectToLoginIfFail: true });
+
+  if (isLoading) {
+    return <ProfilePageSkeleton />;
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8 text-center">Trang cÃ¡ nhÃ¢n</h1>
+      <UserProfile user={user} />
+    </div>
+  );
+}
+
+
+//(public)\layout.tsx
+"use client";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/hooks/useAuth";
+
+const PublicHeader = () => {
+  const { user, isLoading } = useAuth();
+
+  return (
+    <header className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-50">
+      <div className="container mx-auto flex justify-between items-center py-4">
+        <Link href="/" className="text-xl font-bold">
+          EngBreaking
+        </Link>
+        <nav className="hidden md:flex items-center gap-6">
+          <Link href="/" className="text-sm font-medium hover:text-primary">
+            Trang chá»§
+          </Link>
+          <Link
+            href="/courses"
+            className="text-sm font-medium hover:text-primary"
+          >
+            KhÃ³a há»c
+          </Link>
+        </nav>
+        <div>
+          {/* BÆ¯á»šC 4: Logic hiá»ƒn thá»‹ dá»±a trÃªn tráº¡ng thÃ¡i tá»« useAuth */}
+          {isLoading ? (
+            // Hiá»ƒn thá»‹ má»™t skeleton trong khi chá» xÃ¡c thá»±c
+            <div className="h-10 w-32 bg-gray-200 rounded-md animate-pulse"></div>
+          ) : user ? (
+            // Náº¿u Ä‘Ã£ Ä‘Äƒng nháº­p, hiá»ƒn thá»‹ nÃºt Dashboard
+            <Link href={`/${user.role}/dashboard`}>
+              <Button>VÃ o Dashboard</Button>
+            </Link>
+          ) : (
+            // Náº¿u chÆ°a Ä‘Äƒng nháº­p, hiá»ƒn thá»‹ nÃºt ÄÄƒng nháº­p/ÄÄƒng kÃ½
+            <div className="flex gap-2">
+              <Link href="/login">
+                <Button variant="ghost">ÄÄƒng nháº­p</Button>
+              </Link>
+              <Link href="/register">
+                <Button>ÄÄƒng kÃ½</Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+const PublicFooter = () => (
+  <footer className="bg-gray-800 text-gray-400 py-8">
+    <div className="container mx-auto text-center text-sm">
+      <p>Â© 2025 EngBreaking. Ná»n táº£ng há»c tiáº¿ng Anh trá»±c tuyáº¿n.</p>
+    </div>
+  </footer>
+);
+
+export default function PublicLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <PublicHeader />
+      <main className="grow">{children}</main>{" "}
+      {/* Sá»­a láº¡i className tá»« 'flex-grow' thÃ nh 'grow' cho tailwindcss v4 */}
+      <PublicFooter />
+    </div>
+  );
+}
+
+
+//(public)\courses\CoursesClientComponent.tsx
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { toast } from "sonner";
+import { courseService } from "@/lib/api/courseService";
+import { Course, Category } from "@/lib/types";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { useDebounce } from "use-debounce";
+import Image from "next/image";
+
+// Component con cho tá»«ng tháº» khÃ³a há»c
+const CourseCard = ({ course }: { course: Course }) => (
+  <Link href={`/courses/${course.course_id}`}>
+    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
+      <CardHeader className="p-0">
+        <div className="relative w-full h-40">
+          <Image
+            src={course.thumbnail_url || "/placeholder.png"}
+            alt={course.title}
+            fill
+            style={{ objectFit: "cover" }}
+            className="rounded-t-lg"
+          />
+        </div>
+      </CardHeader>
+      <CardContent className="flex-grow p-4">
+        <Badge variant="secondary" className="mb-2">
+          {course.category?.name || "Uncategorized"}
+        </Badge>
+        <h3 className="font-semibold text-lg line-clamp-2">{course.title}</h3>
+      </CardContent>
+      <CardFooter className="p-4 flex justify-between items-center">
+        <p className="text-lg font-bold text-primary">
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(course.price)}
+        </p>
+        <Badge variant="outline" className="capitalize">
+          {course.level}
+        </Badge>
+      </CardFooter>
+    </Card>
+  </Link>
+);
+
+// Component Skeleton
+const CourseGridSkeleton = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {[...Array(8)].map((_, i) => (
+      <Card key={i}>
+        <div className="flex flex-col space-y-3 p-4">
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-5 w-1/2" />
+        </div>
+      </Card>
+    ))}
+  </div>
+);
+
+export default function CoursesPage() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // State cho bá»™ lá»c, Ä‘á»c giÃ¡ trá»‹ ban Ä‘áº§u tá»« URL
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get("search") || ""
+  );
+  const [selectedCategory, setSelectedCategory] = useState(
+    searchParams.get("category_id") || ""
+  );
+
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
+
+  // âœ… 1. Di chuyá»ƒn setIsLoading(true) vÃ o cÃ¡c hÃ m handler
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLoading(true);
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setIsLoading(true);
+    setSelectedCategory(e.target.value);
+  };
+
+  // Fetch categories chá»‰ má»™t láº§n
+  useEffect(() => {
+    courseService
+      .listCategories()
+      .then(setCategories)
+      .catch(() => toast.error("KhÃ´ng thá»ƒ táº£i danh má»¥c."));
+  }, []);
+
+  // Fetch courses khi filter thay Ä‘á»•i
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (selectedCategory) params.set("category_id", selectedCategory);
+
+    const newUrl = `${pathname}?${params.toString()}`;
+    window.history.pushState(null, "", newUrl);
+
+    courseService
+      .listCourses({
+        search: debouncedSearch,
+        category_id: selectedCategory ? Number(selectedCategory) : undefined,
+        status: "published",
+        approval_status: "approved",
+      })
+      .then((response) => setCourses(response.data))
+      .catch((err) => {
+        toast.error(err.message || "Lá»—i khi táº£i khÃ³a há»c.");
+        setCourses([]);
+      })
+      .finally(() => setIsLoading(false));
+  }, [debouncedSearch, selectedCategory, pathname]);
+
+  return (
+    <div className="container mx-auto py-12">
+      <header className="text-center mb-12">
+        <h1 className="text-4xl font-bold">KhÃ¡m phÃ¡ KhÃ³a há»c</h1>
+        <p className="text-muted-foreground mt-2">
+          TÃ¬m kiáº¿m khÃ³a há»c phÃ¹ há»£p vá»›i báº¡n tá»« hÃ ng trÄƒm lá»±a chá»n.
+        </p>
+      </header>
+
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <Input
+          placeholder="TÃ¬m kiáº¿m khÃ³a há»c..."
+          className="flex-grow"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="border p-2 rounded-md bg-background"
+        >
+          <option value="">Táº¥t cáº£ danh má»¥c</option>
+          {categories.map((cat) => (
+            <option key={cat.category_id} value={cat.category_id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {isLoading ? (
+        <CourseGridSkeleton />
+      ) : courses && courses.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {courses.map((course) => (
+            <CourseCard key={course.course_id} course={course} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20">
+          <h2 className="text-xl font-semibold">KhÃ´ng tÃ¬m tháº¥y khÃ³a há»c nÃ o</h2>
+          <p className="text-muted-foreground mt-2">
+            Vui lÃ²ng thá»­ láº¡i vá»›i tá»« khÃ³a hoáº·c bá»™ lá»c khÃ¡c.
+          </p>
+        </div>
+      )}
+
+      {/* Pagination cÃ³ thá»ƒ thÃªm á»Ÿ Ä‘Ã¢y */}
+    </div>
+  );
+}
+
+
+//(public)\courses\page.tsx
+import { Suspense } from "react";
+import CoursesClientComponent from "./CoursesClientComponent";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const CoursesPageSkeleton = () => (
+  <div className="container mx-auto py-12">
+    <header className="text-center mb-12">
+      <Skeleton className="h-10 w-1/2 mx-auto" />
+      <Skeleton className="h-5 w-3/4 mx-auto mt-4" />
+    </header>
+    <div className="flex flex-col md:flex-row gap-4 mb-8">
+      <Skeleton className="h-10 grow" />
+      <Skeleton className="h-10 w-48" />
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="flex flex-col space-y-3 p-4 border rounded-lg">
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-5 w-1/2" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+export default function CoursesPage() {
+  return (
+    <Suspense fallback={<CoursesPageSkeleton />}>
+      <CoursesClientComponent />
+    </Suspense>
+  );
+}
+
+

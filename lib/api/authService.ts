@@ -1,90 +1,97 @@
-import { apiRequest } from "./client";
+import apiClient from "./apiClient";
 import {
+  ApiResponse,
   LoginRequest,
   RegisterRequest,
-  AuthResponse,
-  ApiResponse,
   User,
-} from "@/lib/types";
-import { mockUsers } from "@/lib/mock/users.mock";
+  AuthenticatedUser,
+} from "../types";
+import { AxiosError } from "axios";
 
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true" || true;
+// Kiểu dữ liệu cho phần `data` trong response của API login/register
+interface AuthResponseData {
+  token: string;
+  user: AuthenticatedUser; // Sử dụng AuthenticatedUser để an toàn hơn
+}
+
+// Hàm trợ giúp để xử lý lỗi một cách nhất quán
+const getErrorMessage = (error: unknown, defaultMessage: string): string => {
+  if (error instanceof AxiosError) {
+    // Lỗi từ Axios, có thể chứa response.data.message
+    return error.response?.data?.message || error.message || defaultMessage;
+  }
+  if (error instanceof Error) {
+    // Lỗi JavaScript thông thường
+    return error.message;
+  }
+  // Trường hợp không xác định
+  return defaultMessage;
+};
+
+/**
+ * Gửi yêu cầu đăng nhập đến server.
+ * @throws {Error} Nếu đăng nhập thất bại.
+ */
+const login = async (credentials: LoginRequest): Promise<AuthResponseData> => {
+  try {
+    const response = await apiClient.post<ApiResponse<AuthResponseData>>(
+      "/auth/login",
+      credentials
+    );
+    const apiResponse = response.data;
+    if (apiResponse.success && apiResponse.data) {
+      return apiResponse.data;
+    } else {
+      throw new Error(apiResponse.message || "Email hoặc mật khẩu không đúng.");
+    }
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error, "Đã xảy ra lỗi kết nối."));
+  }
+};
+
+/**
+ * Gửi yêu cầu đăng ký đến server.
+ * @throws {Error} Nếu đăng ký thất bại.
+ */
+const register = async (data: RegisterRequest): Promise<AuthResponseData> => {
+  try {
+    const response = await apiClient.post<ApiResponse<AuthResponseData>>(
+      "/auth/register",
+      data
+    );
+    const apiResponse = response.data;
+    if (apiResponse.success && apiResponse.data) {
+      return apiResponse.data;
+    } else {
+      throw new Error(apiResponse.message || "Đăng ký thất bại.");
+    }
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error, "Lỗi đăng ký."));
+  }
+};
+
+/**
+ * Lấy thông tin người dùng hiện tại từ server.
+ * @throws {Error} Nếu token không hợp lệ.
+ */
+const getMe = async (): Promise<AuthenticatedUser> => {
+  try {
+    const response = await apiClient.get<ApiResponse<AuthenticatedUser>>(
+      "/auth/me"
+    );
+    const apiResponse = response.data;
+    if (apiResponse.success && apiResponse.data) {
+      return apiResponse.data;
+    } else {
+      throw new Error(apiResponse.message || "Phiên đăng nhập không hợp lệ.");
+    }
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error, "Không thể xác thực người dùng."));
+  }
+};
 
 export const authService = {
-  async login(data: LoginRequest): Promise<AuthResponse> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const user = mockUsers.find((u) => u.email === data.email);
-      if (!user || data.password !== "password") {
-        throw new Error("Invalid credentials");
-      }
-
-      return {
-        success: true,
-        message: "Login successful",
-        data: {
-          user,
-          token: "mock_token_" + Date.now(),
-        },
-      };
-    }
-
-    return apiRequest<AuthResponse>({
-      method: "POST",
-      url: "/auth/login",
-      data,
-    });
-  },
-
-  async register(data: RegisterRequest): Promise<AuthResponse> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const newUser: User = {
-        user_id: Math.floor(Math.random() * 10000),
-        email: data.email,
-        full_name: data.full_name,
-        role: data.role,
-        status: "active",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      return {
-        success: true,
-        message: "Registration successful",
-        data: {
-          user: newUser,
-          token: "mock_token_" + Date.now(),
-        },
-      };
-    }
-
-    return apiRequest<AuthResponse>({
-      method: "POST",
-      url: "/auth/register",
-      data,
-    });
-  },
-
-  async getMe(): Promise<ApiResponse<User>> {
-    if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      const storedUser = localStorage.getItem("user");
-      if (!storedUser) throw new Error("Not authenticated");
-
-      return {
-        success: true,
-        message: "User retrieved",
-        data: JSON.parse(storedUser),
-      };
-    }
-
-    return apiRequest<ApiResponse<User>>({
-      method: "GET",
-      url: "/auth/me",
-    });
-  },
+  login,
+  register,
+  getMe,
 };

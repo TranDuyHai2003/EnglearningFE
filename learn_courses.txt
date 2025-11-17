@@ -1,0 +1,343 @@
+"use client";
+
+import Link from "next/link";
+import { Section, LessonProgress } from "@/lib/types";
+import { CheckCircle, Circle } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  courseId: number;
+  sections: Section[];
+  lessonProgress: LessonProgress[];
+  currentLessonId: number;
+}
+
+export const CourseSidebar = ({
+  courseId,
+  sections,
+  lessonProgress,
+  currentLessonId,
+}: Props) => {
+  const progressMap = new Map(
+    lessonProgress.map((p) => [p.lesson_id, p.status])
+  );
+
+  return (
+    <aside className="h-full border-r bg-white">
+      <div className="p-4 border-b">
+        <h2 className="text-lg font-semibold">Nội dung khóa học</h2>
+      </div>
+      <nav className="p-2 space-y-2">
+        {sections.map((section, index) => (
+          <div key={section.section_id}>
+            <h3 className="font-semibold text-sm px-2 py-1 text-gray-500">
+              Phần {index + 1}: {section.title}
+            </h3>
+            <ul className="space-y-1">
+              {section.lessons?.map((lesson) => {
+                const isCompleted =
+                  progressMap.get(lesson.lesson_id) === "completed";
+                const isActive = lesson.lesson_id === currentLessonId;
+
+                return (
+                  <li key={lesson.lesson_id}>
+                    <Link
+                      href={`/learn/courses/${courseId}/lessons/${lesson.lesson_id}`}
+                      className={cn(
+                        "flex items-center gap-3 p-2 rounded-md text-sm transition-colors",
+                        isActive
+                          ? "bg-blue-100 text-blue-700 font-medium"
+                          : "hover:bg-gray-100"
+                      )}
+                    >
+                      {isCompleted ? (
+                        <CheckCircle className="text-green-500" size={16} />
+                      ) : (
+                        <Circle className="text-gray-400" size={16} />
+                      )}
+                      <span className="flex-1">{lesson.title}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </aside>
+  );
+};
+
+///app\(protected)\learn\courses\[courseId]\_components\CourseSideBar.tsx
+
+"use client";
+
+import { Lesson } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
+
+interface Props {
+  lesson: Lesson;
+  onMarkComplete: (lessonId: number) => void;
+  isCompleted: boolean;
+}
+
+export const LessonContent = ({
+  lesson,
+  onMarkComplete,
+  isCompleted,
+}: Props) => {
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-4">{lesson.title}</h1>
+      <p className="text-gray-600 mb-8">{lesson.description}</p>
+
+      {/* Hiển thị nội dung dựa trên loại bài học */}
+      {lesson.lesson_type === "video" && lesson.video_url && (
+        <div className="aspect-video">
+          <iframe
+            className="w-full h-full rounded-lg"
+            src={lesson.video_url.replace("watch?v=", "embed/")} // Chuyển đổi link YouTube
+            title={lesson.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      )}
+
+      {lesson.lesson_type === "document" && lesson.content && (
+        <div
+          className="prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: lesson.content }}
+        />
+      )}
+
+      {lesson.lesson_type === "quiz" && (
+        <div className="text-center p-8 border rounded-lg">
+          <p className="font-semibold">Đây là một bài kiểm tra.</p>
+          <Button className="mt-4">Bắt đầu làm bài</Button>
+        </div>
+      )}
+
+      {/* Nút hoàn thành */}
+      <div className="mt-12 text-center">
+        <Button
+          size="lg"
+          onClick={() => onMarkComplete(lesson.lesson_id)}
+          disabled={isCompleted}
+          className={isCompleted ? "bg-green-600 hover:bg-green-700" : ""}
+        >
+          <CheckCircle className="mr-2" />
+          {isCompleted ? "Đã hoàn thành" : "Đánh dấu đã hoàn thành"}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+//app\(protected)\learn\courses\[courseId]\_components\LessonContent.tsx
+
+
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { learningService } from "@/lib/api/learningService";
+import { Enrollment, Lesson } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CourseSidebar } from "../../_components/CourseSideBar";
+import { LessonContent } from "../../_components/LessonContent";
+
+const PlayerSkeleton = () => (
+  <div className="flex h-screen">
+    <div className="w-80 border-r p-4 space-y-4">
+      <Skeleton className="h-full w-full" />
+    </div>
+    <div className="flex-1 p-8">
+      <Skeleton className="h-full w-full" />
+    </div>
+  </div>
+);
+
+export default function CoursePlayerPage() {
+  const params = useParams();
+  const router = useRouter();
+  const courseId = Number(params.courseId);
+  const lessonId = Number(params.lessonId);
+
+  const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!courseId) return;
+    const fetchContent = async () => {
+      setIsLoading(true);
+      try {
+        const data = await learningService.getMyCourseContent(courseId);
+        setEnrollment(data);
+      } catch (error) {
+        toast.error("Bạn không có quyền truy cập khóa học này.");
+        router.replace("/student/my-courses");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchContent();
+  }, [courseId, router]);
+
+  // Tìm bài học hiện tại từ dữ liệu đã fetch
+  const currentLesson = useMemo(() => {
+    if (!enrollment?.course?.sections) return null;
+    for (const section of enrollment.course.sections) {
+      const foundLesson = section.lessons?.find(
+        (l) => l.lesson_id === lessonId
+      );
+      if (foundLesson) return foundLesson;
+    }
+    return null;
+  }, [enrollment, lessonId]);
+
+  // Xử lý khi nhấn nút "Đánh dấu đã hoàn thành"
+  const handleMarkComplete = async (completedLessonId: number) => {
+    try {
+      await learningService.recordProgress(completedLessonId, "completed");
+      toast.success("Đã cập nhật tiến độ!");
+
+      // Cập nhật lại state để UI thay đổi ngay lập tức
+      setEnrollment((prev) => {
+        if (!prev) return null;
+        const newProgress = [...prev.lessonProgress];
+        const progressIndex = newProgress.findIndex(
+          (p) => p.lesson_id === completedLessonId
+        );
+        if (progressIndex > -1) {
+          newProgress[progressIndex].status = "completed";
+        } else {
+          newProgress.push({
+            progress_id: Date.now(),
+            enrollment_id: prev.enrollment_id,
+            lesson_id: completedLessonId,
+            status: "completed",
+            video_progress: 100,
+          });
+        }
+        return { ...prev, lessonProgress: newProgress };
+      });
+
+      // Tự động chuyển đến bài tiếp theo (nếu có)
+      const allLessons: Lesson[] =
+        enrollment?.course.sections?.flatMap((s) => s.lessons || []) || [];
+      const currentIndex = allLessons.findIndex(
+        (l) => l.lesson_id === completedLessonId
+      );
+      if (currentIndex > -1 && currentIndex < allLessons.length - 1) {
+        const nextLesson = allLessons[currentIndex + 1];
+        router.push(
+          `/learn/courses/${courseId}/lessons/${nextLesson.lesson_id}`
+        );
+      }
+    } catch (error) {
+      toast.error("Không thể cập nhật tiến độ.");
+    }
+  };
+
+  if (isLoading) return <PlayerSkeleton />;
+
+  if (!enrollment || !enrollment.course || !currentLesson) {
+    return (
+      <div className="text-center py-20">Không tìm thấy nội dung bài học.</div>
+    );
+  }
+
+  const isCompleted = enrollment.lessonProgress.some(
+    (p) => p.lesson_id === lessonId && p.status === "completed"
+  );
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <div className="w-80 flex-shrink-0">
+        <CourseSidebar
+          courseId={courseId}
+          sections={enrollment.course.sections || []}
+          lessonProgress={enrollment.lessonProgress || []}
+          currentLessonId={lessonId}
+        />
+      </div>
+      <main className="flex-1 overflow-y-auto">
+        <LessonContent
+          lesson={currentLesson}
+          onMarkComplete={handleMarkComplete}
+          isCompleted={isCompleted}
+        />
+      </main>
+    </div>
+  );
+}
+//app\(protected)\learn\courses\[courseId]\lesson\[lessonId]\page.tsx
+
+
+
+
+"use client";
+
+import { useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { learningService } from "@/lib/api/learningService";
+import { toast } from "sonner";
+
+export default function CourseLearnRedirectPage() {
+  const params = useParams();
+  const router = useRouter();
+  const courseId = Number(params.courseId);
+
+  useEffect(() => {
+    if (!courseId) return;
+
+    const findFirstLesson = async () => {
+      try {
+        const enrollment = await learningService.getMyCourseContent(courseId);
+        const allLessons =
+          enrollment.course.sections?.flatMap((s) => s.lessons || []) || [];
+
+        if (allLessons.length === 0) {
+          toast.error("Khóa học này chưa có nội dung.");
+          router.replace("/student/my-courses");
+          return;
+        }
+
+        // Tìm bài học đầu tiên chưa hoàn thành
+        const completedLessonIds = new Set(
+          enrollment.lessonProgress
+            .filter((p) => p.status === "completed")
+            .map((p) => p.lesson_id)
+        );
+        const firstUncompletedLesson = allLessons.find(
+          (l) => !completedLessonIds.has(l.lesson_id)
+        );
+
+        // Nếu tất cả đã hoàn thành, đi đến bài đầu tiên. Nếu không, đi đến bài chưa hoàn thành đầu tiên.
+        const targetLesson = firstUncompletedLesson || allLessons[0];
+
+        router.replace(
+          `/learn/courses/${courseId}/lessons/${targetLesson.lesson_id}`
+        );
+      } catch (error) {
+        console.error("Failed to find first lesson:", error);
+
+        router.replace("/student/my-courses");
+        toast.error("Lỗi khi tìm bài học để bắt đầu.");
+        router.replace("/student/my-courses");
+      }
+    };
+
+    findFirstLesson();
+  }, [courseId, router]);
+
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <p>Đang tải khóa học...</p>
+    </div>
+  );
+}
+//app\(protected)\learn\courses\[courseId]\lesson\[lessonId]\page.tsx

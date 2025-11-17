@@ -4,13 +4,12 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getStoredUser } from "@/lib/auth";
+import { getStoredUser } from "@/lib/auth/utils";
 
 export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Nếu đã login, redirect to dashboard
     const user = getStoredUser();
     if (user) {
       router.push(`/${user.role}/dashboard`);

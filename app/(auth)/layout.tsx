@@ -3,22 +3,30 @@
 import { ReactNode } from "react";
 import { useEffect } from "react";
 
-import { getStoredUser } from "@/lib/auth";
+import { getStoredUser } from "@/lib/auth/utils";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/hooks/useAuth";
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // Nếu đã login, redirect to dashboard
-    const user = getStoredUser();
-    if (user) {
-      router.push(`/${user.role}/dashboard`);
+    if (!isLoading && user) {
+      router.replace(`/${user.role}/dashboard`);
     }
-  }, [router]);
+  }, [isLoading, user, router]);
+
+  if (isLoading || user) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-block bg-blue-600 text-white rounded-lg p-3 mb-4">
