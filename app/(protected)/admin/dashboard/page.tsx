@@ -1,9 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link"; // Thêm Link
+import Link from "next/link";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users,
@@ -15,6 +21,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { adminService } from "@/lib/api/adminService";
+import { cn } from "@/lib/utils";
 
 interface DashboardSummary {
   total_users: number;
@@ -25,7 +32,6 @@ interface DashboardSummary {
   total_revenue: number;
 }
 
-// Sửa lại StatCard để nhận href
 const StatCard = ({
   title,
   value,
@@ -33,13 +39,15 @@ const StatCard = ({
   isLoading,
   formatAsCurrency = false,
   href,
+  colorClass,
 }: {
   title: string;
   value: string | number;
   icon: React.ElementType;
   isLoading: boolean;
   formatAsCurrency?: boolean;
-  href?: string; // Thêm prop href
+  href?: string;
+  colorClass?: string;
 }) => {
   const displayValue =
     formatAsCurrency && typeof value === "number"
@@ -47,10 +55,15 @@ const StatCard = ({
           style: "currency",
           currency: "VND",
         }).format(value)
-      : value;
+      : value.toLocaleString("vi-VN");
 
   const CardContentComponent = (
-    <Card className="transition-all hover:shadow-md hover:-translate-y-1">
+    <Card
+      className={cn(
+        "transition-all hover:shadow-lg hover:-translate-y-1",
+        colorClass
+      )}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-gray-600">
           {title}
@@ -67,11 +80,11 @@ const StatCard = ({
     </Card>
   );
 
-  if (href) {
-    return <Link href={href}>{CardContentComponent}</Link>;
-  }
-
-  return CardContentComponent;
+  return href ? (
+    <Link href={href}>{CardContentComponent}</Link>
+  ) : (
+    CardContentComponent
+  );
 };
 
 export default function AdminDashboardPage() {
@@ -80,9 +93,9 @@ export default function AdminDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // ... logic fetch data giữ nguyên
     const fetchSummary = async () => {
       try {
+        setIsLoading(true);
         const data = await adminService.getDashboardSummary();
         setSummary(data);
       } catch (error) {
@@ -99,13 +112,13 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
+    <div className="space-y-8">
+      <div className="bg-white rounded-lg border p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Chào mừng, {user?.full_name || "Admin"}! 👋
+          Chào mừng, {user?.full_name || "Admin"}! 👑
         </h1>
         <p className="text-gray-600">
-          Đây là trang tổng quan quản lý hệ thống EngBreaking.
+          Tổng quan tình hình hoạt động của nền tảng EngBreaking.
         </p>
       </div>
 
@@ -116,21 +129,21 @@ export default function AdminDashboardPage() {
           icon={CreditCard}
           isLoading={isLoading}
           formatAsCurrency={true}
-          href="/admin/transactions" // Thêm href
+          href="/admin/transactions"
         />
         <StatCard
           title="Tổng Người dùng"
           value={summary?.total_users || 0}
           icon={Users}
           isLoading={isLoading}
-          href="/admin/users" // Thêm href
+          href="/admin/users"
         />
         <StatCard
           title="Tổng Khóa học"
           value={summary?.total_courses || 0}
           icon={BookOpen}
           isLoading={isLoading}
-          href="/admin/courses" // Thêm href
+          href="/admin/courses"
         />
         <StatCard
           title="Tổng Lượt ghi danh"
@@ -143,15 +156,75 @@ export default function AdminDashboardPage() {
           value={summary?.pending_instructors || 0}
           icon={UserCheck}
           isLoading={isLoading}
-          href="/admin/instructors" // Thêm href
+          href="/admin/instructors"
+          colorClass="bg-yellow-100 border-yellow-300 ring-2 ring-yellow-400"
         />
         <StatCard
           title="Khóa học Chờ duyệt"
           value={summary?.pending_courses || 0}
           icon={FileClock}
           isLoading={isLoading}
-          href="/admin/courses" // Thêm href
+          href="/admin/courses"
+          colorClass="bg-yellow-100 border-yellow-300 ring-2 ring-yellow-400"
         />
+      </div>
+
+      {/* Thêm các section mới */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Biểu đồ Tăng trưởng Doanh thu</CardTitle>
+            <CardDescription>Dữ liệu giả lập 6 tháng gần nhất</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-72 bg-gray-100 rounded-md flex items-center justify-center">
+              <p className="text-muted-foreground">
+                [Biểu đồ sẽ được hiển thị ở đây]
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Hoạt động gần đây</CardTitle>
+            <CardDescription>
+              Các sự kiện mới nhất trên hệ thống
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-3">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <Users className="h-4 w-4 text-green-600" />
+                </div>
+                <p className="text-gray-700">
+                  Người dùng mới
+                  <span className="font-semibold">Trần Văn An</span> vừa đăng
+                  ký.
+                </p>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="bg-blue-100 p-2 rounded-full">
+                  <BookOpen className="h-4 w-4 text-blue-600" />
+                </div>
+                <p className="text-gray-700">
+                  Khóa học
+                  <span className="font-semibold">IELTS Speaking Master</span>
+                  vừa có 1 lượt ghi danh mới.
+                </p>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="bg-yellow-100 p-2 rounded-full">
+                  <UserCheck className="h-4 w-4 text-yellow-600" />
+                </div>
+                <p className="text-gray-700">
+                  Giảng viên <span className="font-semibold">Lê Thị Bích</span>
+                  vừa nộp hồ sơ chờ duyệt.
+                </p>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

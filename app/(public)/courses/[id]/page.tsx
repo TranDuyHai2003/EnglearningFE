@@ -44,7 +44,7 @@ export default function CourseDetailPage() {
   const handlePurchase = async () => {
     if (!isAuthenticated || !user) {
       toast.info("Vui lòng đăng nhập để mua khóa học.");
-      router.push("/login");
+      router.push(`/login?redirect=/courses/${courseId}`);
       return;
     }
 

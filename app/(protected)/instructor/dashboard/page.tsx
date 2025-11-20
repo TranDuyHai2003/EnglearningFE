@@ -1,193 +1,215 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
 import {
-  Users,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
   BookOpen,
-  CreditCard,
+  Users,
   TrendingUp,
-  AlertCircle,
+  DollarSign,
+  Clock,
+  Star,
+  HelpCircle,
+  MessageSquare,
+  Loader2,
 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getStoredUser } from "@/lib/auth/utils";
+import { cn } from "@/lib/utils";
+import type { LucideProps } from "lucide-react";
+import { toast } from "sonner";
+import { InstructorSummary, ActionItems } from "@/lib/types/index"; // Import the new service and types
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
+import { instructorService } from "@/lib/api/instructorService";
 
-export default function AdminDashboard() {
-  // ✅ Get user directly - no useState
-  const user = getStoredUser();
+// Stat Card Component (No changes needed, but I'll fix the 'any' type for icon)
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+  >;
+  isLoading: boolean;
+  formatAsCurrency?: boolean;
+}
 
-  if (!user) return null;
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  isLoading,
+  formatAsCurrency = false,
+}: StatCardProps) => {
+  const displayValue =
+    formatAsCurrency && typeof value === "number"
+      ? new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(value)
+      : typeof value === "number"
+      ? value.toLocaleString("vi-VN")
+      : value;
+
+  return (
+    <Card className="shadow-sm hover:shadow-md transition-shadow bg-white">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base font-medium text-gray-500">
+          {title}
+        </CardTitle>
+        <Icon className="h-5 w-5 text-gray-400" />
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <Skeleton className="h-9 w-3/4" />
+        ) : (
+          <div className="text-3xl font-bold">{displayValue}</div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default function InstructorDashboard() {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [summary, setSummary] = useState<InstructorSummary | null>(null);
+  const [actionItems, setActionItems] = useState<ActionItems | null>(null);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setIsLoading(true);
+      try {
+        const [summaryData, actionItemsData] = await Promise.all([
+          instructorService.getDashboardSummary(),
+          instructorService.getActionItems(),
+        ]);
+        setSummary(summaryData);
+        setActionItems(actionItemsData);
+      } catch (error) {
+        toast.error("Không thể tải dữ liệu dashboard. Vui lòng thử lại.");
+        console.error("Dashboard fetch error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+  if (isLoading && !summary) {
+    return (
+      <div className="flex items-center justify-center min-h-[600px]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-          Chào mừng, {user.full_name}! 👋
+      <div className="bg-light-green border border-green-200 text-green-900 rounded-xl p-6">
+        <h1 className="text-2xl xl:text-3xl font-bold">
+          Chào mừng, {user?.full_name}! 🚀
         </h1>
-        <p className="text-lg text-gray-600">Quản lý hệ thống e-learning</p>
+        <p className="text-green-800 text-base xl:text-lg">
+          Đây là trung tâm điều hành các khóa học của bạn.
+        </p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Tổng người dùng
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Tổng doanh thu"
+          value={summary?.total_revenue ?? 0}
+          icon={DollarSign}
+          isLoading={isLoading}
+          formatAsCurrency
+        />
+        <StatCard
+          title="Tổng học viên"
+          value={summary?.total_students ?? 0}
+          icon={Users}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Đánh giá trung bình"
+          value={summary?.average_rating?.toFixed(1) ?? "N/A"}
+          icon={Star}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Câu hỏi chờ trả lời"
+          value={summary?.pending_questions_count ?? 0}
+          icon={HelpCircle}
+          isLoading={isLoading}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 shadow-sm bg-white">
+          <CardHeader>
+            <CardTitle className="text-xl xl:text-xl">
+              Thống kê Doanh thu & Học viên mới
             </CardTitle>
-            <Users className="h-4 w-4 text-blue-600" />
+            <CardDescription className="text-base">
+              Dữ liệu được tổng hợp theo tháng.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-blue-600">0</p>
-            <p className="text-xs text-gray-600 mt-1">người dùng</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Khóa học</CardTitle>
-            <BookOpen className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-green-600">0</p>
-            <p className="text-xs text-gray-600 mt-1">khóa học</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Tổng doanh thu
-            </CardTitle>
-            <CreditCard className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-purple-600">$0</p>
-            <p className="text-xs text-gray-600 mt-1">doanh thu</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tăng trưởng</CardTitle>
-            <TrendingUp className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-orange-600">0%</p>
-            <p className="text-xs text-gray-600 mt-1">tháng này</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* System Status */}
-      <Alert className="bg-green-50 border-green-200">
-        <AlertCircle className="h-4 w-4 text-green-600" />
-        <AlertDescription className="text-green-700">
-          ✓ Hệ thống hoạt động bình thường
-        </AlertDescription>
-      </Alert>
-
-      {/* Main sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Pending approvals */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Chờ duyệt</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="text-center py-8">
-                <p className="text-sm text-gray-600">
-                  Không có yêu cầu chờ duyệt
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent activities */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Hoạt động gần đây</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="text-center py-8">
-                <p className="text-sm text-gray-600">Chưa có hoạt động</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Management sections */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quản lý người dùng</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
-              Xem và quản lý tất cả người dùng trong hệ thống
-            </p>
-            <Button variant="outline" className="w-full">
-              Xem người dùng
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Quản lý khóa học</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
-              Duyệt và quản lý các khóa học
-            </p>
-            <Button variant="outline" className="w-full">
-              Xem khóa học
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Quản lý giao dịch</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
-              Xem và quản lý các giao dịch thanh toán
-            </p>
-            <Button variant="outline" className="w-full">
-              Xem giao dịch
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* System info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Thông tin hệ thống</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Phiên bản</p>
-              <p className="text-lg font-semibold">1.0.0</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Ngôn ngữ</p>
-              <p className="text-lg font-semibold">Tiếng Việt</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Thời gian khởi động</p>
-              <p className="text-lg font-semibold">
-                {new Date().toLocaleDateString("vi-VN")}
+            <div className="h-80 bg-gray-100 rounded-md flex items-center justify-center">
+              <p className="text-muted-foreground">
+                [Biểu đồ sẽ được hiển thị ở đây]
               </p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm bg-white">
+          <CardHeader>
+            <CardTitle className="text-xl xl:text-xl">Cần bạn xử lý</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div>
+                    <p className="font-semibold text-gray-700">
+                      Câu hỏi chưa trả lời
+                    </p>
+                    <p className="text-3xl font-bold text-gray-800">
+                      {actionItems?.pending_questions?.length ?? 0}
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Xem ngay
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div>
+                    <p className="font-semibold text-gray-700">Đánh giá mới</p>
+                    <p className="text-3xl font-bold text-gray-800">
+                      {actionItems?.recent_reviews?.length ?? 0}
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Xem đánh giá
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

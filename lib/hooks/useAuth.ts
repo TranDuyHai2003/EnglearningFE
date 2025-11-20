@@ -83,7 +83,8 @@ export function useAuth(options: UseAuthOptions = {}): UseAuthReturn {
       // Chỉ chuyển hướng nếu được yêu cầu rõ ràng.
       setIsLoading(false); // Kết thúc loading ngay lập tức
       if (options.redirectToLoginIfFail) {
-        router.replace("/login");
+        const redirectUrl = window.location.pathname + window.location.search;
+        router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
       }
     }
 

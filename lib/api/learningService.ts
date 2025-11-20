@@ -1,24 +1,39 @@
 import apiClient from "./apiClient";
 import {
+  ApiResponse,
   PaginatedResponse,
   Enrollment,
   ProgressStatus,
-  ApiResponse,
+  StudentStats,
+  RecentActivity,
 } from "@/lib/types";
+
+// Interface này định nghĩa các tham số TÙY CHỌN có thể truyền vào hàm
+export interface ListEnrollmentsParams {
+  limit?: number;
+  page?: number;
+  status?: "active" | "completed" | "dropped";
+}
 
 class LearningService {
   /**
    * Lấy danh sách các khóa học mà học viên đã ghi danh.
+   * @param params - Các tùy chọn filter như limit, page, status.
    */
-  async getMyEnrollments(): Promise<PaginatedResponse<Enrollment>> {
+  async getMyEnrollments(
+    params: ListEnrollmentsParams = {}
+  ): Promise<PaginatedResponse<Enrollment>> {
+    //                                                                      ^----------- Sửa ở đây
     const response = await apiClient.get<PaginatedResponse<Enrollment>>(
-      "/learning/enrollments"
+      //                                         ^----------- Sửa ở đây
+      "/learning/enrollments",
+      { params } // Truyền params vào request
     );
     return response.data;
   }
 
   /**
-   * Lấy toàn bộ nội dung của một khóa học (chương, bài học) và tiến độ của học viên.
+   * Lấy toàn bộ nội dung của một khóa học và tiến độ của học viên.
    */
   async getMyCourseContent(courseId: number): Promise<Enrollment> {
     const response = await apiClient.get<ApiResponse<Enrollment>>(
@@ -42,15 +57,40 @@ class LearningService {
   ): Promise<void> {
     const response = await apiClient.post<ApiResponse<null>>(
       "/learning/progress",
-      {
-        lesson_id: lessonId,
-        status: status,
-        video_progress: videoProgress,
-      }
+      { lesson_id: lessonId, status: status, video_progress: videoProgress }
     );
     if (!response.data.success) {
       throw new Error(response.data.message || "Không thể cập nhật tiến độ.");
     }
+  }
+
+  /**
+   * Lấy thống kê tổng quan của học viên.
+   */
+  async getMyStats(): Promise<StudentStats> {
+    const response = await apiClient.get<ApiResponse<StudentStats>>(
+      "/learning/my-stats"
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể tải thống kê.");
+  }
+
+  /**
+   * Lấy hoạt động gần đây của học viên.
+   */
+  async getActivityFeed(limit: number = 5): Promise<RecentActivity[]> {
+    const response = await apiClient.get<ApiResponse<RecentActivity[]>>(
+      "/learning/my-activity-feed",
+      { params: { limit } }
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    throw new Error(
+      response.data.message || "Không thể tải hoạt động gần đây."
+    );
   }
 }
 

@@ -5,6 +5,8 @@ import {
   InstructorApplicationForm,
   ApprovalStatus,
   PaginatedResponse,
+  InstructorSummary,
+  ActionItems,
 } from "@/lib/types";
 import { AxiosError } from "axios";
 
@@ -28,6 +30,7 @@ export const instructorService = {
       const response = await apiClient.get<ApiResponse<InstructorProfile>>(
         "/instructors/profiles/my-profile"
       );
+      console.log(response, "rés");
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
@@ -109,5 +112,86 @@ export const instructorService = {
       return response.data.data;
     }
     throw new Error(response.data.message || "Duyệt hồ sơ thất bại.");
+  },
+
+  async getDashboardSummary(): Promise<InstructorSummary> {
+    const response = await apiClient.get<ApiResponse<InstructorSummary>>(
+      "/instructors/dashboard/summary"
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    throw new Error(
+      response.data.message || "Không thể tải dữ liệu tổng quan."
+    );
+  },
+
+  /**
+   * Lấy các mục cần hành động (câu hỏi, đánh giá mới).
+   */
+  async getActionItems(): Promise<ActionItems> {
+    const response = await apiClient.get<ApiResponse<ActionItems>>(
+      "/instructors/dashboard/action-items"
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    throw new Error(
+      response.data.message || "Không thể tải các mục cần xử lý."
+    );
+  },
+
+  async getProfileById(profileId: number): Promise<InstructorProfile> {
+    const response = await apiClient.get<ApiResponse<InstructorProfile>>(
+      `/instructors/profiles/${profileId}`
+    );
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể tải hồ sơ giảng viên.");
+  },
+
+  /**
+   * Tải lên file CV cho giảng viên hiện tại.
+   */
+  async uploadCv(file: File): Promise<unknown> {
+    const formData = new FormData();
+    formData.append("cv", file);
+
+    const response = await apiClient.post("/instructors/upload-cv", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Tải lên CV thất bại.");
+  },
+
+  /**
+   * Tải lên các file chứng chỉ cho giảng viên hiện tại.
+   */
+  async uploadCertificates(files: File[]): Promise<unknown> {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("certificates", file);
+    });
+
+    const response = await apiClient.post(
+      "/instructors/upload-certificates",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Tải lên chứng chỉ thất bại.");
   },
 };

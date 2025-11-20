@@ -57,6 +57,15 @@ export interface InstructorProfile {
   approved_at?: string | null;
   rejection_reason?: string | null;
   user?: AuthenticatedUser; // `user` lồng vào từ API listProfiles
+  cv_url?: string | null;
+  cv_file_name?: string | null;
+  cv_uploaded_at?: string | null;
+  certificate_files?: {
+    url: string;
+    file_name: string;
+    file_size: number;
+    uploaded_at: string;
+  };
 }
 
 export interface Category {
@@ -187,6 +196,7 @@ export interface Quiz {
   shuffle_questions: boolean;
   show_correct_answers: boolean;
   created_at: string;
+  questions?: Question[];
 }
 
 export interface Question {
@@ -197,6 +207,7 @@ export interface Question {
   points: number;
   display_order: number;
   explanation?: string | null;
+  options?: AnswerOption[];
 }
 
 export interface AnswerOption {
@@ -220,6 +231,20 @@ export interface Enrollment {
   course: Course;
   lessonProgress: LessonProgress[];
   // === KẾT THÚC PHẦN THÊM ===
+}
+
+export interface StudentStats {
+  total_courses_enrolled: number;
+  total_courses_completed: number;
+  total_hours_learned: number;
+}
+
+export interface RecentActivity {
+  type: "lesson_completed" | "quiz_submitted" | "course_enrolled";
+  title: string;
+  course_title: string;
+  timestamp: string;
+  // Các trường khác tùy thuộc vào type
 }
 
 export interface LessonProgress {
@@ -440,4 +465,38 @@ export interface InstructorApplicationForm {
   education: string;
   experience: string;
   certificates: string;
+}
+
+export interface InstructorSummary {
+  total_students: number;
+  total_revenue: number;
+  average_rating: number;
+  pending_questions_count: number;
+  total_courses: number;
+  total_enrollments: number;
+  revenue_over_time: { month: string; revenue: number }[];
+  enrollments_over_time: { month: string; enrollments: number }[];
+}
+
+// For GET /api/instructors/dashboard/action-items
+interface ActionItemQuestion {
+  discussion_id: number;
+  course: { course_id: number; title: string };
+  user: { user_id: number; full_name: string; avatar_url?: string };
+  question_text: string;
+  created_at: string;
+}
+
+interface ActionItemReview {
+  review_id: number;
+  course: { course_id: number; title: string };
+  student: { user_id: number; full_name: string; avatar_url?: string };
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
+export interface ActionItems {
+  pending_questions: ActionItemQuestion[];
+  recent_reviews: ActionItemReview[];
 }

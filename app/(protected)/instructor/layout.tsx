@@ -2,18 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { User as UserIcon, LogOut, Loader2, AlertTriangle } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Loader2,
+  AlertTriangle,
+  LayoutDashboard,
+  BookCopy,
+  PlusCircle,
+} from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { instructorService } from "@/lib/api/instructorService";
 import { InstructorProfile } from "@/lib/types";
-import { usePathname, useRouter } from "next/navigation";
 import { clearAuthData } from "@/lib/auth/utils";
+import { Logo } from "@/app/page";
+import { cn } from "@/lib/utils";
 
-// --- Component con cho màn hình chờ duyệt / yêu cầu nộp hồ sơ ---
-// Định nghĩa kiểu cho prop `status` một cách chặt chẽ
+// --- Component ApplicationPrompt (giữ nguyên, không thay đổi) ---
 type PromptStatus = "pending" | "rejected" | "no_profile";
-
 const ApplicationPrompt = ({
   status,
   reason,
@@ -25,7 +33,6 @@ const ApplicationPrompt = ({
     clearAuthData();
     window.location.href = "/";
   };
-
   const getStatusMessage = () => {
     switch (status) {
       case "pending":
@@ -41,7 +48,7 @@ const ApplicationPrompt = ({
             reason || "Không có lý do cụ thể"
           }. Vui lòng cập nhật lại hồ sơ và gửi lại để chúng tôi xem xét.`,
         };
-      default: // 'no_profile'
+      default:
         return {
           title: "Hoàn thành hồ sơ của bạn",
           description:
@@ -49,27 +56,37 @@ const ApplicationPrompt = ({
         };
     }
   };
-
   const { title, description } = getStatusMessage();
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
-      <AlertTriangle className="h-12 w-12 text-yellow-500 mb-4" />
-      <h1 className="text-2xl font-bold mb-2">{title}</h1>
-      <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Link href="/instructor/profile">
-          <Button>Đến trang hồ sơ</Button>
-        </Link>
-        <Button variant="outline" onClick={handleLogoutAndRedirectHome}>
-          Đăng xuất & Về trang chủ
-        </Button>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-background p-6 text-center">
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-lg">
+        <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+        <h1 className="text-2xl font-bold mb-2">{title}</h1>
+        <p className="text-muted-foreground mb-6">{description}</p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/instructor/profile">
+            <Button>Đến trang hồ sơ</Button>
+          </Link>
+          <Button variant="outline" onClick={handleLogoutAndRedirectHome}>
+            Đăng xuất & Về trang chủ
+          </Button>
+        </div>
       </div>
     </div>
   );
 };
+// --- END ---
 
-// --- Component Layout chính ---
+const navItems = [
+  { href: "/instructor/dashboard", icon: LayoutDashboard, label: "Tổng quan" },
+  { href: "/instructor/my-courses", icon: BookCopy, label: "Quản lý khóa học" },
+  {
+    href: "/instructor/create-course",
+    icon: PlusCircle,
+    label: "Tạo khóa học mới",
+  },
+];
+
 export default function InstructorLayout({
   children,
 }: {
@@ -77,7 +94,9 @@ export default function InstructorLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isLoading: isAuthLoading } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth({
+    redirectToLoginIfFail: true,
+  });
 
   const [profile, setProfile] = useState<InstructorProfile | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
@@ -110,84 +129,74 @@ export default function InstructorLayout({
 
   const isLoading = isAuthLoading || isProfileLoading;
 
-  if (isLoading || !user) {
+  if (isLoading || !user || (user.role !== "instructor" && !isAuthLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="ml-4 text-muted-foreground">
-          Đang tải dữ liệu giảng viên...
-        </p>
+      <div className="min-h-screen flex items-center justify-center bg-brand-background">
+        <Loader2 className="h-12 w-12 animate-spin text-brand-green" />
       </div>
     );
   }
 
-  // --- RENDER LOGIC (ĐÃ SỬA) ---
   const approvalStatus = profile?.approval_status;
 
-  // Trường hợp 1: Instructor đã được duyệt
   if (approvalStatus === "approved") {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <nav /* ... JSX navbar đầy đủ ... */>
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <div className="text-2xl">👨‍🏫</div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">E-Learning</h1>
-                <p className="text-xs text-gray-600">Giảng viên</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-6">
+      <div className="min-h-screen bg-gray-50 text-gray-800">
+        <header className="bg-white sticky top-0 z-50 border-b ">
+          <div className="flex justify-between items-center h-30 w-full max-w-[90%] mx-auto">
+            <Logo />
+
+            <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-2 rounded-full bg-gray-100 p-1">
+              {navItems.map((item) => {
+                const isActive = pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-2 text-sm lg:text-lg xl:text-xl  font-semibold py-2 px-4 rounded-full transition-colors",
+                      isActive
+                        ? "bg-white shadow-sm text-primary"
+                        : "text-gray-600 hover:text-gray-800"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="flex items-center gap-4">
               <Link
-                href="/instructor/dashboard"
-                className="text-gray-700 hover:text-gray-900 font-medium"
+                href="/instructor/profile"
+                className="flex items-center gap-2 text-sm lg:text-lg xl:text-xl  font-semibold text-gray-700 hover:text-primary"
               >
-                Dashboard
+                <User className="h-5 w-5" />
+                <span>{user.full_name}</span>
               </Link>
-              <Link
-                href="/instructor/my-courses"
-                className="text-gray-700 hover:text-gray-900 font-medium"
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-gray-600 hover:bg-red-50 hover:text-red-600 lg:text-lg xl:text-xl "
               >
-                Khóa học của tôi
-              </Link>
-              <Link
-                href="/instructor/create-course"
-                className="text-gray-700 hover:text-gray-900 font-medium"
-              >
-                Tạo khóa học
-              </Link>
-              <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
-                <Link
-                  href="/instructor/profile"
-                  className="flex items-center gap-2"
-                >
-                  <UserIcon className="w-5 h-5 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-700">
-                    {user.full_name}
-                  </span>
-                </Link>
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                  Đăng xuất
-                </Button>
-              </div>
+                <LogOut className="mr-2 h-4 w-4" /> Đăng xuất
+              </Button>
             </div>
           </div>
-        </nav>
-        <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
-        <footer className="bg-gray-900 text-gray-400 mt-12 py-8 text-center text-sm">
-          <p>&copy; 2025 E-Learning Platform. Developed by Team.</p>
-        </footer>
+        </header>
+        <main className="w-full max-w-[90%] mx-auto py-10">{children}</main>
       </div>
     );
   }
 
-  // Trường hợp 2: Instructor chưa được duyệt VÀ đang ở trang profile
   if (pathname === "/instructor/profile") {
-    return <div className="min-h-screen bg-gray-50">{children}</div>;
+    return (
+      <div className="min-h-screen bg-brand-background py-10">{children}</div>
+    );
   }
 
-  // Trường hợp 3: Instructor chưa được duyệt VÀ đang ở các trang khác
-  // Ở đây, chúng ta biết chắc chắn `approvalStatus` không phải là 'approved'
   return (
     <ApplicationPrompt
       status={approvalStatus || "no_profile"}

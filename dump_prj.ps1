@@ -81,7 +81,7 @@ try {
         
         # Read and write file content
         try {
-            $content = Get-Content -Path $fullPath -Raw -ErrorAction SilentlyContinue
+            $content = Get-Content -LiteralPath $fullPath -Raw -ErrorAction SilentlyContinue
             
             if ($null -eq $content) {
                 $content = ""

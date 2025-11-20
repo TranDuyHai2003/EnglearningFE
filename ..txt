@@ -198,7 +198,7 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4">
       <div className="text-center">
         <h1 className="text-5xl font-bold text-gray-900 mb-4">
           ðŸ“š E-Learning Platform
@@ -760,7 +760,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200 p-8">
+      <div className="bg-linear-to-r from-red-50 to-orange-50 rounded-lg border border-red-200 p-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
           ChÃ o má»«ng, {user?.full_name || "Admin"}! ðŸ‘‹
         </h1>
@@ -2347,7 +2347,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
+      <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
           ChÃ o má»«ng, {user.full_name}! ðŸ‘‹
         </h1>
@@ -11087,7 +11087,7 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4">
       <div className="text-center">
         <h1 className="text-5xl font-bold text-gray-900 mb-4">
           ðŸ“š E-Learning Platform
@@ -11649,7 +11649,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200 p-8">
+      <div className="bg-linear-to-r from-red-50 to-orange-50 rounded-lg border border-red-200 p-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
           ChÃ o má»«ng, {user?.full_name || "Admin"}! ðŸ‘‹
         </h1>
@@ -13236,7 +13236,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
+      <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
           ChÃ o má»«ng, {user.full_name}! ðŸ‘‹
         </h1>
@@ -22018,7 +22018,7 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4">
       <div className="text-center">
         <h1 className="text-5xl font-bold text-gray-900 mb-4">
           ðŸ“š E-Learning Platform
@@ -22580,7 +22580,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200 p-8">
+      <div className="bg-linear-to-r from-red-50 to-orange-50 rounded-lg border border-red-200 p-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
           ChÃ o má»«ng, {user?.full_name || "Admin"}! ðŸ‘‹
         </h1>
@@ -24167,7 +24167,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
+      <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
           ChÃ o má»«ng, {user.full_name}! ðŸ‘‹
         </h1>

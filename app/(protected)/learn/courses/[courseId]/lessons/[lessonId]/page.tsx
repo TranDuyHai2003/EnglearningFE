@@ -1,17 +1,18 @@
-// app/(student)/learn/courses/[courseId]/lessons/[lessonId]/page.tsx
+// app/(protected)/learn/courses/[courseId]/lessons/[lessonId]/page.tsx
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { learningService } from "@/lib/api/learningService";
-import { Enrollment, Lesson } from "@/lib/types";
+import { Enrollment, Lesson, LessonProgress } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CourseSidebar } from "../../_components/CourseSideBar";
 import { LessonContent } from "../../_components/LessonContent";
-import { CoursePlayerHeader } from "../../_components/CoursePlayerHeader"; // Component mới
+import { CoursePlayerHeader } from "../../_components/CoursePlayerHeader";
 import { cn } from "@/lib/utils";
 
+// ... (Giữ nguyên PlayerSkeleton)
 const PlayerSkeleton = () => (
   <div className="flex h-[calc(100vh-4rem)]">
     <div className="flex-1 p-6 lg:p-8">
@@ -33,6 +34,7 @@ export default function CoursePlayerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  // ... (Giữ nguyên useEffect fetchContent)
   useEffect(() => {
     if (!courseId) return;
     const fetchContent = async () => {
@@ -50,6 +52,7 @@ export default function CoursePlayerPage() {
     fetchContent();
   }, [courseId, router]);
 
+  // ... (Giữ nguyên useMemo)
   const { currentLesson, totalLessons, completedLessons } = useMemo(() => {
     if (!enrollment?.course?.sections) {
       return { currentLesson: null, totalLessons: 0, completedLessons: 0 };
@@ -76,11 +79,19 @@ export default function CoursePlayerPage() {
     };
   }, [enrollment, lessonId]);
 
+  // <-- Logic xử lý hoàn thành bài học và chuyển bài -->
   const handleMarkComplete = async (completedLessonId: number) => {
-    // ... (Giữ nguyên logic của bạn)
+    // Tránh gọi lại nếu đã hoàn thành
+    const alreadyCompleted = enrollment?.lessonProgress.some(
+      (p) => p.lesson_id === completedLessonId && p.status === "completed"
+    );
+    if (alreadyCompleted) return;
+
     try {
       await learningService.recordProgress(completedLessonId, "completed");
       toast.success("Đã cập nhật tiến độ!");
+
+      // Cập nhật trạng thái ngay trên UI (Optimistic Update)
       setEnrollment((prev) => {
         if (!prev) return null;
         const newProgress = [...prev.lessonProgress];
@@ -91,16 +102,17 @@ export default function CoursePlayerPage() {
           newProgress[progressIndex].status = "completed";
         } else {
           newProgress.push({
-            progress_id: Date.now(), // Fake ID for optimistic update
+            progress_id: Date.now(), // Fake ID
             enrollment_id: prev.enrollment_id,
             lesson_id: completedLessonId,
             status: "completed",
             video_progress: 100,
-          });
+          } as LessonProgress);
         }
         return { ...prev, lessonProgress: newProgress };
       });
 
+      // Tự động chuyển đến bài học tiếp theo
       const allLessons =
         enrollment?.course.sections?.flatMap((s) => s.lessons || []) || [];
       const currentIndex = allLessons.findIndex(
@@ -108,15 +120,19 @@ export default function CoursePlayerPage() {
       );
       if (currentIndex > -1 && currentIndex < allLessons.length - 1) {
         const nextLesson = allLessons[currentIndex + 1];
+        toast.info(`Chuyển đến bài học: ${nextLesson.title}`);
         router.push(
           `/learn/courses/${courseId}/lessons/${nextLesson.lesson_id}`
         );
+      } else {
+        toast.success("Chúc mừng bạn đã hoàn thành khóa học!");
       }
     } catch (error) {
       toast.error("Không thể cập nhật tiến độ.");
     }
   };
 
+  // ... (Phần render giữ nguyên)
   if (isLoading) return <PlayerSkeleton />;
 
   if (!enrollment || !enrollment.course || !currentLesson) {

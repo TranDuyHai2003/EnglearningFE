@@ -14,7 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { instructorService } from "@/lib/api/instructorService";
 import { InstructorProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, Eye, XCircle } from "lucide-react";
+import Link from "next/link";
 
 const InstructorSkeleton = () => (
   <div className="space-y-4">
@@ -190,6 +191,11 @@ export default function AdminInstructorsPage() {
                 >
                   <XCircle className="mr-2 h-4 w-4" /> Từ chối
                 </Button>
+                <Link href={`/admin/instructors/${profile.profile_id}`}>
+                  <Button variant="outline" size="sm">
+                    <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

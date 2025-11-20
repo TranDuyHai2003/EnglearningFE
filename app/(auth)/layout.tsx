@@ -1,11 +1,10 @@
 "use client";
 
-import { ReactNode } from "react";
 import { useEffect } from "react";
-
-import { getStoredUser } from "@/lib/auth/utils";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { Logo } from "@/app/page";
+import { Loader2 } from "lucide-react";
 
 export default function AuthLayout({
   children,
@@ -17,26 +16,36 @@ export default function AuthLayout({
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.replace(`/${user.role}/dashboard`);
+      if (user.role.includes("admin")) {
+        router.replace(`/admin/dashboard`);
+      } else {
+        router.replace(`/${user.role}/dashboard`);
+      }
     }
   }, [isLoading, user, router]);
 
   if (isLoading || user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto" />
+          <p className="mt-4 text-base text-gray-600 font-medium">
+            Đang tải...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-block bg-blue-600 text-white rounded-lg p-3 mb-4">
-            <span className="text-2xl">📚</span>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900">E-Learning</h1>
-          <p className="text-gray-600 mt-2">Trung tâm Anh Ngữ</p>
+    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
+      <div className="w-full max-w-xl max-h-[100vh] bg-white rounded-2xl shadow-xl p-6 overflow-auto border border-gray-100">
+        {/* Logo */}
+        <div className="mb-6 flex justify-center">
+          <Logo />
         </div>
-
-        <div className="bg-white rounded-lg shadow-xl p-8">{children}</div>
+        {/* Content */}
+        {children}
       </div>
     </div>
   );

@@ -29,18 +29,20 @@ apiClient.interceptors.request.use(
   }
 );
 
-/**
- * Interceptor để xử lý lỗi response, đặc biệt là lỗi 401 (Unauthorized).
- */
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Chỉ thực thi ở phía client
     if (typeof window !== "undefined" && error.response?.status === 401) {
-      console.error("Unauthorized! Token might be expired. Logging out.");
-      clearAuthData();
-      // Redirect về trang login để người dùng đăng nhập lại
-      window.location.href = "/login";
+      // Chỉ chuyển hướng nếu không phải đang ở trang login để tránh lặp vô hạn
+      if (window.location.pathname !== "/login") {
+        console.error("Unauthorized! Redirecting to login.");
+        clearAuthData();
+        // Lấy đường dẫn hiện tại và thêm nó vào URL đăng nhập
+        const redirectUrl = window.location.pathname + window.location.search;
+        window.location.href = `/login?redirect=${encodeURIComponent(
+          redirectUrl
+        )}`;
+      }
     }
     return Promise.reject(error);
   }

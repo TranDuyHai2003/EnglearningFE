@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-// ❌ Không cần import Zod
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -25,23 +24,22 @@ import {
 import { toast } from "sonner";
 import { authService } from "@/lib/api/authService";
 import { setAuthData } from "@/lib/auth/utils";
-import { UserPlus, Loader2 } from "lucide-react";
-import { RegisterRequest } from "@/lib/types"; // ✅ Sử dụng RegisterRequest từ types
+import { UserPlus, Loader2, Mail, Lock, User, Briefcase } from "lucide-react";
+import { RegisterRequest } from "@/lib/types";
 
-// ✅ Định nghĩa lại kiểu dữ liệu cho form (thay thế z.infer)
 type RegisterFormData = RegisterRequest;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<RegisterFormData>({
-    // ❌ Bỏ zodResolver
     defaultValues: {
       full_name: "",
       email: "",
       password: "",
-      role: "student", // Mặc định là student
+      role: "student",
     },
   });
 
@@ -52,35 +50,43 @@ export default function RegisterPage() {
       setAuthData(authData.token, authData.user);
       toast.success(`Đăng ký thành công! Chào ${authData.user.full_name}`);
 
-      const { role } = authData.user;
-      if (role === "student") {
-        router.replace("/student/dashboard");
-      } else if (role === "instructor") {
-        router.replace("/instructor/dashboard");
+      const redirectUrl = searchParams.get("redirect");
+
+      if (redirectUrl) {
+        router.replace(redirectUrl);
+      } else {
+        router.replace(`/${authData.user.role}/dashboard`);
       }
     } catch (error: unknown) {
-      const errorMessage =
+      toast.error(
         error instanceof Error
           ? error.message
-          : "Đăng ký thất bại. Vui lòng thử lại.";
-      toast.error(errorMessage);
+          : "Đăng ký thất bại. Vui lòng thử lại."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div>
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-        Đăng ký tài khoản
-      </h2>
+  const redirectQuery = searchParams.get("redirect");
 
+  return (
+    <div className="w-full h-full overflow-auto p-4 flex flex-col justify-center">
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Bắt đầu hành trình</h2>
+        <p className="mt-1 text-base text-gray-600">
+          Tạo tài khoản để bắt đầu học tập
+        </p>
+      </div>
+
+      {/* Form */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Full name */}
           <FormField
             control={form.control}
             name="full_name"
-            // ✅ Thêm rules validation
             rules={{
               required: "Họ tên không được để trống.",
               minLength: {
@@ -90,45 +96,54 @@ export default function RegisterPage() {
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Họ và tên</FormLabel>
+                <FormLabel className="text-sm font-semibold">
+                  Họ và tên
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Nguyễn Văn A"
-                    disabled={isLoading}
-                    {...field}
-                  />
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      placeholder="Nguyễn Văn A"
+                      className="pl-10 h-10"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
 
+          {/* Email */}
           <FormField
             control={form.control}
             name="email"
             rules={{
               required: "Email không được để trống.",
-              pattern: {
-                value: /^\S+@\S+$/i,
-                message: "Email không hợp lệ.",
-              },
+              pattern: { value: /^\S+@\S+$/i, message: "Email không hợp lệ." },
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-sm font-semibold">Email</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="your@email.com"
-                    type="email"
-                    disabled={isLoading}
-                    {...field}
-                  />
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      type="email"
+                      placeholder="example@gmail.com"
+                      className="pl-10 h-10"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
 
+          {/* Password */}
           <FormField
             control={form.control}
             name="password"
@@ -141,36 +156,45 @@ export default function RegisterPage() {
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mật khẩu</FormLabel>
+                <FormLabel className="text-sm font-semibold">
+                  Mật khẩu
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="••••••••"
-                    type="password"
-                    disabled={isLoading}
-                    {...field}
-                  />
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      className="pl-10 h-10"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
 
+          {/* Role */}
           <FormField
             control={form.control}
             name="role"
             rules={{ required: "Vui lòng chọn vai trò." }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Bạn là?</FormLabel>
+                <FormLabel className="text-sm font-semibold">Vai trò</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  disabled={isLoading}
                 >
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn vai trò" />
-                    </SelectTrigger>
+                    <div className="relative">
+                      <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <SelectTrigger className="pl-10 h-10">
+                        <SelectValue placeholder="Chọn vai trò" />
+                      </SelectTrigger>
+                    </div>
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="student">👨‍🎓 Tôi là học viên</SelectItem>
@@ -179,16 +203,16 @@ export default function RegisterPage() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
 
+          {/* Submit */}
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full"
-            size="lg"
+            className="w-full h-10 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white"
           >
             {isLoading ? (
               <>
@@ -197,22 +221,26 @@ export default function RegisterPage() {
               </>
             ) : (
               <>
-                <UserPlus className="mr-2 h-4 w-4" /> Đăng ký
+                <UserPlus className="mr-2 h-4 w-4" />
+                Đăng ký
               </>
             )}
           </Button>
         </form>
       </Form>
 
-      <p className="text-center mt-6 text-sm text-gray-600">
-        Đã có tài khoản?{" "}
-        <Link
-          href="/login"
-          className="text-blue-600 hover:underline font-medium"
-        >
-          Đăng nhập
-        </Link>
-      </p>
+      {/* Divider */}
+      <div className="my-4 text-center text-sm text-gray-500">
+        Đã có tài khoản?
+      </div>
+
+      {/* Link */}
+      <Link
+        href={`/login${redirectQuery ? `?redirect=${redirectQuery}` : ""}`}
+        className="block w-full text-center py-2 rounded-lg border border-blue-300 bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100"
+      >
+        Đăng nhập ngay
+      </Link>
     </div>
   );
 }
