@@ -8,7 +8,11 @@ export type UserRole =
   | "support_admin"
   | "system_admin";
 export type UserStatus = "active" | "inactive" | "pending" | "locked";
-export type ApprovalStatus = "pending" | "approved" | "rejected";
+export type ApprovalStatus =
+  | "pending"
+  | "interviewing"
+  | "approved"
+  | "rejected";
 export type CourseLevel = "beginner" | "intermediate" | "advanced";
 export type CourseStatus =
   | "draft"
@@ -56,16 +60,24 @@ export interface InstructorProfile {
   approved_by?: number | null;
   approved_at?: string | null;
   rejection_reason?: string | null;
-  user?: AuthenticatedUser; // `user` lồng vào từ API listProfiles
+  user?: AuthenticatedUser;
+
+  // === CÁC TRƯỜNG FILE & CV ===
   cv_url?: string | null;
   cv_file_name?: string | null;
   cv_uploaded_at?: string | null;
+
+  // === CÁC TRƯỜNG MỚI CHO LUỒNG PHỎNG VẤN (BẮT BUỘC KHỚP DB) ===
+  intro_video_url?: string | null; // Link video dạy thử
+  interview_date?: string | null; // Ngày hẹn phỏng vấn
+  interview_notes?: string | null; // Ghi chú của Admin
+
   certificate_files?: {
     url: string;
     file_name: string;
     file_size: number;
     uploaded_at: string;
-  };
+  }[]; // Lưu ý: Có thể là mảng nếu DB lưu JSONB
 }
 
 export interface Category {
@@ -465,8 +477,10 @@ export interface InstructorApplicationForm {
   education: string;
   experience: string;
   certificates: string;
+  // === THÊM 2 TRƯỜNG MỚI ===
+  cv_url: string;
+  intro_video_url: string;
 }
-
 export interface InstructorSummary {
   total_students: number;
   total_revenue: number;

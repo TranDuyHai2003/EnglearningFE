@@ -1,4 +1,3 @@
-// app/(protected)/admin/instructors/[id]/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,39 +9,40 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, FileText } from "lucide-react";
-import Link from "next/link";
+import {
+  ArrowLeft,
+  Calendar,
+  CheckCircle2,
+  Download,
+  FileSignature,
+  FileText,
+  Phone,
+  Video,
+  XCircle,
+  Loader2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+
+// === IMPORT DIALOG ===
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-const ProfileDetailSkeleton = () => (
-  <Card>
-    <CardHeader>
-      <Skeleton className="h-8 w-1/2" />
-      <Skeleton className="h-5 w-1/3 mt-2" />
-    </CardHeader>
-    <CardContent className="space-y-6">
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-1/4" />
-        <Skeleton className="h-10 w-full" />
-      </div>
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-1/4" />
-        <Skeleton className="h-10 w-full" />
-      </div>
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-1/4" />
-        <Skeleton className="h-10 w-1/3" />
-      </div>
-    </CardContent>
-  </Card>
-);
 
 export default function InstructorProfileDetailPage() {
   const params = useParams();
@@ -51,92 +51,410 @@ export default function InstructorProfileDetailPage() {
 
   const [profile, setProfile] = useState<InstructorProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMutating, setIsMutating] = useState(false);
+
+  // Modal State
+  const [reviewModal, setReviewModal] = useState<{
+    isOpen: boolean;
+    type: "interviewing" | "rejected" | null;
+  }>({
+    isOpen: false,
+    type: null,
+  });
+  const [reviewNote, setReviewNote] = useState("");
+  const [reviewLink, setReviewLink] = useState("");
+
+  const fetchProfile = async () => {
+    setIsLoading(true);
+    try {
+      const data = await instructorService.getProfileById(profileId);
+      setProfile(data);
+    } catch (error) {
+      toast.error("Không thể tải hồ sơ.");
+      router.back();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!profileId) return;
-    const fetchProfile = async () => {
-      setIsLoading(true);
-      try {
-        const data = await instructorService.getProfileById(profileId);
-        setProfile(data);
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Không thể tải hồ sơ."
-        );
-        router.back();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProfile();
-  }, [profileId, router]);
+    if (profileId) fetchProfile();
+  }, [profileId]);
+
+  // === HANDLERS ===
+
+  const openReviewModal = (type: "interviewing" | "rejected") => {
+    setReviewModal({ isOpen: true, type });
+    setReviewNote("");
+    setReviewLink("");
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewModal.type || !profile) return;
+
+    // Validation
+    if (reviewModal.type === "rejected" && !reviewNote.trim()) {
+      toast.error("Vui lòng nhập lý do từ chối.");
+      return;
+    }
+
+    setIsMutating(true);
+    try {
+      await instructorService.reviewProfile(
+        profile.profile_id,
+        reviewModal.type === "interviewing" ? "interviewing" : "rejected",
+        reviewModal.type === "rejected" ? reviewNote : undefined,
+        reviewModal.type === "interviewing" ? reviewNote : undefined
+        // reviewLink // Pass if supported
+      );
+      toast.success("Cập nhật trạng thái thành công!");
+      setReviewModal({ isOpen: false, type: null });
+      fetchProfile(); // Reload
+    } catch (error) {
+      toast.error("Có lỗi xảy ra.");
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (profile?.approval_status !== "interviewing") {
+      if (
+        !confirm(
+          "Xác nhận: Bạn muốn PHÊ DUYỆT giảng viên này mà không qua phỏng vấn?"
+        )
+      )
+        return;
+    }
+
+    setIsMutating(true);
+    try {
+      await instructorService.reviewProfile(profileId, "approved");
+      toast.success("Đã phê duyệt giảng viên!");
+      fetchProfile();
+    } catch (error) {
+      toast.error("Có lỗi xảy ra.");
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  if (isLoading)
+    return (
+      <div className="container py-10 text-center">Đang tải dữ liệu...</div>
+    );
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 max-w-4xl">
       <Button variant="ghost" onClick={() => router.back()} className="mb-4">
         <ArrowLeft className="mr-2 h-4 w-4" /> Quay lại danh sách
       </Button>
 
-      {isLoading ? (
-        <ProfileDetailSkeleton />
-      ) : (
-        profile && (
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-2xl">
-                    {profile.user?.full_name}
-                  </CardTitle>
-                  <CardDescription>{profile.user?.email}</CardDescription>
-                </div>
-                <Badge variant="secondary" className="capitalize text-base">
-                  {profile.approval_status}
+      {profile && (
+        <Card className="shadow-md border-slate-200">
+          <CardHeader className="bg-slate-50/50">
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle className="text-3xl font-bold text-primary">
+                  {profile.user?.full_name}
+                </CardTitle>
+                <CardDescription className="text-lg mt-1">
+                  {profile.user?.email} • {profile.user?.phone || "Chưa có SĐT"}
+                </CardDescription>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <Badge
+                  className={`text-base px-4 py-1 capitalize shadow-sm ${
+                    profile.approval_status === "approved"
+                      ? "bg-green-600 hover:bg-green-700"
+                      : profile.approval_status === "rejected"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : profile.approval_status === "interviewing"
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-yellow-500 hover:bg-yellow-600"
+                  }`}
+                >
+                  {profile.approval_status === "interviewing"
+                    ? "Đang phỏng vấn"
+                    : profile.approval_status}
                 </Badge>
+                <span className="text-xs text-muted-foreground">
+                  ID Hồ sơ: {profile.profile_id}
+                </span>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h4 className="font-semibold text-lg">Bio</h4>
-                <p className="text-muted-foreground mt-1">
-                  {profile.bio || "Chưa cung cấp"}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-lg">Học vấn</h4>
-                <p className="text-muted-foreground mt-1">
-                  {profile.education || "Chưa cung cấp"}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-lg">Kinh nghiệm</h4>
-                <p className="text-muted-foreground mt-1">
-                  {profile.experience || "Chưa cung cấp"}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-lg">Tài liệu</h4>
+            </div>
+          </CardHeader>
+
+          <Separator />
+
+          <CardContent className="space-y-8 pt-8">
+            {/* 1. Document & Video */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-5 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow">
+                <h4 className="font-semibold flex items-center gap-2 mb-3 text-slate-800">
+                  <FileSignature className="h-5 w-5 text-blue-600" /> Hồ sơ CV
+                </h4>
                 {profile.cv_url ? (
-                  <a
-                    href={`${baseURL}${profile.cv_url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button variant="outline">
-                      <Download className="mr-2 h-4 w-4" />
-                      Xem/Tải CV (
-                      {decodeURIComponent(profile.cv_file_name || "")})
-                    </Button>
-                  </a>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-sm bg-slate-100 p-2 rounded text-slate-600">
+                      <FileText className="h-4 w-4" />
+                      <span className="truncate">
+                        {profile.cv_file_name || "cv.pdf"}
+                      </span>
+                    </div>
+                    <a
+                      href={`${baseURL}${profile.cv_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+                      >
+                        <Download className="mr-2 h-4 w-4" /> Tải xuống / Xem
+                      </Button>
+                    </a>
+                  </div>
                 ) : (
-                  <p className="text-muted-foreground mt-1">Chưa tải lên CV.</p>
+                  <p className="text-sm italic text-gray-500 py-2">
+                    Chưa tải lên CV.
+                  </p>
                 )}
-                {/* Thêm phần hiển thị chứng chỉ ở đây nếu cần */}
               </div>
-            </CardContent>
-          </Card>
-        )
+
+              <div className="p-5 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow">
+                <h4 className="font-semibold flex items-center gap-2 mb-3 text-slate-800">
+                  <Video className="h-5 w-5 text-red-600" /> Video Giới thiệu
+                </h4>
+                {profile.intro_video_url ? (
+                  <div className="flex flex-col gap-3">
+                    <a
+                      href={profile.intro_video_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full border-red-200 text-red-700 hover:bg-red-50"
+                      >
+                        <Video className="mr-2 h-4 w-4" /> Xem trên
+                        YouTube/Drive
+                      </Button>
+                    </a>
+                    <p className="text-xs text-muted-foreground truncate bg-slate-50 p-2 rounded">
+                      {profile.intro_video_url}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm italic text-gray-500 py-2">
+                    Chưa cung cấp video.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* 2. Details */}
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-semibold text-lg border-b pb-2 mb-3 text-slate-800">
+                  Giới thiệu
+                </h4>
+                <p className="text-slate-600 whitespace-pre-line bg-slate-50 p-4 rounded-lg border">
+                  {profile.bio || "Chưa cập nhật."}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-lg border-b pb-2 mb-3 text-slate-800">
+                    Học vấn
+                  </h4>
+                  <p className="text-slate-600 whitespace-pre-line bg-slate-50 p-4 rounded-lg border">
+                    {profile.education || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-lg border-b pb-2 mb-3 text-slate-800">
+                    Kinh nghiệm
+                  </h4>
+                  <p className="text-slate-600 whitespace-pre-line bg-slate-50 p-4 rounded-lg border">
+                    {profile.experience || "N/A"}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg border-b pb-2 mb-3 text-slate-800">
+                  Chứng chỉ
+                </h4>
+                <p className="text-slate-600 whitespace-pre-line bg-slate-50 p-4 rounded-lg border">
+                  {profile.certificates || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            {/* 3. Admin Info (Interview/Reject) */}
+            <div className="space-y-4">
+              {(profile.approval_status === "interviewing" ||
+                profile.interview_notes) && (
+                <div className="p-5 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="font-semibold text-blue-800 flex items-center gap-2 mb-2">
+                    <Calendar className="h-5 w-5" /> Thông tin Phỏng vấn
+                  </h4>
+                  {profile.interview_date && (
+                    <p className="text-sm mb-1 text-blue-900">
+                      <strong>Ngày cập nhật:</strong>{" "}
+                      {new Date(profile.interview_date).toLocaleString()}
+                    </p>
+                  )}
+                  <p className="text-sm text-blue-900">
+                    <strong>Ghi chú Admin:</strong>{" "}
+                    {profile.interview_notes || "Không có ghi chú"}
+                  </p>
+                </div>
+              )}
+
+              {profile.approval_status === "rejected" &&
+                profile.rejection_reason && (
+                  <div className="p-5 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 className="font-semibold text-red-800 mb-1 flex items-center gap-2">
+                      <XCircle className="h-5 w-5" /> Lý do từ chối
+                    </h4>
+                    <p className="text-red-700 mt-2">
+                      {profile.rejection_reason}
+                    </p>
+                  </div>
+                )}
+            </div>
+          </CardContent>
+
+          {/* FOOTER BUTTONS */}
+          <CardFooter className="flex justify-end gap-3 bg-slate-50 p-6 rounded-b-xl border-t">
+            {/* Button Interview (Show if not Approved) */}
+            {profile.approval_status !== "approved" && (
+              <Button
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                onClick={() => openReviewModal("interviewing")}
+                disabled={isMutating}
+              >
+                <Phone className="mr-2 h-4 w-4" />
+                {profile.approval_status === "interviewing"
+                  ? "Cập nhật PV"
+                  : "Mời Phỏng vấn"}
+              </Button>
+            )}
+
+            {/* Button Reject (Always show unless Rejected) */}
+            {profile.approval_status !== "rejected" && (
+              <Button
+                variant="destructive"
+                onClick={() => openReviewModal("rejected")}
+                disabled={isMutating}
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                {profile.approval_status === "approved"
+                  ? "Hủy duyệt / Thu hồi"
+                  : "Từ chối"}
+              </Button>
+            )}
+
+            {/* Button Approve (Show if not Approved) */}
+            {profile.approval_status !== "approved" && (
+              <Button
+                className="bg-green-600 hover:bg-green-700"
+                onClick={handleApprove}
+                disabled={isMutating}
+              >
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                {profile.approval_status === "rejected"
+                  ? "Duyệt lại"
+                  : "Phê duyệt Chính thức"}
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
       )}
+
+      {/* === MODAL === */}
+      <Dialog
+        open={reviewModal.isOpen}
+        onOpenChange={(open) =>
+          !open && setReviewModal((prev) => ({ ...prev, isOpen: false }))
+        }
+      >
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {reviewModal.type === "interviewing"
+                ? "Gửi lời mời Phỏng vấn"
+                : "Từ chối Hồ sơ"}
+            </DialogTitle>
+            <DialogDescription>
+              {reviewModal.type === "interviewing"
+                ? "Nhập thông tin lịch hẹn, link họp online hoặc hướng dẫn tiếp theo."
+                : "Vui lòng nhập lý do từ chối."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            {/* Link Input */}
+            {reviewModal.type === "interviewing" && (
+              <div className="grid gap-2">
+                <Label htmlFor="link">Link cuộc họp (Google Meet / Zoom)</Label>
+                <Input
+                  id="link"
+                  value={reviewLink}
+                  onChange={(e) => setReviewLink(e.target.value)}
+                  placeholder="https://meet.google.com/..."
+                />
+              </div>
+            )}
+
+            <div className="grid gap-2">
+              <Label htmlFor="note">
+                {reviewModal.type === "interviewing"
+                  ? "Ghi chú / Lịch hẹn"
+                  : "Lý do từ chối"}
+              </Label>
+              <Textarea
+                id="note"
+                value={reviewNote}
+                onChange={(e) => setReviewNote(e.target.value)}
+                placeholder={
+                  reviewModal.type === "interviewing"
+                    ? "VD: 10:00 AM ngày 20/11..."
+                    : "VD: Hồ sơ thiếu thông tin..."
+                }
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() =>
+                setReviewModal((prev) => ({ ...prev, isOpen: false }))
+              }
+            >
+              Hủy bỏ
+            </Button>
+            <Button
+              variant={
+                reviewModal.type === "rejected" ? "destructive" : "default"
+              }
+              onClick={handleSubmitReview}
+              disabled={isMutating}
+            >
+              {isMutating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {reviewModal.type === "interviewing"
+                ? "Gửi lời mời"
+                : "Xác nhận Từ chối"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

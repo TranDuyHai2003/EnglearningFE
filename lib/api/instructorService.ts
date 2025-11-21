@@ -101,12 +101,13 @@ export const instructorService = {
    */
   async reviewProfile(
     profileId: number,
-    status: "approved" | "rejected",
-    reason?: string
+    status: "approved" | "rejected" | "interviewing",
+    reason?: string,
+    interview_notes?: string
   ): Promise<InstructorProfile> {
     const response = await apiClient.patch<ApiResponse<InstructorProfile>>(
       `/instructors/profiles/${profileId}/review`,
-      { status, reason }
+      { status, reason, interview_notes }
     );
     if (response.data.success && response.data.data) {
       return response.data.data;
