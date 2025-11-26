@@ -6,13 +6,10 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { courseService } from "@/lib/api/courseService";
 import { Course } from "@/lib/types";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, BarChart, Users, PlayCircle, Lock, Star } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { useRouter } from "next/navigation";
-import { paymentService } from "@/lib/api/paymentService";
+import { PurchaseButton } from "@/components/courses/PurchaseButton";
 
 // Component Skeleton cho trang chi tiết
 const CourseDetailSkeleton = () => (
@@ -36,49 +33,9 @@ const CourseDetailSkeleton = () => (
 export default function CourseDetailPage() {
   const params = useParams();
   const courseId = Number(params.id);
-  const { user, isAuthenticated } = useAuth(); // Lấy thông tin user
   const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-  const [isPurchasing, setIsPurchasing] = useState(false);
-  const handlePurchase = async () => {
-    if (!isAuthenticated || !user) {
-      toast.info("Vui lòng đăng nhập để mua khóa học.");
-      router.push(`/login?redirect=/courses/${courseId}`);
-      return;
-    }
 
-    setIsPurchasing(true);
-    try {
-      // Bước 1: Tạo giao dịch
-      toast.loading("Đang tạo giao dịch...");
-      const transaction = await paymentService.createTransaction([courseId]);
-
-      // Bước 2: Mô phỏng thanh toán và checkout
-      // (Trong thực tế, bước này sẽ chuyển hướng đến cổng thanh toán)
-      toast.loading("Đang xử lý thanh toán...");
-      await paymentService.checkout({
-        transaction_id: transaction.transaction_id,
-        payment_method: "e_wallet", // Giả lập
-        payment_gateway: "MockGateway", // Giả lập
-      });
-
-      toast.dismiss(); // Xóa các toast loading
-      toast.success("Mua khóa học thành công! Bạn sẽ được chuyển hướng.");
-
-      // Chuyển hướng đến trang "Khóa học của tôi" của học viên
-      router.push("/student/my-courses");
-    } catch (error) {
-      toast.dismiss();
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Đã xảy ra lỗi khi mua khóa học."
-      );
-    } finally {
-      setIsPurchasing(false);
-    }
-  };
   useEffect(() => {
     if (!courseId) return;
 
@@ -195,14 +152,12 @@ export default function CourseDetailPage() {
               </CardHeader>
               <CardContent className="p-6">
                 <p className="text-3xl font-bold mb-4">{displayPrice}</p>
-                <Button
-                  size="lg"
-                  className="w-full"
-                  onClick={handlePurchase}
-                  disabled={isPurchasing}
-                >
-                  {isPurchasing ? "Đang xử lý..." : "Mua ngay"}
-                </Button>
+                <PurchaseButton
+                  courseId={course.course_id}
+                  price={course.price}
+                  discountPrice={course.discount_price ?? undefined}
+                  isEnrolled={false}
+                />
                 <ul className="mt-6 space-y-3 text-sm text-gray-600">
                   <li className="flex items-center gap-3">
                     <Clock size={16} /> Thời lượng: {course.duration_hours} giờ

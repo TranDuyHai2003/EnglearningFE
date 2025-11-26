@@ -1,5 +1,0 @@
-catch (error: unknown) {
-      let errorMessage = "Đăng nhập thất bại. Vui lòng thử lại.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }

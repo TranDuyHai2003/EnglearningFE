@@ -1,7 +1,5 @@
-// app/(protected)/learn/courses/[courseId]/_components/LessonContent.tsx
 "use client";
 
-import dynamic from "next/dynamic"; // <-- THÊM DÒNG NÀY
 import { Lesson, LessonResource } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,25 +8,20 @@ import {
   Info,
   MessageSquare,
   Notebook,
+  Star,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 
-import { useThrottle } from "use-throttle";
+import { useState, useRef, useEffect } from "react";
 import { learningService } from "@/lib/api/learningService";
 import { QuizView } from "./QuizView";
-
-const ReactPlayer = dynamic(() => import("react-player"), {
-  ssr: false,
-  loading: () => (
-    <div className="aspect-video bg-slate-800 flex items-center justify-center text-white">
-      Đang tải video...
-    </div>
-  ),
-});
+import { QATab } from "./QATab";
+import { ReviewTab } from "./ReviewTab";
 
 interface Props {
   lesson: Lesson;
+  courseId: number;
   onMarkComplete: (lessonId: number) => void;
   isCompleted: boolean;
 }
@@ -54,56 +47,81 @@ const ResourceItem = ({ resource }: { resource: LessonResource }) => (
 
 export const LessonContent = ({
   lesson,
+  courseId,
   onMarkComplete,
   isCompleted,
 }: Props) => {
-  const throttledRecordProgress = useThrottle(
-    (progress: { playedSeconds: number }) => {
-      if (!isCompleted && lesson.video_duration) {
-        const percentage =
-          (progress.playedSeconds / lesson.video_duration) * 100;
-        learningService.recordProgress(
-          lesson.lesson_id,
-          "in_progress",
-          Math.round(percentage)
-        );
-      }
-    },
-    5000 // Ghi nhận tiến độ mỗi 5 giây
-  );
+  const lastProgressUpdate = useRef<number>(0);
+
+  // Keep this for potential future use or remove if strictly not needed
+  const handleProgress = (progress: any) => {
+    if (!progress || !progress.playedSeconds) return;
+    // Progress tracking logic would go here if we had access to player state
+  };
+
+  const [hasWindow, setHasWindow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasWindow(true);
+    }
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {lesson.lesson_type === "video" && lesson.video_url && (
+      {lesson.lesson_type === "video" ? (
         <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg mb-6">
-          <ReactPlayer
-            url={lesson.video_url}
-            width="100%"
-            height="100%"
-            controls
-            playing
-            onProgress={throttledRecordProgress}
-            onEnded={() => onMarkComplete(lesson.lesson_id)}
-          />
+          {(() => {
+            // Extract video ID from URL (supports standard watch URLs)
+            const videoId = lesson.video_url?.split("v=")[1]?.split("&")[0];
+            
+            return videoId && hasWindow ? (
+              <>
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title={lesson.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+                <div className="absolute bottom-2 right-2 z-10">
+                  <a 
+                    href={`https://www.youtube.com/watch?v=${videoId}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs text-white/50 hover:text-white bg-black/50 px-2 py-1 rounded"
+                  >
+                    Mở trong tab mới
+                  </a>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-full text-white">
+                <p>
+                  {lesson.video_url
+                    ? "Đang tải video..."
+                    : "Bài học này chưa có video."}
+                </p>
+              </div>
+            );
+          })()}
         </div>
-      )}
+      ) : null}
 
       <header className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
             {lesson.title}
           </h1>
-          {lesson.lesson_type !== "video" && (
-            <Button
-              size="lg"
-              onClick={() => onMarkComplete(lesson.lesson_id)}
-              disabled={isCompleted}
-              className="shrink-0"
-            >
-              <CheckCircle className="mr-2 h-5 w-5" />
-              {isCompleted ? "Đã hoàn thành" : "Đánh dấu đã hoàn thành"}
-            </Button>
-          )}
+          <Button
+            size="lg"
+            onClick={() => onMarkComplete(lesson.lesson_id)}
+            disabled={isCompleted}
+            className="shrink-0"
+          >
+            <CheckCircle className="mr-2 h-5 w-5" />
+            {isCompleted ? "Đã hoàn thành" : "Đánh dấu đã hoàn thành"}
+          </Button>
         </div>
       </header>
 
@@ -123,10 +141,14 @@ export const LessonContent = ({
             <MessageSquare className="w-4 h-4 mr-2" />
             Hỏi & Đáp
           </TabsTrigger>
-          <TabsTrigger value="notes">
+          <TabsTrigger value="reviews">
+            <Star className="w-4 h-4 mr-2" />
+            Đánh giá
+          </TabsTrigger>
+          {/* <TabsTrigger value="notes">
             <Notebook className="w-4 h-4 mr-2" />
             Ghi chú
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
         <TabsContent value="overview">
           <div className="prose max-w-none p-6 border rounded-lg bg-white">
@@ -134,9 +156,10 @@ export const LessonContent = ({
             {lesson.lesson_type === "document" && lesson.content && (
               <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
             )}
-            {lesson.lesson_type === "quiz" && (
+            {lesson.quiz && (
               <QuizView
                 lessonId={lesson.lesson_id}
+                quizId={lesson.quiz.quiz_id}
                 onQuizPassed={() => onMarkComplete(lesson.lesson_id)}
               />
             )}
@@ -159,11 +182,13 @@ export const LessonContent = ({
           </div>
         </TabsContent>
         <TabsContent value="qna">
-          <div className="p-6 border rounded-lg bg-white text-center">
-            <h3 className="text-lg font-semibold mb-2">Hỏi & Đáp</h3>
-            <p className="text-muted-foreground">
-              Tính năng này đang được phát triển.
-            </p>
+          <div className="p-6 border rounded-lg bg-white">
+            <QATab lessonId={lesson.lesson_id} />
+          </div>
+        </TabsContent>
+        <TabsContent value="reviews">
+          <div className="p-6 border rounded-lg bg-white">
+            <ReviewTab courseId={courseId} />
           </div>
         </TabsContent>
         <TabsContent value="notes">

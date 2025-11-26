@@ -1,34 +1,71 @@
 import apiClient from "./apiClient";
 import { ApiResponse, Transaction } from "@/lib/types";
 
-interface CheckoutPayload {
-  transaction_id: number;
-  payment_method: "bank_card" | "e_wallet" | "bank_transfer";
-  payment_gateway: string;
+interface CreateCheckoutResponse {
+  sessionId: string;
+  url: string;
+}
+
+interface SessionStatusResponse {
+  status: string;
+  transaction: Transaction;
 }
 
 class PaymentService {
-  // Bước 1: Tạo giao dịch "pending" (giống như tạo giỏ hàng cho 1 sản phẩm)
-  async createTransaction(courseIds: number[]): Promise<Transaction> {
-    const response = await apiClient.post<
-      ApiResponse<{ transaction: Transaction }>
-    >("/payments/cart", { course_ids: courseIds });
-    if (response.data.success) {
-      return response.data.data.transaction;
-    }
-    throw new Error(response.data.message || "Không thể tạo giao dịch.");
-  }
-
-  // Bước 2: Xác nhận thanh toán
-  async checkout(payload: CheckoutPayload): Promise<Transaction> {
-    const response = await apiClient.post<ApiResponse<Transaction>>(
-      "/payments/checkout",
-      payload
+  // Create Stripe checkout session
+  async createCheckout(courseId: number): Promise<CreateCheckoutResponse> {
+    const response = await apiClient.post<ApiResponse<CreateCheckoutResponse>>(
+      "/payments/create-checkout",
+      { courseId }
     );
     if (response.data.success) {
       return response.data.data;
     }
-    throw new Error(response.data.message || "Thanh toán thất bại.");
+    throw new Error(response.data.message || "Không thể tạo thanh toán");
+  }
+
+  // Get session status
+  async getSessionStatus(sessionId: string): Promise<SessionStatusResponse> {
+    const response = await apiClient.get<ApiResponse<SessionStatusResponse>>(
+      `/payments/session/${sessionId}`
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể lấy trạng thái thanh toán");
+  }
+
+  // Get user transactions
+  async getTransactions(page = 1, limit = 20) {
+    const response = await apiClient.get<ApiResponse<Transaction[]>>(
+      "/payments/transactions",
+      {
+        params: { page, limit },
+      }
+    );
+    return response.data;
+  }
+
+  // Admin: Get all transactions
+  async getAllTransactions(page = 1, limit = 20, status?: string) {
+    const response = await apiClient.get<ApiResponse<Transaction[]>>(
+      "/payments/transactions",
+      {
+        params: { page, limit, status },
+      }
+    );
+    return response.data;
+  }
+
+  // Admin: Request refund
+  async requestRefund(transactionId: number) {
+    const response = await apiClient.post<ApiResponse<Transaction>>(
+      `/payments/transactions/${transactionId}/refund`
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Hoàn tiền thất bại");
   }
 }
 

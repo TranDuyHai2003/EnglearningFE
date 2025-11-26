@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { SectionFormDialog } from "./_components/SectionForm";
 import { LessonFormDialog } from "./_components/LessonFormDialog";
+import { QuizEditorDialog } from "./_components/QuizEditorDialog";
 
 const CourseManageSkeleton = () => (
   <div className="container mx-auto py-8">
@@ -50,6 +51,13 @@ export default function ManageCoursePage() {
   const [isLessonFormOpen, setIsLessonFormOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [currentSectionId, setCurrentSectionId] = useState<number | null>(null);
+  
+  // State cho Quiz Editor
+  const [quizEditorState, setQuizEditorState] = useState<{
+    isOpen: boolean;
+    lessonId: number | null;
+  }>({ isOpen: false, lessonId: null });
+
   const handleSubmitForReview = async () => {
     if (
       !course ||
@@ -207,6 +215,21 @@ export default function ManageCoursePage() {
                                 <p className="text-sm flex items-center gap-2">
                                   <PlayCircle className="h-4 w-4 text-muted-foreground" />
                                   {lesson.title}
+                                  <span
+                                    className={`text-xs px-2 py-0.5 rounded-full ${
+                                      lesson.approval_status === "approved"
+                                        ? "bg-green-100 text-green-700"
+                                        : lesson.approval_status === "rejected"
+                                        ? "bg-red-100 text-red-700"
+                                        : "bg-yellow-100 text-yellow-700"
+                                    }`}
+                                  >
+                                    {lesson.approval_status === "approved"
+                                      ? "Đã duyệt"
+                                      : lesson.approval_status === "rejected"
+                                      ? "Từ chối"
+                                      : "Chờ duyệt"}
+                                  </span>
                                 </p>
                                 <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                                   <Button
@@ -315,6 +338,18 @@ export default function ManageCoursePage() {
           isOpen={isLessonFormOpen}
           onClose={() => setIsLessonFormOpen(false)}
           onSuccess={fetchCourseDetails}
+          onOpenQuizEditor={(lessonId) => {
+             setQuizEditorState({ isOpen: true, lessonId });
+             setIsLessonFormOpen(false); // Close lesson form when opening quiz editor
+          }}
+        />
+      )}
+      
+      {quizEditorState.isOpen && quizEditorState.lessonId && (
+        <QuizEditorDialog
+          lessonId={quizEditorState.lessonId}
+          isOpen={quizEditorState.isOpen}
+          onClose={() => setQuizEditorState({ isOpen: false, lessonId: null })}
         />
       )}
     </>

@@ -92,6 +92,51 @@ class LearningService {
       response.data.message || "Không thể tải hoạt động gần đây."
     );
   }
+
+  /**
+   * Lấy chi tiết bài quiz (bao gồm câu hỏi).
+   */
+  async getQuiz(quizId: number): Promise<any> {
+    const response = await apiClient.get<ApiResponse<any>>(
+      `/learning/quizzes/${quizId}`
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể tải bài quiz.");
+  }
+
+  /**
+   * Bắt đầu một lượt làm bài quiz mới.
+   */
+  async startQuizAttempt(quizId: number): Promise<any> {
+    const response = await apiClient.post<ApiResponse<any>>(
+      `/learning/quizzes/${quizId}/attempts`
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(
+      response.data.message || "Không thể bắt đầu làm bài."
+    );
+  }
+
+  /**
+   * Nộp bài làm quiz.
+   */
+  async submitQuizAttempt(
+    attemptId: number,
+    answers: { question_id: number; selected_option_id: number }[]
+  ): Promise<any> {
+    const response = await apiClient.post<ApiResponse<any>>(
+      `/learning/attempts/${attemptId}/submit`,
+      { answers }
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Nộp bài thất bại.");
+  }
 }
 
 export const learningService = new LearningService();

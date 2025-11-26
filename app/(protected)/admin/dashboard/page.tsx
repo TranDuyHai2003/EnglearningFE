@@ -87,10 +87,35 @@ const StatCard = ({
   );
 };
 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// ... (keep existing StatCard component)
+
 export default function AdminDashboardPage() {
   const { user } = useAuth();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Chart state
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartMetric, setChartMetric] = useState("revenue");
+  const [chartPeriod, setChartPeriod] = useState("month");
+  const [isChartLoading, setIsChartLoading] = useState(true);
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -110,6 +135,30 @@ export default function AdminDashboardPage() {
     };
     fetchSummary();
   }, []);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        setIsChartLoading(true);
+        const data = await adminService.getMetricsTimeseries(chartMetric, chartPeriod);
+        setChartData(data.timeseries);
+      } catch (error) {
+        console.error("Failed to fetch chart data:", error);
+      } finally {
+        setIsChartLoading(false);
+      }
+    };
+    fetchChartData();
+  }, [chartMetric, chartPeriod]);
+
+  const formatYAxis = (value: number) => {
+    if (chartMetric === "revenue") {
+      if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+      if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+      return String(value);
+    }
+    return String(value);
+  };
 
   return (
     <div className="space-y-8">
@@ -169,60 +218,94 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      {/* Thêm các section mới */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card>
+        <Card className="col-span-1 lg:col-span-2">
           <CardHeader>
-            <CardTitle>Biểu đồ Tăng trưởng Doanh thu</CardTitle>
-            <CardDescription>Dữ liệu giả lập 6 tháng gần nhất</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-72 bg-gray-100 rounded-md flex items-center justify-center">
-              <p className="text-muted-foreground">
-                [Biểu đồ sẽ được hiển thị ở đây]
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Biểu đồ Tăng trưởng</CardTitle>
+                <CardDescription>Theo dõi các chỉ số quan trọng theo thời gian</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Select value={chartMetric} onValueChange={setChartMetric}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Chỉ số" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="revenue">Doanh thu</SelectItem>
+                    <SelectItem value="users">Người dùng</SelectItem>
+                    <SelectItem value="enrollments">Ghi danh</SelectItem>
+                    <SelectItem value="courses">Khóa học</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={chartPeriod} onValueChange={setChartPeriod}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="Thời gian" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="week">Theo Tuần</SelectItem>
+                    <SelectItem value="month">Theo Tháng</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Hoạt động gần đây</CardTitle>
-            <CardDescription>
-              Các sự kiện mới nhất trên hệ thống
-            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-3">
-                <div className="bg-green-100 p-2 rounded-full">
-                  <Users className="h-4 w-4 text-green-600" />
+            <div className="h-[350px] w-full">
+              {isChartLoading ? (
+                <div className="h-full flex items-center justify-center">
+                  <Skeleton className="h-[300px] w-full" />
                 </div>
-                <p className="text-gray-700">
-                  Người dùng mới
-                  <span className="font-semibold">Trần Văn An</span> vừa đăng
-                  ký.
-                </p>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="bg-blue-100 p-2 rounded-full">
-                  <BookOpen className="h-4 w-4 text-blue-600" />
+              ) : chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={chartData}
+                    margin={{
+                      top: 10,
+                      right: 30,
+                      left: 0,
+                      bottom: 0,
+                    }}
+                  >
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis 
+                      dataKey="period" 
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={(value) => value.split('-').slice(1).join('/')}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={formatYAxis}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [
+                        chartMetric === 'revenue' 
+                          ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+                          : value,
+                        chartMetric === 'revenue' ? 'Doanh thu' : 'Số lượng'
+                      ]}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#0ea5e9"
+                      fillOpacity={1}
+                      fill="url(#colorValue)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-muted-foreground">
+                  Chưa có dữ liệu cho khoảng thời gian này.
                 </div>
-                <p className="text-gray-700">
-                  Khóa học
-                  <span className="font-semibold">IELTS Speaking Master</span>
-                  vừa có 1 lượt ghi danh mới.
-                </p>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="bg-yellow-100 p-2 rounded-full">
-                  <UserCheck className="h-4 w-4 text-yellow-600" />
-                </div>
-                <p className="text-gray-700">
-                  Giảng viên <span className="font-semibold">Lê Thị Bích</span>
-                  vừa nộp hồ sơ chờ duyệt.
-                </p>
-              </li>
-            </ul>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

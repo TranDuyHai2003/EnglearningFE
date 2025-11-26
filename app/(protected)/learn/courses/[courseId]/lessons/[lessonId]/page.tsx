@@ -164,6 +164,7 @@ export default function CoursePlayerPage() {
         >
           <LessonContent
             lesson={currentLesson}
+            courseId={courseId}
             onMarkComplete={handleMarkComplete}
             isCompleted={isCompleted}
           />

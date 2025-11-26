@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Lesson, LessonForm, LessonType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,8 @@ import { courseService } from "@/lib/api/courseService";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
+
+
 interface LessonFormProps {
   sectionId: number;
   lesson?: Lesson | null;
@@ -47,7 +50,15 @@ export function LessonFormDialog({
   isOpen,
   onClose,
   onSuccess,
-}: LessonFormProps) {
+  onOpenQuizEditor,
+}: LessonFormProps & { onOpenQuizEditor: (lessonId: number) => void }) {
+  const [activeLesson, setActiveLesson] = useState<Lesson | null>(lesson || null);
+  
+  // Sync activeLesson with lesson prop when it changes
+  useEffect(() => {
+    setActiveLesson(lesson || null);
+  }, [lesson]);
+
   const form = useForm<LessonForm>({
     defaultValues: {
       title: lesson?.title || "",
@@ -58,7 +69,7 @@ export function LessonFormDialog({
     },
   });
 
-  const onSubmit = async (data: LessonForm) => {
+  const onSubmit = async (data: LessonForm, shouldOpenQuizEditor = false) => {
     try {
       let result;
       const payload = {
@@ -66,18 +77,27 @@ export function LessonFormDialog({
         video_duration: data.video_duration ? Number(data.video_duration) : 0,
       };
 
-      if (lesson) {
+      if (activeLesson) {
         result = await courseService.updateLesson(
           sectionId,
-          lesson.lesson_id,
+          activeLesson.lesson_id,
           payload
         );
       } else {
         result = await courseService.createLesson(sectionId, payload);
       }
-      toast.success(`Bài học đã được ${lesson ? "cập nhật" : "tạo"}!`);
+      
+      toast.success(`Bài học đã được ${activeLesson ? "cập nhật" : "tạo"}!`);
+      
+      // Update local state with the result
+      setActiveLesson(result);
       onSuccess(result);
-      onClose();
+
+      if (shouldOpenQuizEditor && result.lesson_id) {
+        onOpenQuizEditor(result.lesson_id);
+      } else {
+        onClose();
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Đã xảy ra lỗi.");
     }
@@ -88,11 +108,11 @@ export function LessonFormDialog({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
-            {lesson ? "Chỉnh sửa bài học" : "Tạo bài học mới"}
+            {activeLesson ? "Chỉnh sửa bài học" : "Tạo bài học mới"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit((data) => onSubmit(data, false))} className="space-y-4">
             <FormField
               name="title"
               control={form.control}
@@ -188,11 +208,35 @@ export function LessonFormDialog({
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={onClose}>
-                Hủy
-              </Button>
-              <Button type="submit">Lưu</Button>
+            <DialogFooter className="flex justify-between sm:justify-between">
+              {/* Show Manage Quiz Button for ANY lesson type if it exists */}
+              {activeLesson && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenQuizEditor(activeLesson.lesson_id)}
+                >
+                  {form.watch("lesson_type") === "quiz" ? "Quản lý câu hỏi Quiz" : "Thêm/Sửa Quiz đính kèm"}
+                </Button>
+              )}
+              
+              {/* For new lessons, if type is quiz, show Save & Add */}
+              {!activeLesson && form.watch("lesson_type") === "quiz" && (
+                 <Button
+                 type="button"
+                 variant="outline"
+                 onClick={form.handleSubmit((data) => onSubmit(data, true))}
+               >
+                 Lưu & Soạn câu hỏi
+               </Button>
+              )}
+
+              <div className="flex gap-2">
+                <Button type="button" variant="ghost" onClick={onClose}>
+                  Hủy
+                </Button>
+                <Button type="submit">Lưu</Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>

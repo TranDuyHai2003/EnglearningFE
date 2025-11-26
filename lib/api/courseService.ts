@@ -209,4 +209,44 @@ export const courseService = {
       response.data.message || "Không thể thay đổi trạng thái khóa học."
     );
   },
+  // ===========================================
+  // QUIZ APIs
+  // ===========================================
+  async getQuiz(quizId: number): Promise<any> {
+    const response = await apiClient.get<ApiResponse<any>>(
+      `/learning/quizzes/${quizId}`
+    );
+    if (response.data.success) return response.data.data;
+    throw new Error(response.data.message || "Không thể tải thông tin quiz.");
+  },
+
+  async upsertQuiz(data: any): Promise<any> {
+    const response = await apiClient.post<ApiResponse<any>>(
+      "/learning/quizzes",
+      data
+    );
+    if (response.data.success) return response.data.data;
+    throw new Error(response.data.message || "Lưu quiz thất bại.");
+  },
+
+  async upsertQuestion(quizId: number, data: any): Promise<any> {
+    const url = data.question_id
+      ? `/learning/quizzes/${quizId}/questions/${data.question_id}`
+      : `/learning/quizzes/${quizId}/questions`;
+    
+    const method = data.question_id ? "put" : "post";
+
+    const response = await apiClient[method]<ApiResponse<any>>(url, data);
+    if (response.data.success) return response.data.data;
+    throw new Error(response.data.message || "Lưu câu hỏi thất bại.");
+  },
+
+  async deleteQuestion(quizId: number, questionId: number): Promise<void> {
+    const response = await apiClient.delete<ApiResponse<null>>(
+      `/learning/quizzes/${quizId}/questions/${questionId}`
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Xóa câu hỏi thất bại.");
+    }
+  },
 };

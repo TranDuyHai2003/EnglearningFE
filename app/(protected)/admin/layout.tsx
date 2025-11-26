@@ -13,6 +13,7 @@ import {
   LogOut,
   LifeBuoy,
   User,
+  CheckCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/admin/dashboard", icon: LayoutDashboard, label: "Tổng quan" },
   { href: "/admin/users", icon: Users, label: "Người dùng" },
   { href: "/admin/courses", icon: BookCopy, label: "Khóa học" },
+  { href: "/admin/approvals", icon: CheckCircle, label: "Phê duyệt" },
   { href: "/admin/instructors", icon: UserCheck, label: "Giảng viên" },
   { href: "/admin/transactions", icon: CreditCard, label: "Giao dịch" },
   { href: "/admin/support", icon: LifeBuoy, label: "Hỗ trợ" },

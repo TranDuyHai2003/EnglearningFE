@@ -23,7 +23,7 @@ interface QuizViewProps {
   onQuizPassed: () => void;
 }
 
-export function QuizView({ lessonId, onQuizPassed }: QuizViewProps) {
+export function QuizView({ lessonId, quizId, onQuizPassed }: { lessonId: number; quizId?: number; onQuizPassed: () => void }) {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
   const [answers, setAnswers] = useState<{ [questionId: number]: number }>({});
@@ -33,106 +33,24 @@ export function QuizView({ lessonId, onQuizPassed }: QuizViewProps) {
   // Lấy dữ liệu quiz và bắt đầu lượt làm bài mới
   useEffect(() => {
     const initializeQuiz = async () => {
+      if (!quizId) return;
       setIsLoading(true);
       try {
-        // NOTE: Backend cần có API để lấy quiz từ lessonId
-        // Giả sử API là: GET /api/learning/lessons/{lessonId}/quiz
-        // const quizData = await learningService.getQuizByLesson(lessonId);
-        // setQuiz(quizData);
-        // const newAttempt = await learningService.startQuizAttempt(quizData.quiz_id);
-        // setAttempt(newAttempt);
+        // 1. Lấy thông tin chi tiết quiz (kèm câu hỏi)
+        const quizData = await learningService.getQuiz(quizId);
+        setQuiz(quizData);
 
-        // --- Dữ liệu giả để test UI trong lúc chờ API ---
-        toast.info("QuizView: Using mock data. Waiting for BE API.");
-        const mockQuizData: Quiz = {
-          quiz_id: 101,
-          lesson_id: lessonId,
-          title: "Kiểm tra kiến thức bài học",
-          description: "Hãy chọn đáp án đúng nhất cho các câu hỏi sau.",
-          time_limit: 10,
-          passing_score: 70,
-          max_attempts: 3,
-          shuffle_questions: false,
-          show_correct_answers: true,
-          created_at: new Date().toISOString(),
-          questions: [
-            {
-              question_id: 1,
-              quiz_id: 101,
-              question_text: "Đâu là cách chào hỏi phổ biến nhất?",
-              question_type: "multiple_choice",
-              points: 1,
-              display_order: 1,
-              options: [
-                {
-                  option_id: 1,
-                  question_id: 1,
-                  option_text: "Tạm biệt",
-                  is_correct: false,
-                  display_order: 1,
-                },
-                {
-                  option_id: 2,
-                  question_id: 1,
-                  option_text: "Xin chào",
-                  is_correct: true,
-                  display_order: 2,
-                },
-                {
-                  option_id: 3,
-                  question_id: 1,
-                  option_text: "Cảm ơn",
-                  is_correct: false,
-                  display_order: 3,
-                },
-              ],
-            },
-            {
-              question_id: 2,
-              quiz_id: 101,
-              question_text: "'Thank you' trong tiếng Việt là gì?",
-              question_type: "multiple_choice",
-              points: 1,
-              display_order: 2,
-              options: [
-                {
-                  option_id: 4,
-                  question_id: 2,
-                  option_text: "Xin lỗi",
-                  is_correct: false,
-                  display_order: 1,
-                },
-                {
-                  option_id: 5,
-                  question_id: 2,
-                  option_text: "Cảm ơn",
-                  is_correct: true,
-                  display_order: 2,
-                },
-              ],
-            },
-          ],
-        };
-        setQuiz(mockQuizData);
-        // Bỏ `as any` vì kiểu Quiz đã chính xác
-
-        // Giả lập một attempt ban đầu (chưa nộp bài)
-        const mockAttempt: Partial<QuizAttempt> = {
-          attempt_id: 201,
-          student_id: 1, // Giả sử user id 1
-          quiz_id: mockQuizData.quiz_id,
-          started_at: new Date().toISOString(),
-        };
-        setAttempt(mockAttempt as QuizAttempt); // Bỏ `as any`
-        // --- Hết dữ liệu giả ---
-      } catch (e) {
-        toast.error("Không thể tải bài quiz. Vui lòng thử lại.");
+        // 2. Bắt đầu lượt làm bài (hoặc lấy lượt đang dang dở nếu BE hỗ trợ)
+        const newAttempt = await learningService.startQuizAttempt(quizId);
+        setAttempt(newAttempt);
+      } catch (e: any) {
+        toast.error(e.message || "Không thể tải bài quiz.");
       } finally {
         setIsLoading(false);
       }
     };
     initializeQuiz();
-  }, [lessonId]);
+  }, [quizId]);
 
   const handleAnswerChange = (questionId: number, optionId: number) => {
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }));
@@ -153,25 +71,16 @@ export function QuizView({ lessonId, onQuizPassed }: QuizViewProps) {
         selected_option_id: oid,
       }));
 
-      // NOTE: Giả lập kết quả vì chưa có API submit
-      // const result = await learningService.submitQuizAttempt(attempt.attempt_id, { answers: answersPayload });
-      const mockResult: QuizAttempt = {
-        ...attempt,
-        submitted_at: new Date().toISOString(),
-        score: 100,
-        passed: true,
-      } as QuizAttempt; // Ép kiểu để đảm bảo đầy đủ
-      const result = mockResult;
-      // Hết giả lập
-
+      const result = await learningService.submitQuizAttempt(attempt.attempt_id, answersPayload);
+      
       setAttempt(result);
       toast.success(`Bạn đã đạt ${result.score}%!`);
 
       if (result.passed) {
         onQuizPassed();
       }
-    } catch (error) {
-      toast.error("Nộp bài thất bại. Vui lòng thử lại.");
+    } catch (error: any) {
+      toast.error(error.message || "Nộp bài thất bại. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
     }

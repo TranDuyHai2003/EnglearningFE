@@ -32,6 +32,22 @@ export const adminService = {
     );
   },
 
+  async getMetricsTimeseries(metric: string, period: string) {
+    const response = await apiClient.get<
+      ApiResponse<{
+        metric: string;
+        period: string;
+        timeseries: { period: string; value: number }[];
+      }>
+    >("/admin/dashboard/metrics", {
+      params: { metric, period },
+    });
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể tải dữ liệu biểu đồ.");
+  },
+
   /**
    * Lấy danh sách tất cả cài đặt hệ thống.
    */
@@ -88,6 +104,41 @@ export const adminService = {
     );
 
     // Trả luôn response.data vì nó đã có dạng { data, meta }
+    return response.data;
+  },
+
+  // === APPROVALS ===
+  async getPendingCourses(page = 1, limit = 10) {
+    const response = await apiClient.get("/admin/approvals/courses", {
+      params: { page, limit },
+    });
+    return response.data; // Returns PaginatedResponse
+  },
+
+  async getPendingLessons(page = 1, limit = 10) {
+    const response = await apiClient.get("/admin/approvals/lessons", {
+      params: { page, limit },
+    });
+    return response.data;
+  },
+
+  async approveCourse(courseId: number) {
+    const response = await apiClient.post(`/admin/approvals/courses/${courseId}/approve`);
+    return response.data;
+  },
+
+  async rejectCourse(courseId: number, reason: string) {
+    const response = await apiClient.post(`/admin/approvals/courses/${courseId}/reject`, { reason });
+    return response.data;
+  },
+
+  async approveLesson(lessonId: number) {
+    const response = await apiClient.post(`/admin/approvals/lessons/${lessonId}/approve`);
+    return response.data;
+  },
+
+  async rejectLesson(lessonId: number, reason: string) {
+    const response = await apiClient.post(`/admin/approvals/lessons/${lessonId}/reject`, { reason });
     return response.data;
   },
 };

@@ -112,7 +112,7 @@ export default function AdminCoursesReviewPage() {
                     <CardDescription>
                       Bởi {course.instructor?.full_name} -
                       <Link
-                        href={`/instructor/courses/${course.course_id}`}
+                        href={`/admin/courses/${course.course_id}`}
                         className="ml-2 text-blue-600 hover:underline"
                       >
                         Xem chi tiết

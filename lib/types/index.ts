@@ -149,6 +149,9 @@ export interface Lesson {
   created_at: string;
   updated_at: string;
   resources?: LessonResource[]; // Quan hệ lồng nhau
+  quiz?: Quiz; // Quan hệ 1-1 (hoặc 1-N nhưng ở đây lấy 1)
+  approval_status: ApprovalStatus;
+  rejection_reason?: string | null;
 }
 
 export interface LessonResource {
@@ -303,6 +306,11 @@ export interface Transaction {
   payment_at?: string | null;
   refunded_at?: string | null;
   created_at: string;
+  student?: {
+    full_name: string;
+    email: string;
+  };
+  details?: TransactionDetail[];
 }
 
 export interface TransactionDetail {
@@ -312,6 +320,10 @@ export interface TransactionDetail {
   price: number;
   discount: number;
   final_price: number;
+  course?: {
+    title: string;
+    thumbnail_url?: string | null;
+  };
 }
 
 export interface Review {
@@ -332,6 +344,8 @@ export interface QaDiscussion {
   question: string;
   created_at: string;
   updated_at: string;
+  student?: AuthenticatedUser;
+  replies?: QaReply[];
 }
 
 export interface QaReply {
@@ -341,6 +355,7 @@ export interface QaReply {
   reply_text: string;
   created_at: string;
   updated_at: string;
+  user?: AuthenticatedUser;
 }
 
 export interface Message {

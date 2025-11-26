@@ -77,11 +77,33 @@ const StatCard = ({
   );
 };
 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// ... (keep existing StatCard component)
+
 export default function InstructorDashboard() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState<InstructorSummary | null>(null);
   const [actionItems, setActionItems] = useState<ActionItems | null>(null);
+  const [chartMetric, setChartMetric] = useState<"revenue" | "enrollments">("revenue");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -110,6 +132,25 @@ export default function InstructorDashboard() {
       </div>
     );
   }
+
+  const chartData = chartMetric === "revenue" 
+    ? summary?.revenue_over_time?.map(item => ({
+        period: item.month,
+        value: Number(item.revenue)
+      }))
+    : summary?.enrollments_over_time?.map(item => ({
+        period: item.month,
+        value: Number(item.enrollments)
+      }));
+
+  const formatYAxis = (value: number) => {
+    if (chartMetric === "revenue") {
+      if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+      if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+      return String(value);
+    }
+    return String(value);
+  };
 
   return (
     <div className="space-y-8">
@@ -153,18 +194,79 @@ export default function InstructorDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-2 shadow-sm bg-white">
           <CardHeader>
-            <CardTitle className="text-xl xl:text-xl">
-              Thống kê Doanh thu & Học viên mới
-            </CardTitle>
-            <CardDescription className="text-base">
-              Dữ liệu được tổng hợp theo tháng.
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl xl:text-xl">
+                  Thống kê {chartMetric === "revenue" ? "Doanh thu" : "Học viên mới"}
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Dữ liệu được tổng hợp theo tháng.
+                </CardDescription>
+              </div>
+              <Select 
+                value={chartMetric} 
+                onValueChange={(v) => setChartMetric(v as "revenue" | "enrollments")}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Chọn chỉ số" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="revenue">Doanh thu</SelectItem>
+                  <SelectItem value="enrollments">Học viên mới</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="h-80 bg-gray-100 rounded-md flex items-center justify-center">
-              <p className="text-muted-foreground">
-                [Biểu đồ sẽ được hiển thị ở đây]
-              </p>
+            <div className="h-80 w-full">
+              {chartData && chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  {chartMetric === "revenue" ? (
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis 
+                        dataKey="period" 
+                        tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
+                      <Tooltip 
+                        formatter={(value: number) => [
+                          new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value),
+                          'Doanh thu'
+                        ]}
+                        labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
+                      />
+                      <Area type="monotone" dataKey="value" stroke="#10b981" fillOpacity={1} fill="url(#colorRevenue)" />
+                    </AreaChart>
+                  ) : (
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis 
+                        dataKey="period" 
+                        tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip 
+                        formatter={(value: number) => [value, 'Học viên']}
+                        labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
+                      />
+                      <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  )}
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-muted-foreground">
+                  Chưa có dữ liệu thống kê.
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

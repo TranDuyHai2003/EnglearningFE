@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
+import { useState, useEffect } from "react";
 import { adminService } from "@/lib/api/adminService";
 import { SystemSetting } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -14,172 +14,219 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Trash2, PlusCircle } from "lucide-react";
-import { useForm } from "react-hook-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Loader2, Plus, Pencil, Trash2, Settings } from "lucide-react";
 
-const SettingsSkeleton = () => (
-  // Sửa lại skeleton để khớp với số cột
-  <TableBody>
-    {[...Array(3)].map((_, i) => (
-      <TableRow key={`skeleton-${i}`}>
-        <TableCell>
-          <Skeleton className="h-5 w-32" />
-        </TableCell>
-        <TableCell>
-          <Skeleton className="h-5 w-48" />
-        </TableCell>
-        <TableCell>
-          <Skeleton className="h-5 w-full" />
-        </TableCell>
-        <TableCell className="text-right">
-          <Skeleton className="h-8 w-8 ml-auto" />
-        </TableCell>
-      </TableRow>
-    ))}
-  </TableBody>
-);
-
-export default function AdminSettingsPage() {
-  const { register, handleSubmit, reset } = useForm<{
-    key: string;
-    value: string;
-    description: string;
-  }>();
+export default function SystemSettingsPage() {
   const [settings, setSettings] = useState<SystemSetting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMutating, setIsMutating] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingSetting, setEditingSetting] = useState<SystemSetting | null>(null);
 
-  const fetchSettings = useCallback(async () => {
+  // Form state
+  const [formData, setFormData] = useState({
+    key: "",
+    value: "",
+    description: "",
+  });
+
+  const fetchSettings = async () => {
     setIsLoading(true);
     try {
       const data = await adminService.listSettings();
       setSettings(data);
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Không thể tải cài đặt."
-      );
+      toast.error("Không thể tải cài đặt hệ thống.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     fetchSettings();
-  }, [fetchSettings]);
+  }, []);
 
-  const onSubmit = async (data: {
-    key: string;
-    value: string;
-    description: string;
-  }) => {
-    setIsMutating(true);
+  const handleOpenDialog = (setting?: SystemSetting) => {
+    if (setting) {
+      setEditingSetting(setting);
+      setFormData({
+        key: setting.setting_key,
+        value: setting.setting_value || "",
+        description: setting.description || "",
+      });
+    } else {
+      setEditingSetting(null);
+      setFormData({ key: "", value: "", description: "" });
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleSave = async () => {
+    if (!formData.key) {
+      toast.error("Vui lòng nhập Key.");
+      return;
+    }
+
+    setIsSaving(true);
     try {
-      await adminService.upsertSetting(data.key, data.value, data.description);
-      toast.success("Cài đặt đã được lưu.");
+      await adminService.upsertSetting(
+        formData.key,
+        formData.value,
+        formData.description
+      );
+      toast.success(editingSetting ? "Cập nhật thành công!" : "Thêm mới thành công!");
+      setIsDialogOpen(false);
       fetchSettings();
-      reset({ key: "", value: "", description: "" });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Lưu thất bại.");
+    } catch (error: any) {
+      toast.error(error.message || "Lưu thất bại.");
     } finally {
-      setIsMutating(false);
+      setIsSaving(false);
     }
   };
 
   const handleDelete = async (key: string) => {
-    if (!confirm(`Bạn có chắc muốn xóa cài đặt "${key}"?`)) return;
-    setIsMutating(true);
+    if (!confirm("Bạn có chắc chắn muốn xóa cài đặt này?")) return;
     try {
       await adminService.deleteSetting(key);
-      toast.success("Cài đặt đã được xóa.");
+      toast.success("Xóa thành công!");
       fetchSettings();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Xóa thất bại.");
-    } finally {
-      setIsMutating(false);
+    } catch (error: any) {
+      toast.error(error.message || "Xóa thất bại.");
     }
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Cài đặt hệ thống</h1>
-
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 p-4 border rounded-lg bg-card"
-      >
-        <Input
-          {...register("key")}
-          placeholder="Key"
-          required
-          disabled={isMutating}
-        />
-        <Input
-          {...register("value")}
-          placeholder="Value"
-          disabled={isMutating}
-        />
-        <Input
-          {...register("description")}
-          placeholder="Mô tả"
-          className="md:col-span-2"
-          disabled={isMutating}
-        />
-        <Button type="submit" disabled={isMutating} className="md:col-start-4">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          {isMutating ? "Đang lưu..." : "Thêm/Cập nhật"}
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Cấu hình Hệ thống</h1>
+          <p className="text-muted-foreground">
+            Quản lý các tham số hệ thống (Email, Thanh toán, v.v.).
+          </p>
+        </div>
+        <Button onClick={() => handleOpenDialog()}>
+          <Plus className="mr-2 h-4 w-4" />
+          Thêm cấu hình
         </Button>
-      </form>
+      </div>
 
-      <div className="rounded-lg border">
+      <div className="border rounded-md bg-white">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Key</TableHead>
-              <TableHead>Value</TableHead>
+              <TableHead className="w-[200px]">Key</TableHead>
+              <TableHead className="w-[300px]">Value</TableHead>
               <TableHead>Mô tả</TableHead>
-              <TableHead className="text-right">Hành động</TableHead>
+              <TableHead className="w-[100px] text-right">Hành động</TableHead>
             </TableRow>
           </TableHeader>
-
-          {isLoading ? (
-            // ✅ SỬA LỖI Ở ĐÂY: Dùng component Skeleton riêng
-            <SettingsSkeleton />
-          ) : (
-            <TableBody>
-              {settings?.length > 0 ? (
-                settings.map((setting) => (
-                  <TableRow key={setting.setting_id}>
-                    <TableCell className="font-mono">
-                      {setting.setting_key}
-                    </TableCell>
-                    <TableCell>{setting.setting_value}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {setting.description}
-                    </TableCell>
-                    <TableCell className="text-right">
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+                </TableCell>
+              </TableRow>
+            ) : settings.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  Chưa có cấu hình nào.
+                </TableCell>
+              </TableRow>
+            ) : (
+              settings.map((setting) => (
+                <TableRow key={setting.setting_key}>
+                  <TableCell className="font-mono font-medium">
+                    {setting.setting_key}
+                  </TableCell>
+                  <TableCell className="truncate max-w-[300px]" title={setting.setting_value || ""}>
+                    {setting.setting_value}
+                  </TableCell>
+                  <TableCell>{setting.description}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(setting.setting_key)}
-                        disabled={isMutating}
+                        onClick={() => handleOpenDialog(setting)}
                       >
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    Không có cài đặt nào.
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => handleDelete(setting.setting_key)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          )}
+              ))
+            )}
+          </TableBody>
         </Table>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editingSetting ? "Cập nhật Cấu hình" : "Thêm Cấu hình Mới"}
+            </DialogTitle>
+            <DialogDescription>
+              Lưu ý: Thay đổi cấu hình có thể ảnh hưởng đến hoạt động của hệ thống.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Key (Mã tham số)</label>
+              <Input
+                placeholder="VD: STRIPE_PUBLIC_KEY"
+                value={formData.key}
+                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+                disabled={!!editingSetting} // Không cho sửa key khi edit
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Value (Giá trị)</label>
+              <Textarea
+                placeholder="Nhập giá trị..."
+                value={formData.value}
+                onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Mô tả</label>
+              <Input
+                placeholder="Mô tả ý nghĩa của tham số này"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Lưu thay đổi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
