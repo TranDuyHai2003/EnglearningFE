@@ -83,107 +83,66 @@ export const Logo = () => (
 // --- SUB-COMPONENTS (Các thành phần con của trang) ---
 
 // Thêm import này nếu chưa có ở đầu file
-export const Header = () => (
-  <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
-    <div className="flex justify-between items-center h-15 w-full px-[30px] md:px-[100px]">
+import { Header } from "@/components/layout/Header";
+import { useAuth } from "@/lib/hooks/useAuth";
+
+const HeroSection = () => {
+  const { user } = useAuth({ redirectToLoginIfFail: false });
+
+  const getDashboardLink = () => {
+    if (!user) return "/courses";
+    if (user.role.includes("admin")) return "/admin/dashboard";
+    return `/${user.role}/dashboard`;
+  };
+
+  return (
+    <section className="flex flex-col md:flex-row min-h-[calc(100vh-68px)]">
       {/* 
-        px-[30px]: Padding ngang 30px cho màn hình mobile.
-        md:px-[50px]: Padding ngang 50px cho màn hình desktop (từ breakpoint 'md' trở lên).
-        Tailwind JIT compiler sẽ tự động tạo ra các class này.
+        min-h-[calc(100vh-68px)]: Đặt chiều cao tối thiểu của section bằng chiều cao của viewport trừ đi chiều cao của Header.
+        Bạn có thể cần điều chỉnh `68px` nếu Header của bạn có chiều cao khác. 
       */}
 
-      {/* Logo */}
-      <Logo />
-
-      {/* Navigation Links - Đặt ở giữa */}
-      <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-        {/*
-          absolute left-1/2 -translate-x-1/2:
-          Đây là kỹ thuật CSS kinh điển để căn giữa một phần tử một cách tuyệt đối.
-        */}
-        <Link
-          href="/"
-          className="text-xl font-medium text-gray-600 hover:text-primary transition-colors"
-        >
-          Trang chủ
-        </Link>
-        <Link
-          href="/courses"
-          className="text-xl font-medium text-gray-600 hover:text-primary transition-colors"
-        >
-          Khóa học
-        </Link>
-        <Link
-          href="//#features"
-          className="text-xl font-medium text-gray-600 hover:text-primary transition-colors"
-        >
-          Về chúng tôi
-        </Link>
-      </nav>
-
-      {/* Auth Buttons */}
-      <div className="flex items-center gap-2 ">
-        <Link href="/login">
-          <Button className="rounded-full text-md font-semibold bg-green-500 hover:bg-green-600 px-6">
-            Đăng nhập
-          </Button>
-        </Link>
-        <Link href="/register">
-          <Button className="rounded-full text-md font-semibold bg-blue-500 hover:bg-blue-600 px-6">
-            Đăng ký
-          </Button>
-        </Link>
-      </div>
-    </div>
-  </header>
-);
-const HeroSection = () => (
-  <section className="flex flex-col md:flex-row min-h-[calc(100vh-68px)]">
-    {/* 
-      min-h-[calc(100vh-68px)]: Đặt chiều cao tối thiểu của section bằng chiều cao của viewport trừ đi chiều cao của Header.
-      Bạn có thể cần điều chỉnh `68px` nếu Header của bạn có chiều cao khác. 
-    */}
-
-    {/* Phần nội dung text - Chiếm 1/3 */}
-    <div className="w-full md:w-1/3 flex items-center justify-center p-8 lg:p-12 bg-green-300">
-      <div className="max-w-md w-full text-center md:text-left">
-        <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
-          Chinh phục Tiếng Anh Toàn diện, Tự tin Vươn xa
-        </h1>
-        <p className="text-base text-gray-600 mb-8">
-          Nền tảng học trực tuyến với lộ trình cá nhân hóa, phương pháp thực tế
-          giúp bạn giao tiếp lưu loát và đạt điểm số mơ ước.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <Link href="/courses">
-            <Button size="lg" className="w-full sm:w-auto">
-              Khám phá khóa học
-            </Button>
-          </Link>
-          <a href="#features">
-            <Button size="lg" variant="outline" className="w-full sm:w-auto">
-              Tìm hiểu thêm
-            </Button>
-          </a>
+      {/* Phần nội dung text - Chiếm 1/3 */}
+      <div className="w-full md:w-1/3 flex items-center justify-center p-8 lg:p-12 bg-green-300">
+        <div className="max-w-md w-full text-center md:text-left">
+          <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+            Chinh phục Tiếng Anh Toàn diện, Tự tin Vươn xa
+          </h1>
+          <p className="text-base text-gray-600 mb-8">
+            Nền tảng học trực tuyến với lộ trình cá nhân hóa, phương pháp thực tế
+            giúp bạn giao tiếp lưu loát và đạt điểm số mơ ước.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <Link href={getDashboardLink()}>
+              <Button size="lg" className="w-full sm:w-auto">
+                {user ? "Vào Dashboard" : "Khám phá khóa học"}
+              </Button>
+            </Link>
+            <a href="#features">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                Tìm hiểu thêm
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Phần ảnh nền - Chiếm 2/3 */}
-    <div className="relative w-full md:w-2/3">
-      <Image
-        src="/banner.png"
-        alt="Online English Academy Banner"
-        fill
-        style={{ objectFit: "cover" }}
-        className="z-0"
-        priority // Ưu tiên tải ảnh này để cải thiện LCP
-      />
-      {/* Bạn có thể thêm lớp phủ nhẹ nếu muốn làm dịu ảnh */}
-      {/* <div className="absolute inset-0 bg-black/5"></div> */}
-    </div>
-  </section>
-);
+      {/* Phần ảnh nền - Chiếm 2/3 */}
+      <div className="relative w-full md:w-2/3">
+        <Image
+          src="/banner.png"
+          alt="Online English Academy Banner"
+          fill
+          style={{ objectFit: "cover" }}
+          className="z-0"
+          priority // Ưu tiên tải ảnh này để cải thiện LCP
+        />
+        {/* Bạn có thể thêm lớp phủ nhẹ nếu muốn làm dịu ảnh */}
+        {/* <div className="absolute inset-0 bg-black/5"></div> */}
+      </div>
+    </section>
+  );
+};
 
 const FeaturesSection = () => (
   <section id="features" className="py-20 bg-white">
@@ -321,24 +280,31 @@ const StatsBanner = () => (
   </div>
 );
 
-const FinalCTASection = () => (
-  <section className="py-20 text-center bg-gray-50">
-    <div className="container mx-auto px-4">
-      <h2 className="text-3xl font-bold mb-4">
-        Sẵn sàng để bắt đầu hành trình của bạn?
-      </h2>
-      <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-        Đăng ký ngay hôm nay để nhận ưu đãi đặc biệt và bắt đầu chinh phục mục
-        tiêu tiếng Anh của bạn!
-      </p>
-      <Link href="/register">
-        <Button size="lg" className="px-10 py-6 text-base">
-          Đăng ký ngay
-        </Button>
-      </Link>
-    </div>
-  </section>
-);
+const FinalCTASection = () => {
+  const { user } = useAuth({ redirectToLoginIfFail: false });
+
+  return (
+    <section className="py-20 text-center bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-4">
+          {user
+            ? "Tiếp tục hành trình học tập của bạn"
+            : "Sẵn sàng để bắt đầu hành trình của bạn?"}
+        </h2>
+        <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+          {user
+            ? "Khám phá thêm nhiều khóa học thú vị và nâng cao kỹ năng ngay hôm nay!"
+            : "Đăng ký ngay hôm nay để nhận ưu đãi đặc biệt và bắt đầu chinh phục mục tiêu tiếng Anh của bạn!"}
+        </p>
+        <Link href={user ? "/courses" : "/register"}>
+          <Button size="lg" className="px-10 py-6 text-base">
+            {user ? "Xem thêm khóa học" : "Đăng ký ngay"}
+          </Button>
+        </Link>
+      </div>
+    </section>
+  );
+};
 
 const Footer = () => (
   <footer className="bg-gray-900 text-gray-400">
@@ -408,16 +374,17 @@ export default function HomePage() {
   const router = useRouter();
 
   // Giữ lại logic chuyển hướng nếu đã đăng nhập
-  useEffect(() => {
-    const user = getStoredUser();
-    if (user) {
-      if (user.role.includes("admin")) {
-        router.replace(`/admin/dashboard`);
-      } else {
-        router.replace(`/${user.role}/dashboard`);
-      }
-    }
-  }, [router]);
+  // Logic chuyển hướng đã được loại bỏ để người dùng có thể xem trang chủ
+  // useEffect(() => {
+  //   const user = getStoredUser();
+  //   if (user) {
+  //     if (user.role.includes("admin")) {
+  //       router.replace(`/admin/dashboard`);
+  //     } else {
+  //       router.replace(`/${user.role}/dashboard`);
+  //     }
+  //   }
+  // }, [router]);
 
   return (
     <div className="bg-white">

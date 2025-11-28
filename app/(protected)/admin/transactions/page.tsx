@@ -43,6 +43,7 @@ export default function AdminTransactionsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isRefunding, setIsRefunding] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
 
   const fetchTransactions = async () => {
     setIsLoading(true);
@@ -53,7 +54,7 @@ export default function AdminTransactionsPage() {
         statusFilter === "all" ? undefined : statusFilter
       );
       setTransactions(response.data);
-      // @ts-ignore - meta is not in the return type yet but API returns it
+      // @ts-ignore
       setTotalPages(response.meta?.total_pages || 1);
     } catch (error) {
       toast.error("Không thể tải danh sách giao dịch");
@@ -74,6 +75,7 @@ export default function AdminTransactionsPage() {
       await paymentService.requestRefund(selectedTransaction.transaction_id);
       toast.success("Hoàn tiền thành công!");
       fetchTransactions();
+      setIsRefundDialogOpen(false);
       setSelectedTransaction(null);
     } catch (error: any) {
       toast.error(error.message || "Hoàn tiền thất bại");
@@ -85,22 +87,22 @@ export default function AdminTransactionsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-500">Thành công</Badge>;
+        return <Badge className="bg-green-500 hover:bg-green-600">Thành công</Badge>;
       case "pending":
-        return <Badge className="bg-yellow-500">Đang chờ</Badge>;
+        return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Đang chờ</Badge>;
       case "failed":
-        return <Badge className="bg-red-500">Thất bại</Badge>;
+        return <Badge variant="destructive">Thất bại</Badge>;
       case "refunded":
-        return <Badge className="bg-gray-500">Đã hoàn tiền</Badge>;
+        return <Badge variant="secondary">Đã hoàn tiền</Badge>;
       default:
-        return <Badge>{status}</Badge>;
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "VND", // Or USD based on your system
+      currency: "USD",
     }).format(amount);
   };
 
@@ -125,7 +127,7 @@ export default function AdminTransactionsPage() {
           <Input
             placeholder="Tìm kiếm mã giao dịch..."
             className="pl-8"
-            disabled // Search implementation pending backend support
+            disabled
           />
         </div>
         <Select
@@ -141,8 +143,6 @@ export default function AdminTransactionsPage() {
           <SelectContent>
             <SelectItem value="all">Tất cả trạng thái</SelectItem>
             <SelectItem value="completed">Thành công</SelectItem>
-            <SelectItem value="pending">Đang chờ</SelectItem>
-            <SelectItem value="failed">Thất bại</SelectItem>
             <SelectItem value="refunded">Đã hoàn tiền</SelectItem>
           </SelectContent>
         </Select>
@@ -177,7 +177,7 @@ export default function AdminTransactionsPage() {
             ) : (
               transactions.map((txn) => (
                 <TableRow key={txn.transaction_id}>
-                  <TableCell className="font-mono">
+                  <TableCell className="font-mono font-medium">
                     {txn.transaction_code}
                   </TableCell>
                   <TableCell>
@@ -190,7 +190,7 @@ export default function AdminTransactionsPage() {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="max-w-[200px] truncate" title={txn.details?.[0]?.course?.title}>
                     {txn.details?.[0]?.course?.title || "N/A"}
                   </TableCell>
                   <TableCell className="font-medium">
@@ -204,59 +204,17 @@ export default function AdminTransactionsPage() {
                   <TableCell>{getStatusBadge(txn.status)}</TableCell>
                   <TableCell className="text-right">
                     {txn.status === "completed" && (
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => setSelectedTransaction(txn)}
-                          >
-                            Hoàn tiền
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Xác nhận hoàn tiền</DialogTitle>
-                            <DialogDescription>
-                              Bạn có chắc chắn muốn hoàn tiền cho giao dịch{" "}
-                              <span className="font-mono font-bold">
-                                {txn.transaction_code}
-                              </span>
-                              ? Hành động này sẽ hủy quyền truy cập khóa học của
-                              học viên và không thể hoàn tác.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 flex gap-3 items-start">
-                            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
-                            <div className="text-sm text-yellow-800">
-                              <p className="font-semibold">Lưu ý:</p>
-                              <p>
-                                Nếu thanh toán qua Stripe, tiền sẽ được hoàn trả
-                                vào thẻ của khách hàng (mất 5-10 ngày).
-                              </p>
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <Button
-                              variant="outline"
-                              onClick={() => setSelectedTransaction(null)}
-                            >
-                              Hủy
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              onClick={handleRefund}
-                              disabled={isRefunding}
-                            >
-                              {isRefunding && (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              )}
-                              Xác nhận hoàn tiền
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => {
+                          setSelectedTransaction(txn);
+                          setIsRefundDialogOpen(true);
+                        }}
+                      >
+                        Hoàn tiền
+                      </Button>
                     )}
                   </TableCell>
                 </TableRow>
@@ -266,25 +224,75 @@ export default function AdminTransactionsPage() {
         </Table>
       </div>
 
-      {/* Pagination Controls could go here */}
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-        >
-          Trước
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          disabled={page === totalPages}
-        >
-          Sau
-        </Button>
-      </div>
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Trước
+          </Button>
+          <span className="flex items-center px-2 text-sm">
+            Trang {page} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            Sau
+          </Button>
+        </div>
+      )}
+
+      {/* Refund Dialog */}
+      <Dialog open={isRefundDialogOpen} onOpenChange={setIsRefundDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xác nhận hoàn tiền</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn hoàn tiền cho giao dịch{" "}
+              <span className="font-mono font-bold">
+                {selectedTransaction?.transaction_code}
+              </span>
+              ? Hành động này sẽ hủy quyền truy cập khóa học của học viên và
+              không thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 flex gap-3 items-start">
+            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+            <div className="text-sm text-yellow-800">
+              <p className="font-semibold">Lưu ý:</p>
+              <p>
+                Nếu thanh toán qua Stripe, tiền sẽ được hoàn trả vào thẻ của
+                khách hàng (mất 5-10 ngày).
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsRefundDialogOpen(false)}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRefund}
+              disabled={isRefunding}
+            >
+              {isRefunding && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Xác nhận hoàn tiền
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

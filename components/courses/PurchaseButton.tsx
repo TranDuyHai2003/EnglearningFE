@@ -37,8 +37,11 @@ export function PurchaseButton({
 
   if (isEnrolled) {
     return (
-      <Button disabled className="w-full">
-        Đã ghi danh
+      <Button 
+        className="w-full" 
+        onClick={() => window.location.href = `/learn/courses/${courseId}`}
+      >
+        Vào học
       </Button>
     );
   }

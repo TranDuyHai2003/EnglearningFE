@@ -33,15 +33,15 @@ export default function PaymentSuccessPage() {
 
   if (loading) {
     return (
-      <div className="container max-w-2xl py-16 flex justify-center">
+      <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="container max-w-2xl py-16">
-      <Card>
+    <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-4rem)] py-8">
+      <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
             <CheckCircle className="h-10 w-10 text-green-600" />

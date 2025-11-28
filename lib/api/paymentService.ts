@@ -67,6 +67,23 @@ class PaymentService {
     }
     throw new Error(response.data.message || "Hoàn tiền thất bại");
   }
+  // Resume payment
+  async resumePayment(transactionId: number): Promise<{ url: string }> {
+    const response = await apiClient.post<ApiResponse<{ url: string }>>(
+      `/payments/transactions/${transactionId}/resume`
+    );
+    throw new Error(response.data.message || "Không thể tiếp tục thanh toán");
+  }
+
+  // Cancel transaction
+  async cancelTransaction(transactionId: number): Promise<void> {
+    const response = await apiClient.post<ApiResponse<any>>(
+      `/payments/transactions/${transactionId}/cancel`
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Không thể hủy giao dịch");
+    }
+  }
 }
 
 export const paymentService = new PaymentService();

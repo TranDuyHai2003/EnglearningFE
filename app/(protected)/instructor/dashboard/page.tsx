@@ -29,6 +29,7 @@ import { InstructorSummary, ActionItems } from "@/lib/types/index"; // Import th
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { instructorService } from "@/lib/api/instructorService";
+import Link from "next/link";
 
 // Stat Card Component (No changes needed, but I'll fix the 'any' type for icon)
 interface StatCardProps {
@@ -171,146 +172,224 @@ export default function InstructorDashboard() {
           isLoading={isLoading}
           formatAsCurrency
         />
-        <StatCard
-          title="Tổng học viên"
-          value={summary?.total_students ?? 0}
-          icon={Users}
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Đánh giá trung bình"
-          value={summary?.average_rating?.toFixed(1) ?? "N/A"}
-          icon={Star}
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Câu hỏi chờ trả lời"
-          value={summary?.pending_questions_count ?? 0}
-          icon={HelpCircle}
-          isLoading={isLoading}
-        />
+        <Link href="/instructor/students">
+          <StatCard
+            title="Tổng học viên"
+            value={summary?.total_students ?? 0}
+            icon={Users}
+            isLoading={isLoading}
+          />
+        </Link>
+        <Link href="/instructor/reviews">
+          <StatCard
+            title="Đánh giá trung bình"
+            value={summary?.average_rating?.toFixed(1) ?? "N/A"}
+            icon={Star}
+            isLoading={isLoading}
+          />
+        </Link>
+        <Link href="/instructor/qa">
+          <StatCard
+            title="Câu hỏi chờ trả lời"
+            value={summary?.pending_questions_count ?? 0}
+            icon={HelpCircle}
+            isLoading={isLoading}
+          />
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 shadow-sm bg-white">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl xl:text-xl">
-                  Thống kê {chartMetric === "revenue" ? "Doanh thu" : "Học viên mới"}
-                </CardTitle>
-                <CardDescription className="text-base">
-                  Dữ liệu được tổng hợp theo tháng.
-                </CardDescription>
-              </div>
-              <Select 
-                value={chartMetric} 
-                onValueChange={(v) => setChartMetric(v as "revenue" | "enrollments")}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Chọn chỉ số" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="revenue">Doanh thu</SelectItem>
-                  <SelectItem value="enrollments">Học viên mới</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80 w-full">
-              {chartData && chartData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  {chartMetric === "revenue" ? (
-                    <AreaChart data={chartData}>
-                      <defs>
-                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis 
-                        dataKey="period" 
-                        tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        formatter={(value: number) => [
-                          new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value),
-                          'Doanh thu'
-                        ]}
-                        labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
-                      />
-                      <Area type="monotone" dataKey="value" stroke="#10b981" fillOpacity={1} fill="url(#colorRevenue)" />
-                    </AreaChart>
-                  ) : (
-                    <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis 
-                        dataKey="period" 
-                        tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        formatter={(value: number) => [value, 'Học viên']}
-                        labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
-                      />
-                      <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  )}
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground">
-                  Chưa có dữ liệu thống kê.
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="shadow-sm bg-white">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl xl:text-xl">
+                    Thống kê {chartMetric === "revenue" ? "Doanh thu" : "Học viên mới"}
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    Dữ liệu được tổng hợp theo tháng.
+                  </CardDescription>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <Select 
+                  value={chartMetric} 
+                  onValueChange={(v) => setChartMetric(v as "revenue" | "enrollments")}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Chọn chỉ số" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="revenue">Doanh thu</SelectItem>
+                    <SelectItem value="enrollments">Học viên mới</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80 w-full">
+                {chartData && chartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    {chartMetric === "revenue" ? (
+                      <AreaChart data={chartData}>
+                        <defs>
+                          <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis 
+                          dataKey="period" 
+                          tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
+                        <Tooltip 
+                          formatter={(value: number) => [
+                            new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value),
+                            'Doanh thu'
+                          ]}
+                          labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
+                        />
+                        <Area type="monotone" dataKey="value" stroke="#10b981" fillOpacity={1} fill="url(#colorRevenue)" />
+                      </AreaChart>
+                    ) : (
+                      <BarChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis 
+                          dataKey="period" 
+                          tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip 
+                          formatter={(value: number) => [value, 'Học viên']}
+                          labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
+                        />
+                        <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    )}
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                    Chưa có dữ liệu thống kê.
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card className="shadow-sm bg-white">
-          <CardHeader>
-            <CardTitle className="text-xl xl:text-xl">Cần bạn xử lý</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <div>
-                    <p className="font-semibold text-gray-700">
-                      Câu hỏi chưa trả lời
-                    </p>
-                    <p className="text-3xl font-bold text-gray-800">
-                      {actionItems?.pending_questions?.length ?? 0}
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Xem ngay
-                  </Button>
+          <Card className="shadow-sm bg-white">
+            <CardHeader>
+              <CardTitle className="text-xl">Học viên mới nhất</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {summary?.recent_enrollments && summary.recent_enrollments.length > 0 ? (
+                <div className="space-y-4">
+                  {summary.recent_enrollments.map((enrollment) => (
+                    <div key={enrollment.enrollment_id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+                      <div className="flex items-center space-x-4">
+                        <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
+                           {enrollment.student.avatar_url ? (
+                             <img src={enrollment.student.avatar_url} alt={enrollment.student.full_name} className="h-full w-full object-cover" />
+                           ) : (
+                             <span className="font-bold text-slate-500">{enrollment.student.full_name.charAt(0)}</span>
+                           )}
+                        </div>
+                        <div>
+                          <p className="font-medium">{enrollment.student.full_name}</p>
+                          <p className="text-sm text-muted-foreground">Đăng ký: {enrollment.course.title}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(enrollment.enrolled_at), { addSuffix: true, locale: vi })}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div>
-                    <p className="font-semibold text-gray-700">Đánh giá mới</p>
-                    <p className="text-3xl font-bold text-gray-800">
-                      {actionItems?.recent_reviews?.length ?? 0}
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Xem đánh giá
-                  </Button>
+              ) : (
+                <p className="text-center text-muted-foreground py-4">Chưa có học viên mới.</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-8">
+          <Card className="shadow-sm bg-white">
+            <CardHeader>
+              <CardTitle className="text-xl">Cần bạn xử lý</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {isLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div>
+                      <p className="font-semibold text-gray-700">
+                        Câu hỏi chưa trả lời
+                      </p>
+                      <p className="text-3xl font-bold text-gray-800">
+                        {actionItems?.pending_questions?.length ?? 0}
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/instructor/qa">Xem ngay</Link>
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div>
+                      <p className="font-semibold text-gray-700">Đánh giá mới</p>
+                      <p className="text-3xl font-bold text-gray-800">
+                        {actionItems?.recent_reviews?.length ?? 0}
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/instructor/reviews">Xem đánh giá</Link>
+                    </Button>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm bg-white">
+            <CardHeader>
+              <CardTitle className="text-xl">Khóa học hàng đầu</CardTitle>
+              <CardDescription>Theo doanh thu</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {summary?.top_courses && summary.top_courses.length > 0 ? (
+                <div className="space-y-4">
+                  {summary.top_courses.map((course, index) => (
+                    <div key={course.course_id} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
+                          index === 0 ? "bg-yellow-100 text-yellow-700" : 
+                          index === 1 ? "bg-gray-100 text-gray-700" : 
+                          index === 2 ? "bg-orange-100 text-orange-700" : "bg-slate-50 text-slate-500"
+                        }`}>
+                          {index + 1}
+                        </span>
+                        <p className="font-medium text-sm truncate max-w-[150px]" title={course.course.title}>
+                          {course.course.title}
+                        </p>
+                      </div>
+                      <span className="font-semibold text-sm text-green-600">
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.total_revenue)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground py-4">Chưa có dữ liệu.</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

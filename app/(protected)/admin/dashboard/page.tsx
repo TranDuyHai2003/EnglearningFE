@@ -28,6 +28,7 @@ interface DashboardSummary {
   total_courses: number;
   pending_courses: number;
   pending_instructors: number;
+  interviewing_instructors: number;
   total_enrollments: number;
   total_revenue: number;
 }
@@ -207,6 +208,14 @@ export default function AdminDashboardPage() {
           isLoading={isLoading}
           href="/admin/instructors"
           colorClass="bg-yellow-100 border-yellow-300 ring-2 ring-yellow-400"
+        />
+        <StatCard
+          title="GV Chờ phỏng vấn"
+          value={summary?.interviewing_instructors || 0}
+          icon={UserCheck}
+          isLoading={isLoading}
+          href="/admin/instructors?status=interviewing"
+          colorClass="bg-blue-100 border-blue-300 ring-2 ring-blue-400"
         />
         <StatCard
           title="Khóa học Chờ duyệt"

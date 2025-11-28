@@ -57,7 +57,15 @@ const InstructorSkeleton = () => (
   </div>
 );
 
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+
+// ...
+
 export default function AdminInstructorsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [profiles, setProfiles] = useState<InstructorProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMutating, setIsMutating] = useState(false);
@@ -67,10 +75,18 @@ export default function AdminInstructorsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
-  // Filter State
-  const [statusFilter, setStatusFilter] = useState<"pending" | "interviewing">(
-    "pending"
-  );
+  // Filter State - Initialize from URL
+  const initialStatus = searchParams.get("status") === "interviewing" ? "interviewing" : "pending";
+  const [statusFilter, setStatusFilter] = useState<"pending" | "interviewing">(initialStatus);
+
+  // Sync URL with state
+  const handleTabChange = (status: "pending" | "interviewing") => {
+    setStatusFilter(status);
+    setPage(1);
+    const params = new URLSearchParams(searchParams);
+    params.set("status", status);
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   // Modal State
   const [reviewModal, setReviewModal] = useState<{
@@ -341,10 +357,7 @@ export default function AdminInstructorsPage() {
           <Button
             variant={statusFilter === "pending" ? "default" : "ghost"}
             size="sm"
-            onClick={() => {
-              setStatusFilter("pending");
-              setPage(1);
-            }}
+            onClick={() => handleTabChange("pending")}
             className="rounded-md"
           >
             Hồ sơ mới
@@ -352,10 +365,7 @@ export default function AdminInstructorsPage() {
           <Button
             variant={statusFilter === "interviewing" ? "default" : "ghost"}
             size="sm"
-            onClick={() => {
-              setStatusFilter("interviewing");
-              setPage(1);
-            }}
+            onClick={() => handleTabChange("interviewing")}
             className="rounded-md"
           >
             Đang phỏng vấn

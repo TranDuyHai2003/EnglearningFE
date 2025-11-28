@@ -180,7 +180,7 @@ export const QATab = ({ lessonId }: Props) => {
                       </Button>
                     )}
                   </div>
-                  <p className="mt-2 text-gray-800">{discussion.question}</p>
+                  <p className="mt-2 text-gray-800">{discussion.content}</p>
                 </div>
               </div>
 
@@ -210,7 +210,7 @@ export const QATab = ({ lessonId }: Props) => {
                           )}
                         </div>
                         <p className="text-sm text-gray-700 mt-1">
-                          {reply.reply_text}
+                          {reply.content}
                         </p>
                       </div>
                     </div>

@@ -117,6 +117,7 @@ export interface Course {
   category?: Category;
   sections?: Section[];
   tags?: CourseTag[];
+  is_enrolled?: boolean;
 }
 
 export interface CourseTag {
@@ -341,7 +342,7 @@ export interface QaDiscussion {
   discussion_id: number;
   lesson_id: number;
   student_id: number;
-  question: string;
+  content: string;
   created_at: string;
   updated_at: string;
   student?: AuthenticatedUser;
@@ -352,7 +353,7 @@ export interface QaReply {
   reply_id: number;
   discussion_id: number;
   user_id: number;
-  reply_text: string;
+  content: string;
   created_at: string;
   updated_at: string;
   user?: AuthenticatedUser;
@@ -447,6 +448,8 @@ export interface AuthenticatedUser {
   avatar_url?: string | null;
   role: UserRole;
   status: UserStatus;
+  created_at: string;
+  instructor_profile?: InstructorProfile | null;
 }
 
 /**
@@ -474,6 +477,7 @@ export interface UpdateProfileForm {
   full_name?: string;
   phone?: string;
   avatar_url?: string;
+  status?: UserStatus;
 }
 
 /**
@@ -505,6 +509,17 @@ export interface InstructorSummary {
   total_enrollments: number;
   revenue_over_time: { month: string; revenue: number }[];
   enrollments_over_time: { month: string; enrollments: number }[];
+  recent_enrollments: {
+    enrollment_id: number;
+    enrolled_at: string;
+    student: { full_name: string; avatar_url?: string };
+    course: { title: string };
+  }[];
+  top_courses: {
+    course_id: number;
+    total_revenue: number;
+    course: { title: string };
+  }[];
 }
 
 // For GET /api/instructors/dashboard/action-items
@@ -512,7 +527,7 @@ interface ActionItemQuestion {
   discussion_id: number;
   course: { course_id: number; title: string };
   user: { user_id: number; full_name: string; avatar_url?: string };
-  question_text: string;
+  content: string;
   created_at: string;
 }
 

@@ -249,4 +249,20 @@ export const courseService = {
       throw new Error(response.data.message || "Xóa câu hỏi thất bại.");
     }
   },
+  
+  async getCourseStudents(courseId: number): Promise<any[]> {
+    const response = await apiClient.get<ApiResponse<any[]>>(
+      `/learning/enrollments?course_id=${courseId}&role=instructor`
+    );
+    if (response.data.success && response.data.data) return response.data.data;
+    return [];
+  },
+
+  async getCourseReviews(courseId: number): Promise<any[]> {
+    const response = await apiClient.get<ApiResponse<any[]>>(
+      `/interaction/reviews?course_id=${courseId}`
+    );
+    if (response.data.success && response.data.data) return response.data.data;
+    return [];
+  },
 };

@@ -14,18 +14,18 @@ export const interactionService = {
     return response.data.data;
   },
 
-  createDiscussion: async (lesson_id: number, question: string) => {
+  createDiscussion: async (lesson_id: number, content: string) => {
     const response = await apiClient.post<ApiResponse<QaDiscussion>>(
       "/interaction/discussions",
-      { lesson_id, question }
+      { lesson_id, content }
     );
     return response.data.data;
   },
 
-  replyDiscussion: async (discussion_id: number, reply_text: string) => {
+  replyDiscussion: async (discussion_id: number, content: string) => {
     const response = await apiClient.post<ApiResponse<QaReply>>(
       `/interaction/discussions/${discussion_id}/replies`,
-      { reply_text }
+      { content }
     );
     return response.data.data;
   },

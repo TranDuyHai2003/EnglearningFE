@@ -13,6 +13,7 @@ import {
   Loader2,
   LayoutDashboard,
   BookMarked,
+  BookOpenCheck,
   History,
 } from "lucide-react";
 import { useEffect } from "react";
@@ -20,6 +21,7 @@ import { useEffect } from "react";
 const navItems = [
   { href: "/student/dashboard", icon: LayoutDashboard, label: "Tổng quan" },
   { href: "/student/my-courses", icon: BookMarked, label: "Khóa học của tôi" },
+  { href: "/courses", icon: BookOpenCheck, label: "Tìm khóa học" },
   { href: "/student/transactions", icon: History, label: "Lịch sử giao dịch" },
 ];
 

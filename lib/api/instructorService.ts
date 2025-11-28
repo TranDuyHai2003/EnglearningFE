@@ -195,4 +195,16 @@ export const instructorService = {
     }
     throw new Error(response.data.message || "Tải lên chứng chỉ thất bại.");
   },
+  async replyToDiscussion(
+    discussionId: number,
+    replyText: string
+  ): Promise<void> {
+    const response = await apiClient.post(
+      `/interaction/discussions/${discussionId}/replies`,
+      { content: replyText }
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Trả lời thất bại.");
+    }
+  },
 };

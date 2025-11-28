@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { Header } from "../page";
+import { Header } from "@/components/layout/Header";
 
 const PublicFooter = () => (
   <footer className="bg-gray-800 text-gray-400 py-8">

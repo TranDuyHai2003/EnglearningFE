@@ -7,17 +7,17 @@ import { courseService } from "@/lib/api/courseService";
 import { Course, Section, Lesson } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  GripVertical,
-  PlusCircle,
-  Pencil,
-  Trash2,
-  PlayCircle,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SectionFormDialog } from "./_components/SectionForm";
 import { LessonFormDialog } from "./_components/LessonFormDialog";
 import { QuizEditorDialog } from "./_components/QuizEditorDialog";
+import { OverviewTab } from "./_components/OverviewTab";
+import { CurriculumTab } from "./_components/CurriculumTab";
+import { StudentsTab } from "./_components/StudentsTab";
+import { ReviewsTab } from "./_components/ReviewsTab";
+import { SettingsTab } from "./_components/SettingsTab";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 const CourseManageSkeleton = () => (
   <div className="container mx-auto py-8">
@@ -51,39 +51,13 @@ export default function ManageCoursePage() {
   const [isLessonFormOpen, setIsLessonFormOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [currentSectionId, setCurrentSectionId] = useState<number | null>(null);
-  
+
   // State cho Quiz Editor
   const [quizEditorState, setQuizEditorState] = useState<{
     isOpen: boolean;
     lessonId: number | null;
   }>({ isOpen: false, lessonId: null });
 
-  const handleSubmitForReview = async () => {
-    if (
-      !course ||
-      !confirm("Bạn có chắc muốn gửi khóa học này để xét duyệt không?")
-    )
-      return;
-
-    setIsSubmitting(true);
-    try {
-      const updatedCourse = await courseService.changeCourseStatus(
-        course.course_id,
-        {
-          status: "pending",
-          approval_status: "pending",
-        }
-      );
-      setCourse(updatedCourse); // Cập nhật lại state của course trên UI
-      toast.success("Đã gửi yêu cầu xét duyệt thành công!");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Gửi yêu cầu thất bại."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
   const fetchCourseDetails = useCallback(async () => {
     if (!courseId) return;
     try {
@@ -104,6 +78,33 @@ export default function ManageCoursePage() {
     setIsLoading(true);
     fetchCourseDetails();
   }, [fetchCourseDetails]);
+
+  const handleSubmitForReview = async () => {
+    if (
+      !course ||
+      !confirm("Bạn có chắc muốn gửi khóa học này để xét duyệt không?")
+    )
+      return;
+
+    setIsSubmitting(true);
+    try {
+      const updatedCourse = await courseService.changeCourseStatus(
+        course.course_id,
+        {
+          status: "pending",
+          approval_status: "pending",
+        }
+      );
+      setCourse(updatedCourse);
+      toast.success("Đã gửi yêu cầu xét duyệt thành công!");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Gửi yêu cầu thất bại."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // === SECTION HANDLERS ===
   const handleOpenSectionForm = (section: Section | null = null) => {
@@ -157,171 +158,77 @@ export default function ManageCoursePage() {
   return (
     <>
       <div className="container mx-auto py-8">
-        <header className="mb-8">
-          <p className="text-sm text-muted-foreground">Quản lý khóa học</p>
-          <h1 className="text-4xl font-bold">{course.title}</h1>
-        </header>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle>Chương trình giảng dạy</CardTitle>
-                <Button
-                  variant="outline"
-                  onClick={() => handleOpenSectionForm()}
-                >
-                  <PlusCircle className="mr-2 h-4 w-4" /> Thêm chương
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {course.sections && course.sections.length > 0 ? (
-                  <div className="space-y-4">
-                    {course.sections.map((section) => (
-                      <div
-                        key={section.section_id}
-                        className="p-4 border rounded-md bg-slate-50"
-                      >
-                        <div className="flex justify-between items-center mb-2">
-                          <h3 className="font-semibold flex items-center gap-2">
-                            <GripVertical className="cursor-move text-muted-foreground" />
-                            {section.title}
-                          </h3>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleOpenSectionForm(section)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() =>
-                                handleDeleteSection(section.section_id)
-                              }
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="pl-6 space-y-2 border-l-2 ml-2 pt-2">
-                          {section.lessons && section.lessons.length > 0 ? (
-                            section.lessons.map((lesson) => (
-                              <div
-                                key={lesson.lesson_id}
-                                className="flex justify-between items-center p-2 rounded-md hover:bg-slate-100 group"
-                              >
-                                <p className="text-sm flex items-center gap-2">
-                                  <PlayCircle className="h-4 w-4 text-muted-foreground" />
-                                  {lesson.title}
-                                  <span
-                                    className={`text-xs px-2 py-0.5 rounded-full ${
-                                      lesson.approval_status === "approved"
-                                        ? "bg-green-100 text-green-700"
-                                        : lesson.approval_status === "rejected"
-                                        ? "bg-red-100 text-red-700"
-                                        : "bg-yellow-100 text-yellow-700"
-                                    }`}
-                                  >
-                                    {lesson.approval_status === "approved"
-                                      ? "Đã duyệt"
-                                      : lesson.approval_status === "rejected"
-                                      ? "Từ chối"
-                                      : "Chờ duyệt"}
-                                  </span>
-                                </p>
-                                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                      handleOpenLessonForm(
-                                        section.section_id,
-                                        lesson
-                                      )
-                                    }
-                                  >
-                                    Sửa
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-destructive hover:text-destructive"
-                                    onClick={() =>
-                                      handleDeleteLesson(
-                                        section.section_id,
-                                        lesson.lesson_id
-                                      )
-                                    }
-                                  >
-                                    Xóa
-                                  </Button>
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <p className="text-sm text-muted-foreground italic p-2">
-                              Chưa có bài học
-                            </p>
-                          )}
-                          <Button
-                            variant="link"
-                            size="sm"
-                            className="w-full justify-start h-8"
-                            onClick={() =>
-                              handleOpenLessonForm(section.section_id)
-                            }
-                          >
-                            <PlusCircle className="mr-2 h-4 w-4" /> Thêm bài học
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">
-                    Khóa học này chưa có nội dung. Hãy bắt đầu bằng cách thêm
-                    chương mới.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+        <div className="mb-6">
+          <Link
+            href="/instructor/my-courses"
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Quay lại danh sách
+          </Link>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold">{course.title}</h1>
+              <p className="text-muted-foreground mt-1">
+                Quản lý nội dung và cài đặt khóa học
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleSubmitForReview}
+                disabled={
+                  isSubmitting ||
+                  course.status === "pending" ||
+                  course.status === "published"
+                }
+              >
+                {course.status === "published"
+                  ? "Đã xuất bản"
+                  : course.status === "pending"
+                  ? "Đang chờ duyệt"
+                  : "Gửi xét duyệt"}
+              </Button>
+            </div>
           </div>
-          <aside className="space-y-6 self-start sticky top-24">
-            <Card>
-              <CardHeader>
-                <CardTitle>Thông tin khóa học</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full">Chỉnh sửa thông tin</Button>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Hành động</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleSubmitForReview}
-                  disabled={
-                    isSubmitting ||
-                    course.status === "pending" ||
-                    course.status === "published"
-                  }
-                >
-                  {isSubmitting ? "Đang gửi..." : "Gửi yêu cầu xét duyệt"}
-                </Button>
-                <Button variant="destructive" className="w-full">
-                  Xóa khóa học
-                </Button>
-              </CardContent>
-            </Card>
-          </aside>
         </div>
+
+        <Tabs defaultValue="curriculum" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="overview">Tổng quan</TabsTrigger>
+            <TabsTrigger value="curriculum">Chương trình học</TabsTrigger>
+            <TabsTrigger value="students">Học viên</TabsTrigger>
+            <TabsTrigger value="reviews">Đánh giá</TabsTrigger>
+            <TabsTrigger value="settings">Cài đặt</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview">
+            <OverviewTab course={course} />
+          </TabsContent>
+
+          <TabsContent value="curriculum">
+            <CurriculumTab
+              course={course}
+              onOpenSectionForm={handleOpenSectionForm}
+              onDeleteSection={handleDeleteSection}
+              onOpenLessonForm={handleOpenLessonForm}
+              onDeleteLesson={handleDeleteLesson}
+            />
+          </TabsContent>
+
+          <TabsContent value="students">
+            <StudentsTab courseId={courseId} />
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <ReviewsTab courseId={courseId} />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SettingsTab course={course} onUpdate={fetchCourseDetails} />
+          </TabsContent>
+        </Tabs>
       </div>
+
       {isSectionFormOpen && (
         <SectionFormDialog
           courseId={courseId}
@@ -339,12 +246,12 @@ export default function ManageCoursePage() {
           onClose={() => setIsLessonFormOpen(false)}
           onSuccess={fetchCourseDetails}
           onOpenQuizEditor={(lessonId) => {
-             setQuizEditorState({ isOpen: true, lessonId });
-             setIsLessonFormOpen(false); // Close lesson form when opening quiz editor
+            setQuizEditorState({ isOpen: true, lessonId });
+            setIsLessonFormOpen(false);
           }}
         />
       )}
-      
+
       {quizEditorState.isOpen && quizEditorState.lessonId && (
         <QuizEditorDialog
           lessonId={quizEditorState.lessonId}

@@ -12,6 +12,7 @@ interface DashboardSummary {
   total_courses: number;
   pending_courses: number;
   pending_instructors: number;
+  interviewing_instructors: number;
   total_enrollments: number;
   total_revenue: number;
 }

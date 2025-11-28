@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -154,9 +155,11 @@ export default function AdminUsersPage() {
               </Badge>
             </TableCell>
             <TableCell>
-              <Button variant="outline" size="sm">
-                Xem
-              </Button>
+              <Link href={`/admin/users/${user.id}`}>
+                <Button variant="outline" size="sm">
+                  Xem
+                </Button>
+              </Link>
             </TableCell>
           </TableRow>
         ))}

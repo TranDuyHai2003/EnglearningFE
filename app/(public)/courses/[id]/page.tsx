@@ -156,7 +156,7 @@ export default function CourseDetailPage() {
                   courseId={course.course_id}
                   price={course.price}
                   discountPrice={course.discount_price ?? undefined}
-                  isEnrolled={false}
+                  isEnrolled={course.is_enrolled || false}
                 />
                 <ul className="mt-6 space-y-3 text-sm text-gray-600">
                   <li className="flex items-center gap-3">

@@ -1,12 +1,30 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
+import { paymentService } from "@/lib/api/paymentService";
+import { toast } from "sonner";
 
 export default function PaymentCancelPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const transactionId = searchParams.get("transaction_id");
+
+  useEffect(() => {
+    if (transactionId) {
+      const cancelTransaction = async () => {
+        try {
+          await paymentService.cancelTransaction(Number(transactionId));
+        } catch (error) {
+          console.error("Failed to cancel transaction:", error);
+        }
+      };
+      cancelTransaction();
+    }
+  }, [transactionId]);
 
   return (
     <div className="container max-w-2xl py-16">
