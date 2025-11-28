@@ -1,82 +1,61 @@
 # EngLearning Frontend
 
-This is the frontend application for the EngLearning platform, built with Next.js 15, React 19, and Tailwind CSS.
+Giao diện người dùng cho dự án EngLearning, được xây dựng bằng Next.js 15, React 19 và Tailwind CSS.
 
-## 🛠 Tech Stack
-
+## 🛠 Công nghệ sử dụng
 - **Framework**: Next.js 15 (App Router)
 - **Library**: React 19
-- **Styling**: Tailwind CSS v4
-- **UI Components**: Shadcn/ui
-- **State Management**: Zustand
-- **Forms**: React Hook Form + Zod
-- **Video Player**: React Player
+- **Styling**: Tailwind CSS v4, Shadcn/ui
+- **State**: Zustand
+- **Form**: React Hook Form + Zod
 
-## 🚀 Local Development
+## 🚀 Hướng dẫn Cài đặt & Chạy Local
 
-### Prerequisites
+### 1. Yêu cầu
+- **Node.js**: Phiên bản 18 trở lên.
+- **Package Manager**: Khuyên dùng `pnpm` (hoặc `npm`).
 
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- [pnpm](https://pnpm.io/) (Recommended) or npm
+### 2. Cài đặt dependencies
+```bash
+git clone https://github.com/TranDuyHai2003/EnglearningFE.git
+cd EnglearningFE
+pnpm install
+# hoặc npm install
+```
 
-### Installation
+### 3. Cấu hình môi trường
+Tạo file `.env.local` tại thư mục gốc của dự án:
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/TranDuyHai2003/EnglearningFE.git
-    cd EnglearningFE
-    ```
+```env
+# URL của Backend API (đang chạy local hoặc production)
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
 
-2.  **Install dependencies**:
-    ```bash
-    pnpm install
-    # or
-    npm install
-    ```
+### 4. Chạy dự án
+```bash
+npm run dev
+```
+Truy cập trình duyệt tại: `http://localhost:3000`
 
-3.  **Environment Configuration**:
-    Create a `.env.local` file in the root directory:
-    ```env
-    # URL of your backend API
-    NEXT_PUBLIC_API_URL=http://localhost:5000/api
-    ```
+## 📦 Hướng dẫn Deploy
 
-4.  **Run the Development Server**:
-    ```bash
-    npm run dev
-    ```
-    Open [http://localhost:3000](http://localhost:3000) with your browser.
+Cách đơn giản và tối ưu nhất để deploy Next.js là sử dụng **Vercel**.
 
-## 📦 Deployment
+### Các bước thực hiện:
 
-The easiest way to deploy your Next.js app is using the [Vercel Platform](https://vercel.com/new).
+1.  Push code lên GitHub.
+2.  Truy cập [Vercel](https://vercel.com) và đăng nhập.
+3.  Chọn **Add New...** -> **Project**.
+4.  Import repository `EnglearningFE`.
+5.  **Cấu hình Project**:
+    - Framework Preset: Next.js (Tự động nhận diện).
+    - **Environment Variables**: Thêm biến `NEXT_PUBLIC_API_URL` với giá trị là **URL của Backend đã deploy** (ví dụ: `https://englearning-be.onrender.com/api`).
+6.  Nhấn **Deploy**.
 
-### Option 1: Vercel (Recommended)
-
-1.  Push your code to a GitHub repository.
-2.  Go to [Vercel](https://vercel.com) and sign up/login.
-3.  Click **"Add New..."** -> **"Project"**.
-4.  Import your `EnglearningFE` repository.
-5.  **Configure Project**:
-    - **Framework Preset**: Next.js (Auto-detected)
-    - **Environment Variables**:
-        - `NEXT_PUBLIC_API_URL`: Your **deployed** backend URL (e.g., `https://englearning-be.onrender.com/api`).
-6.  Click **Deploy**.
-
-### Option 2: Netlify / Render
-You can also deploy to Netlify or Render as a Static Site or Web Service, but Vercel is optimized for Next.js features (Image optimization, SSR, etc.).
-
-## 📂 Project Structure
-
-- `app/`: App Router pages and layouts.
-    - `(public)/`: Publicly accessible pages (Home, Login, Register).
-    - `(protected)/`: Pages requiring authentication (Dashboard, Learning, Admin).
-- `components/`: Reusable UI components.
-- `lib/`: Utilities, API services, and types.
-- `store/`: Zustand state stores (Auth, etc.).
-
-## 🔑 Key Features
-- **Authentication**: Login/Register with JWT handling.
-- **Role-based Access**: Student, Instructor, and Admin dashboards.
-- **Course Learning**: Video player, lesson navigation, and progress tracking.
-- **Payments**: Integration with Stripe (via Backend).
+## 📂 Cấu trúc dự án
+- `app/`: Chứa các page và layout (App Router).
+    - `(public)`: Các trang công khai (Home, Login...).
+    - `(protected)`: Các trang cần đăng nhập (Dashboard, Learning...).
+- `components/`: Các UI component tái sử dụng.
+- `lib/`: Các hàm tiện ích, gọi API (axios), và định nghĩa kiểu dữ liệu.
+- `store/`: Quản lý state toàn cục (Zustand).
