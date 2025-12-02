@@ -53,10 +53,8 @@ export const LessonContent = ({
 }: Props) => {
   const lastProgressUpdate = useRef<number>(0);
 
-  // Keep this for potential future use or remove if strictly not needed
   const handleProgress = (progress: any) => {
     if (!progress || !progress.playedSeconds) return;
-    // Progress tracking logic would go here if we had access to player state
   };
 
   const [hasWindow, setHasWindow] = useState(false);
@@ -72,9 +70,8 @@ export const LessonContent = ({
       {lesson.lesson_type === "video" ? (
         <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg mb-6">
           {(() => {
-            // Extract video ID from URL (supports standard watch URLs)
             const videoId = lesson.video_url?.split("v=")[1]?.split("&")[0];
-            
+
             return videoId && hasWindow ? (
               <>
                 <iframe
@@ -85,9 +82,9 @@ export const LessonContent = ({
                   allowFullScreen
                 />
                 <div className="absolute bottom-2 right-2 z-10">
-                  <a 
-                    href={`https://www.youtube.com/watch?v=${videoId}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://www.youtube.com/watch?v=${videoId}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-white/50 hover:text-white bg-black/50 px-2 py-1 rounded"
                   >

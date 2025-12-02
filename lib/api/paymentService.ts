@@ -12,7 +12,6 @@ interface SessionStatusResponse {
 }
 
 class PaymentService {
-  // Create Stripe checkout session
   async createCheckout(courseId: number): Promise<CreateCheckoutResponse> {
     const response = await apiClient.post<ApiResponse<CreateCheckoutResponse>>(
       "/payments/create-checkout",
@@ -24,7 +23,6 @@ class PaymentService {
     throw new Error(response.data.message || "Không thể tạo thanh toán");
   }
 
-  // Get session status
   async getSessionStatus(sessionId: string): Promise<SessionStatusResponse> {
     const response = await apiClient.get<ApiResponse<SessionStatusResponse>>(
       `/payments/session/${sessionId}`
@@ -32,10 +30,11 @@ class PaymentService {
     if (response.data.success) {
       return response.data.data;
     }
-    throw new Error(response.data.message || "Không thể lấy trạng thái thanh toán");
+    throw new Error(
+      response.data.message || "Không thể lấy trạng thái thanh toán"
+    );
   }
 
-  // Get user transactions
   async getTransactions(page = 1, limit = 20) {
     const response = await apiClient.get<ApiResponse<Transaction[]>>(
       "/payments/transactions",
@@ -46,7 +45,6 @@ class PaymentService {
     return response.data;
   }
 
-  // Admin: Get all transactions
   async getAllTransactions(page = 1, limit = 20, status?: string) {
     const response = await apiClient.get<ApiResponse<Transaction[]>>(
       "/payments/transactions",
@@ -57,7 +55,6 @@ class PaymentService {
     return response.data;
   }
 
-  // Admin: Request refund
   async requestRefund(transactionId: number) {
     const response = await apiClient.post<ApiResponse<Transaction>>(
       `/payments/transactions/${transactionId}/refund`
@@ -67,7 +64,7 @@ class PaymentService {
     }
     throw new Error(response.data.message || "Hoàn tiền thất bại");
   }
-  // Resume payment
+
   async resumePayment(transactionId: number): Promise<{ url: string }> {
     const response = await apiClient.post<ApiResponse<{ url: string }>>(
       `/payments/transactions/${transactionId}/resume`
@@ -75,7 +72,6 @@ class PaymentService {
     throw new Error(response.data.message || "Không thể tiếp tục thanh toán");
   }
 
-  // Cancel transaction
   async cancelTransaction(transactionId: number): Promise<void> {
     const response = await apiClient.post<ApiResponse<any>>(
       `/payments/transactions/${transactionId}/cancel`

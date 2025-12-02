@@ -1,7 +1,6 @@
 import api from "./apiClient";
 
 export const reviewService = {
-  // Get reviews for a course
   getCourseReviews: async (
     courseId: number,
     page = 1,
@@ -14,13 +13,11 @@ export const reviewService = {
     return response.data;
   },
 
-  // Get my review for a course
   getMyReview: async (courseId: number) => {
     const response = await api.get(`/courses/${courseId}/reviews/me`);
     return response.data;
   },
 
-  // Create or update review
   upsertReview: async (
     courseId: number,
     data: { rating: number; comment?: string }
@@ -29,7 +26,6 @@ export const reviewService = {
     return response.data;
   },
 
-  // Delete my review
   deleteReview: async (courseId: number) => {
     const response = await api.delete(`/courses/${courseId}/reviews`);
     return response.data;

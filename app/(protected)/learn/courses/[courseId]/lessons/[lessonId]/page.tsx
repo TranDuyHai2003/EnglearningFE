@@ -1,4 +1,3 @@
-// app/(protected)/learn/courses/[courseId]/lessons/[lessonId]/page.tsx
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -12,7 +11,6 @@ import { LessonContent } from "../../_components/LessonContent";
 import { CoursePlayerHeader } from "../../_components/CoursePlayerHeader";
 import { cn } from "@/lib/utils";
 
-// ... (Giữ nguyên PlayerSkeleton)
 const PlayerSkeleton = () => (
   <div className="flex h-[calc(100vh-4rem)]">
     <div className="flex-1 p-6 lg:p-8">
@@ -34,7 +32,6 @@ export default function CoursePlayerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // ... (Giữ nguyên useEffect fetchContent)
   useEffect(() => {
     if (!courseId) return;
     const fetchContent = async () => {
@@ -52,7 +49,6 @@ export default function CoursePlayerPage() {
     fetchContent();
   }, [courseId, router]);
 
-  // ... (Giữ nguyên useMemo)
   const { currentLesson, totalLessons, completedLessons } = useMemo(() => {
     if (!enrollment?.course?.sections) {
       return { currentLesson: null, totalLessons: 0, completedLessons: 0 };
@@ -79,9 +75,7 @@ export default function CoursePlayerPage() {
     };
   }, [enrollment, lessonId]);
 
-  // <-- Logic xử lý hoàn thành bài học và chuyển bài -->
   const handleMarkComplete = async (completedLessonId: number) => {
-    // Tránh gọi lại nếu đã hoàn thành
     const alreadyCompleted = enrollment?.lessonProgress.some(
       (p) => p.lesson_id === completedLessonId && p.status === "completed"
     );
@@ -91,7 +85,6 @@ export default function CoursePlayerPage() {
       await learningService.recordProgress(completedLessonId, "completed");
       toast.success("Đã cập nhật tiến độ!");
 
-      // Cập nhật trạng thái ngay trên UI (Optimistic Update)
       setEnrollment((prev) => {
         if (!prev) return null;
         const newProgress = [...prev.lessonProgress];
@@ -102,7 +95,7 @@ export default function CoursePlayerPage() {
           newProgress[progressIndex].status = "completed";
         } else {
           newProgress.push({
-            progress_id: Date.now(), // Fake ID
+            progress_id: Date.now(),
             enrollment_id: prev.enrollment_id,
             lesson_id: completedLessonId,
             status: "completed",
@@ -112,7 +105,6 @@ export default function CoursePlayerPage() {
         return { ...prev, lessonProgress: newProgress };
       });
 
-      // Tự động chuyển đến bài học tiếp theo
       const allLessons =
         enrollment?.course.sections?.flatMap((s) => s.lessons || []) || [];
       const currentIndex = allLessons.findIndex(
@@ -132,7 +124,6 @@ export default function CoursePlayerPage() {
     }
   };
 
-  // ... (Phần render giữ nguyên)
   if (isLoading) return <PlayerSkeleton />;
 
   if (!enrollment || !enrollment.course || !currentLesson) {

@@ -32,8 +32,6 @@ import { courseService } from "@/lib/api/courseService";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
-
 interface LessonFormProps {
   sectionId: number;
   lesson?: Lesson | null;
@@ -52,9 +50,10 @@ export function LessonFormDialog({
   onSuccess,
   onOpenQuizEditor,
 }: LessonFormProps & { onOpenQuizEditor: (lessonId: number) => void }) {
-  const [activeLesson, setActiveLesson] = useState<Lesson | null>(lesson || null);
-  
-  // Sync activeLesson with lesson prop when it changes
+  const [activeLesson, setActiveLesson] = useState<Lesson | null>(
+    lesson || null
+  );
+
   useEffect(() => {
     setActiveLesson(lesson || null);
   }, [lesson]);
@@ -86,10 +85,9 @@ export function LessonFormDialog({
       } else {
         result = await courseService.createLesson(sectionId, payload);
       }
-      
+
       toast.success(`Bài học đã được ${activeLesson ? "cập nhật" : "tạo"}!`);
-      
-      // Update local state with the result
+
       setActiveLesson(result);
       onSuccess(result);
 
@@ -112,7 +110,10 @@ export function LessonFormDialog({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => onSubmit(data, false))} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit((data) => onSubmit(data, false))}
+            className="space-y-4"
+          >
             <FormField
               name="title"
               control={form.control}
@@ -209,26 +210,26 @@ export function LessonFormDialog({
               )}
             />
             <DialogFooter className="flex justify-between sm:justify-between">
-              {/* Show Manage Quiz Button for ANY lesson type if it exists */}
               {activeLesson && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => onOpenQuizEditor(activeLesson.lesson_id)}
                 >
-                  {form.watch("lesson_type") === "quiz" ? "Quản lý câu hỏi Quiz" : "Thêm/Sửa Quiz đính kèm"}
+                  {form.watch("lesson_type") === "quiz"
+                    ? "Quản lý câu hỏi Quiz"
+                    : "Thêm/Sửa Quiz đính kèm"}
                 </Button>
               )}
-              
-              {/* For new lessons, if type is quiz, show Save & Add */}
+
               {!activeLesson && form.watch("lesson_type") === "quiz" && (
-                 <Button
-                 type="button"
-                 variant="outline"
-                 onClick={form.handleSubmit((data) => onSubmit(data, true))}
-               >
-                 Lưu & Soạn câu hỏi
-               </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={form.handleSubmit((data) => onSubmit(data, true))}
+                >
+                  Lưu & Soạn câu hỏi
+                </Button>
               )}
 
               <div className="flex gap-2">

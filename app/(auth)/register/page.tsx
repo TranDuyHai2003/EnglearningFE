@@ -72,7 +72,6 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full h-full overflow-auto p-4 flex flex-col justify-center">
-      {/* Header */}
       <div className="mb-4">
         <h2 className="text-2xl font-bold text-gray-900">Bắt đầu hành trình</h2>
         <p className="mt-1 text-base text-gray-600">
@@ -80,10 +79,8 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      {/* Form */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Full name */}
           <FormField
             control={form.control}
             name="full_name"
@@ -115,7 +112,6 @@ export default function RegisterPage() {
             )}
           />
 
-          {/* Email */}
           <FormField
             control={form.control}
             name="email"
@@ -143,7 +139,6 @@ export default function RegisterPage() {
             )}
           />
 
-          {/* Password */}
           <FormField
             control={form.control}
             name="password"
@@ -176,7 +171,6 @@ export default function RegisterPage() {
             )}
           />
 
-          {/* Role */}
           <FormField
             control={form.control}
             name="role"
@@ -208,7 +202,6 @@ export default function RegisterPage() {
             )}
           />
 
-          {/* Submit */}
           <Button
             type="submit"
             disabled={isLoading}
@@ -229,12 +222,10 @@ export default function RegisterPage() {
         </form>
       </Form>
 
-      {/* Divider */}
       <div className="my-4 text-center text-sm text-gray-500">
         Đã có tài khoản?
       </div>
 
-      {/* Link */}
       <Link
         href={`/login${redirectQuery ? `?redirect=${redirectQuery}` : ""}`}
         className="block w-full text-center py-2 rounded-lg border border-blue-300 bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100"

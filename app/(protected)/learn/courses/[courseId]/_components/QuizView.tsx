@@ -1,9 +1,8 @@
-// app/(protected)/learn/courses/[courseId]/_components/QuizView.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { learningService } from "@/lib/api/learningService";
-import { Quiz, QuizAttempt, Question, AnswerOption } from "@/lib/types"; // Import thêm Question và AnswerOption
+import { Quiz, QuizAttempt, Question, AnswerOption } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,24 +22,29 @@ interface QuizViewProps {
   onQuizPassed: () => void;
 }
 
-export function QuizView({ lessonId, quizId, onQuizPassed }: { lessonId: number; quizId?: number; onQuizPassed: () => void }) {
+export function QuizView({
+  lessonId,
+  quizId,
+  onQuizPassed,
+}: {
+  lessonId: number;
+  quizId?: number;
+  onQuizPassed: () => void;
+}) {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
   const [answers, setAnswers] = useState<{ [questionId: number]: number }>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Lấy dữ liệu quiz và bắt đầu lượt làm bài mới
   useEffect(() => {
     const initializeQuiz = async () => {
       if (!quizId) return;
       setIsLoading(true);
       try {
-        // 1. Lấy thông tin chi tiết quiz (kèm câu hỏi)
         const quizData = await learningService.getQuiz(quizId);
         setQuiz(quizData);
 
-        // 2. Bắt đầu lượt làm bài (hoặc lấy lượt đang dang dở nếu BE hỗ trợ)
         const newAttempt = await learningService.startQuizAttempt(quizId);
         setAttempt(newAttempt);
       } catch (e: any) {
@@ -71,8 +75,11 @@ export function QuizView({ lessonId, quizId, onQuizPassed }: { lessonId: number;
         selected_option_id: oid,
       }));
 
-      const result = await learningService.submitQuizAttempt(attempt.attempt_id, answersPayload);
-      
+      const result = await learningService.submitQuizAttempt(
+        attempt.attempt_id,
+        answersPayload
+      );
+
       setAttempt(result);
       toast.success(`Bạn đã đạt ${result.score}%!`);
 
@@ -99,7 +106,6 @@ export function QuizView({ lessonId, quizId, onQuizPassed }: { lessonId: number;
       </div>
     );
 
-  // Render kết quả nếu đã nộp bài
   if (attempt?.submitted_at) {
     return (
       <Card className="bg-slate-50">
@@ -132,7 +138,6 @@ export function QuizView({ lessonId, quizId, onQuizPassed }: { lessonId: number;
     );
   }
 
-  // Render giao diện làm bài
   return (
     <Card>
       <CardHeader>

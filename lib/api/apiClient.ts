@@ -15,7 +15,6 @@ const apiClient = axios.create({
  */
 apiClient.interceptors.request.use(
   (config) => {
-    // Chỉ thực thi ở phía client
     if (typeof window !== "undefined") {
       const token = getAuthToken();
       if (token) {
@@ -33,11 +32,10 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (typeof window !== "undefined" && error.response?.status === 401) {
-      // Chỉ chuyển hướng nếu không phải đang ở trang login để tránh lặp vô hạn
       if (window.location.pathname !== "/login") {
         console.error("Unauthorized! Redirecting to login.");
         clearAuthData();
-        // Lấy đường dẫn hiện tại và thêm nó vào URL đăng nhập
+
         const redirectUrl = window.location.pathname + window.location.search;
         window.location.href = `/login?redirect=${encodeURIComponent(
           redirectUrl

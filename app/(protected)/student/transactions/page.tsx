@@ -40,7 +40,7 @@ export default function TransactionHistoryPage() {
     try {
       const response = await paymentService.getTransactions(page);
       setTransactions(response.data);
-      // @ts-ignore
+
       setTotalPages(response.meta?.total_pages || 1);
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
@@ -52,9 +52,18 @@ export default function TransactionHistoryPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-500 hover:bg-green-600">Thành công</Badge>;
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">Thành công</Badge>
+        );
       case "pending":
-        return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Đang xử lý</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-yellow-600 border-yellow-600"
+          >
+            Đang xử lý
+          </Badge>
+        );
       case "failed":
         return <Badge variant="destructive">Thất bại</Badge>;
       case "refunded":
@@ -67,23 +76,18 @@ export default function TransactionHistoryPage() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency: "VND", // Or USD based on your system, assuming USD for now based on previous context but formatting as VND usually implies VND currency. 
-      // Wait, the backend uses USD in Stripe checkout (unit_amount: amountInCents, currency: "usd").
-      // But let's check the display. The user is likely Vietnamese. 
-      // Let's stick to USD if the backend is USD, or format as USD.
-      // Actually, let's look at the backend controller again.
-      // const amountInCents = Math.round(parseFloat(price) * 100);
-      // currency: "usd"
-      // So it is USD.
-    }).format(amount).replace("₫", "$"); // Quick hack if we want $ symbol with vi-VN formatting, or just use en-US.
+      currency: "VND",
+    })
+      .format(amount)
+      .replace("₫", "$");
   };
-  
+
   const formatMoney = (amount: number) => {
-      return new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD"
-      }).format(amount);
-  }
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
 
   return (
     <div className="space-y-6">
@@ -128,11 +132,17 @@ export default function TransactionHistoryPage() {
                         {transaction.details?.[0]?.course?.title || "N/A"}
                       </TableCell>
                       <TableCell>
-                        {format(new Date(transaction.created_at), "dd/MM/yyyy HH:mm", {
-                          locale: vi,
-                        })}
+                        {format(
+                          new Date(transaction.created_at),
+                          "dd/MM/yyyy HH:mm",
+                          {
+                            locale: vi,
+                          }
+                        )}
                       </TableCell>
-                      <TableCell>{formatMoney(transaction.final_amount)}</TableCell>
+                      <TableCell>
+                        {formatMoney(transaction.final_amount)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(transaction.status)}
@@ -149,7 +159,6 @@ export default function TransactionHistoryPage() {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               <Button

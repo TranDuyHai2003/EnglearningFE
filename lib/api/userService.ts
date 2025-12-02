@@ -8,7 +8,6 @@ import {
   UserStatus,
 } from "@/lib/types";
 
-// Kiểu dữ liệu cho các tham số lọc/phân trang
 interface ListUsersParams {
   limit?: number;
   page?: number;

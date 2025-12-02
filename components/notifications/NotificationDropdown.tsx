@@ -126,7 +126,6 @@ export function NotificationDropdown({
 
   return (
     <div className="flex flex-col max-h-[500px]">
-      {/* Header */}
       <div className="p-4 border-b flex items-center justify-between">
         <h3 className="font-semibold">Thông báo</h3>
         {notifications.some((n) => !n.is_read) && (
@@ -142,7 +141,6 @@ export function NotificationDropdown({
         )}
       </div>
 
-      {/* Notifications */}
       <ScrollArea className="flex-1">
         {notifications.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground">
@@ -203,7 +201,6 @@ export function NotificationDropdown({
         )}
       </ScrollArea>
 
-      {/* Footer */}
       {notifications.length > 0 && (
         <div className="p-3 border-t">
           <Button

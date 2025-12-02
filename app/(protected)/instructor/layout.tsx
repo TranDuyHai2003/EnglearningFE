@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-// ... các imports khác (icon, service, types, logo...)
+
 import {
   User,
   LogOut,
@@ -22,7 +22,6 @@ import { clearAuthData } from "@/lib/auth/utils";
 import { Logo } from "@/app/page";
 import { cn } from "@/lib/utils";
 
-// --- Prompt Component (Giữ nguyên) ---
 type PromptStatus = "pending" | "rejected" | "interviewing" | "no_profile";
 const ApplicationPrompt = ({
   status,
@@ -31,9 +30,6 @@ const ApplicationPrompt = ({
   status: PromptStatus;
   reason?: string | null;
 }) => {
-  // ... (Code Prompt giữ nguyên như cũ)
-  // Copy lại đoạn component ApplicationPrompt ở các câu trả lời trước
-  // Chú ý import các icon cần thiết
   const handleLogoutAndRedirectHome = () => {
     clearAuthData();
     window.location.href = "/";
@@ -137,7 +133,6 @@ export default function InstructorLayout({
   useEffect(() => {
     if (isAuthLoading || !user) return;
 
-    // Logic 1: Nếu role không phải instructor -> Đá về đúng chỗ
     if (user.role !== "instructor") {
       if (user.role === "student") {
         router.replace("/student/dashboard");
@@ -147,7 +142,6 @@ export default function InstructorLayout({
       return;
     }
 
-    // Logic 2: Nếu là Instructor, fetch profile để biết trạng thái
     const fetchProfile = async () => {
       setIsProfileLoading(true);
       try {
@@ -155,7 +149,7 @@ export default function InstructorLayout({
         setProfile(myProfile);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
-        setProfile(null); // Chưa có profile
+        setProfile(null);
       } finally {
         setIsProfileLoading(false);
       }
@@ -182,16 +176,13 @@ export default function InstructorLayout({
 
   const approvalStatus = profile?.approval_status;
 
-  // === QUYỀN LỰC QUYẾT ĐỊNH GIAO DIỆN ===
-
-  // CASE 1: Đã Approved -> Được dùng Full Layout (Dashboard, Sidebar...)
   if (approvalStatus === "approved") {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-800">
         <header className="bg-white sticky top-0 z-50 border-b shadow-sm">
           <div className="flex justify-between items-center h-20 w-full max-w-[95%] mx-auto px-4">
             <Logo />
-            {/* Menu chỉ hiện khi Approved */}
+
             <nav className="hidden md:flex items-center gap-1 bg-gray-100/50 p-1.5 rounded-full border">
               {navItems.map((item) => {
                 const isActive = pathname.startsWith(item.href);
@@ -238,8 +229,6 @@ export default function InstructorLayout({
     );
   }
 
-  // CASE 2: Chưa Approved (Pending, Interviewing, Rejected, No Profile)
-  // Nhưng đang ở trang Profile hoặc Apply -> Cho phép hiển thị nội dung con để sửa/xem
   if (pathname === "/instructor/profile" || pathname === "/instructor/apply") {
     return (
       <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -247,7 +236,6 @@ export default function InstructorLayout({
           <div className="flex justify-between items-center mb-6">
             <Logo />
             <div className="flex items-center gap-3">
-              {/* Hiển thị tên user để họ biết đang login acc nào */}
               <span className="text-sm text-muted-foreground hidden sm:inline">
                 {user.full_name} ({user.role})
               </span>
@@ -262,7 +250,6 @@ export default function InstructorLayout({
     );
   }
 
-  // CASE 3: Chưa Approved mà cố vào Dashboard -> Hiện Prompt Chặn
   return (
     <ApplicationPrompt
       status={approvalStatus || "no_profile"}

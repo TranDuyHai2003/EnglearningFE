@@ -31,9 +31,10 @@ export default function SystemSettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [editingSetting, setEditingSetting] = useState<SystemSetting | null>(null);
+  const [editingSetting, setEditingSetting] = useState<SystemSetting | null>(
+    null
+  );
 
-  // Form state
   const [formData, setFormData] = useState({
     key: "",
     value: "",
@@ -84,7 +85,9 @@ export default function SystemSettingsPage() {
         formData.value,
         formData.description
       );
-      toast.success(editingSetting ? "Cập nhật thành công!" : "Thêm mới thành công!");
+      toast.success(
+        editingSetting ? "Cập nhật thành công!" : "Thêm mới thành công!"
+      );
       setIsDialogOpen(false);
       fetchSettings();
     } catch (error: any) {
@@ -109,7 +112,9 @@ export default function SystemSettingsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Cấu hình Hệ thống</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Cấu hình Hệ thống
+          </h1>
           <p className="text-muted-foreground">
             Quản lý các tham số hệ thống (Email, Thanh toán, v.v.).
           </p>
@@ -149,7 +154,10 @@ export default function SystemSettingsPage() {
                   <TableCell className="font-mono font-medium">
                     {setting.setting_key}
                   </TableCell>
-                  <TableCell className="truncate max-w-[300px]" title={setting.setting_value || ""}>
+                  <TableCell
+                    className="truncate max-w-[300px]"
+                    title={setting.setting_value || ""}
+                  >
                     {setting.setting_value}
                   </TableCell>
                   <TableCell>{setting.description}</TableCell>
@@ -186,7 +194,8 @@ export default function SystemSettingsPage() {
               {editingSetting ? "Cập nhật Cấu hình" : "Thêm Cấu hình Mới"}
             </DialogTitle>
             <DialogDescription>
-              Lưu ý: Thay đổi cấu hình có thể ảnh hưởng đến hoạt động của hệ thống.
+              Lưu ý: Thay đổi cấu hình có thể ảnh hưởng đến hoạt động của hệ
+              thống.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -195,8 +204,10 @@ export default function SystemSettingsPage() {
               <Input
                 placeholder="VD: STRIPE_PUBLIC_KEY"
                 value={formData.key}
-                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
-                disabled={!!editingSetting} // Không cho sửa key khi edit
+                onChange={(e) =>
+                  setFormData({ ...formData, key: e.target.value })
+                }
+                disabled={!!editingSetting}
               />
             </div>
             <div className="space-y-2">
@@ -204,7 +215,9 @@ export default function SystemSettingsPage() {
               <Textarea
                 placeholder="Nhập giá trị..."
                 value={formData.value}
-                onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, value: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -212,7 +225,9 @@ export default function SystemSettingsPage() {
               <Input
                 placeholder="Mô tả ý nghĩa của tham số này"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
               />
             </div>
           </div>

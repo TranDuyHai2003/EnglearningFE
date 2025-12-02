@@ -43,16 +43,14 @@ export default function ManageCoursePage() {
   const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // State cho dialog Section
   const [isSectionFormOpen, setIsSectionFormOpen] = useState(false);
   const [editingSection, setEditingSection] = useState<Section | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // State cho dialog Lesson
+
   const [isLessonFormOpen, setIsLessonFormOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [currentSectionId, setCurrentSectionId] = useState<number | null>(null);
 
-  // State cho Quiz Editor
   const [quizEditorState, setQuizEditorState] = useState<{
     isOpen: boolean;
     lessonId: number | null;
@@ -106,7 +104,6 @@ export default function ManageCoursePage() {
     }
   };
 
-  // === SECTION HANDLERS ===
   const handleOpenSectionForm = (section: Section | null = null) => {
     setEditingSection(section);
     setIsSectionFormOpen(true);
@@ -127,7 +124,6 @@ export default function ManageCoursePage() {
     }
   };
 
-  // === LESSON HANDLERS ===
   const handleOpenLessonForm = (
     sectionId: number,
     lesson: Lesson | null = null

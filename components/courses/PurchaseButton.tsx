@@ -25,8 +25,7 @@ export function PurchaseButton({
     try {
       setLoading(true);
       const response = await paymentService.createCheckout(courseId);
-      
-      // Redirect to Stripe Checkout
+
       window.location.href = response.url;
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Không thể tạo thanh toán");
@@ -37,9 +36,9 @@ export function PurchaseButton({
 
   if (isEnrolled) {
     return (
-      <Button 
-        className="w-full" 
-        onClick={() => window.location.href = `/learn/courses/${courseId}`}
+      <Button
+        className="w-full"
+        onClick={() => (window.location.href = `/learn/courses/${courseId}`)}
       >
         Vào học
       </Button>

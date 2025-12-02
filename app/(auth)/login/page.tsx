@@ -48,14 +48,12 @@ export default function LoginPage() {
         router.replace(redirectUrl);
       } else {
         const { role } = authData.user;
-        // ===== THAY ĐỔI LOGIC Ở ĐÂY =====
+
         if (role.includes("admin")) {
           router.replace("/admin/dashboard");
         } else {
-          // Điều hướng cho student, instructor như cũ
           router.replace(`/${role}/dashboard`);
         }
-        // ===== KẾT THÚC THAY ĐỔI =====
       }
     } catch (error: unknown) {
       const message =
@@ -72,7 +70,6 @@ export default function LoginPage() {
 
   return (
     <div className="w-full h-full overflow-auto p-4 flex flex-col justify-center">
-      {/* Header */}
       <div className="mb-4">
         <h2 className="text-2xl font-bold text-gray-900">Chào mừng trở lại</h2>
         <p className="mt-1 text-base text-gray-600">
@@ -80,7 +77,6 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Demo Accounts */}
       <Alert className="mb-4 p-3 text-sm border-blue-200 bg-blue-50">
         <AlertDescription className="text-gray-700">
           <p className="font-semibold mb-2 text-gray-900">Tài khoản demo:</p>
@@ -93,10 +89,8 @@ export default function LoginPage() {
         </AlertDescription>
       </Alert>
 
-      {/* Form */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Email */}
           <FormField
             control={form.control}
             name="email"
@@ -127,7 +121,6 @@ export default function LoginPage() {
             )}
           />
 
-          {/* Password */}
           <FormField
             control={form.control}
             name="password"
@@ -154,7 +147,6 @@ export default function LoginPage() {
             )}
           />
 
-          {/* Submit */}
           <Button
             type="submit"
             disabled={isLoading}
@@ -175,12 +167,10 @@ export default function LoginPage() {
         </form>
       </Form>
 
-      {/* Divider */}
       <div className="my-4 text-center text-sm text-gray-500">
         Chưa có tài khoản?
       </div>
 
-      {/* Link */}
       <Link
         href={`/register${redirectQuery ? `?redirect=${redirectQuery}` : ""}`}
         className="block w-full text-center py-2 rounded-lg border border-blue-300 bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100"

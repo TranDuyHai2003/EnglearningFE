@@ -8,7 +8,6 @@ import {
   RecentActivity,
 } from "@/lib/types";
 
-// Interface này định nghĩa các tham số TÙY CHỌN có thể truyền vào hàm
 export interface ListEnrollmentsParams {
   limit?: number;
   page?: number;
@@ -23,11 +22,9 @@ class LearningService {
   async getMyEnrollments(
     params: ListEnrollmentsParams = {}
   ): Promise<PaginatedResponse<Enrollment>> {
-    //                                                                      ^----------- Sửa ở đây
     const response = await apiClient.get<PaginatedResponse<Enrollment>>(
-      //                                         ^----------- Sửa ở đây
       "/learning/enrollments",
-      { params } // Truyền params vào request
+      { params }
     );
     return response.data;
   }
@@ -116,9 +113,7 @@ class LearningService {
     if (response.data.success) {
       return response.data.data;
     }
-    throw new Error(
-      response.data.message || "Không thể bắt đầu làm bài."
-    );
+    throw new Error(response.data.message || "Không thể bắt đầu làm bài.");
   }
 
   /**

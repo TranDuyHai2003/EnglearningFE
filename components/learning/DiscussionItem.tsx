@@ -74,7 +74,6 @@ export function DiscussionItem({ discussion, onUpdate }: DiscussionItemProps) {
 
   return (
     <div className="border rounded-lg p-4 space-y-4 bg-card">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 flex-1">
           <Avatar className="h-10 w-10">
@@ -102,7 +101,6 @@ export function DiscussionItem({ discussion, onUpdate }: DiscussionItemProps) {
           </div>
         </div>
 
-        {/* Actions */}
         {(isOwner || isInstructor || isAdmin) && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -132,7 +130,6 @@ export function DiscussionItem({ discussion, onUpdate }: DiscussionItemProps) {
         )}
       </div>
 
-      {/* Question */}
       <div>
         <h4 className="font-semibold text-lg mb-2">{discussion.title}</h4>
         <p className="text-muted-foreground whitespace-pre-wrap">
@@ -140,7 +137,6 @@ export function DiscussionItem({ discussion, onUpdate }: DiscussionItemProps) {
         </p>
       </div>
 
-      {/* Replies */}
       {discussion.replies && discussion.replies.length > 0 && (
         <div className="space-y-3 pl-4 border-l-2">
           {discussion.replies.map((reply: any) => (
@@ -154,7 +150,6 @@ export function DiscussionItem({ discussion, onUpdate }: DiscussionItemProps) {
         </div>
       )}
 
-      {/* Reply Form */}
       {showReplyForm ? (
         <ReplyForm
           discussionId={discussion.discussion_id}
@@ -175,7 +170,6 @@ export function DiscussionItem({ discussion, onUpdate }: DiscussionItemProps) {
   );
 }
 
-// Reply Item Component
 function ReplyItem({
   reply,
   discussionOwnerId,

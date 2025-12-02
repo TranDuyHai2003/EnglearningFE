@@ -14,7 +14,6 @@ import {
   Lesson,
 } from "@/lib/types";
 
-// Kiểu cho tham số lọc khóa học
 interface ListCoursesParams {
   limit?: number;
   page?: number;
@@ -39,7 +38,6 @@ export const courseService = {
   async listCourses(
     params: ListCoursesParams
   ): Promise<PaginatedResponse<Course>> {
-    // ✅ SỬA LỖI Ở ĐÂY:
     const response = await apiClient.get<ListCoursesApiResponse>("/courses", {
       params,
     });
@@ -150,9 +148,6 @@ export const courseService = {
     }
   },
 
-  // ===========================================
-  // LESSON APIs
-  // ===========================================
   async createLesson(sectionId: number, data: LessonForm): Promise<Lesson> {
     const response = await apiClient.post<ApiResponse<Lesson>>(
       `/courses/sections/${sectionId}/lessons`,
@@ -209,9 +204,7 @@ export const courseService = {
       response.data.message || "Không thể thay đổi trạng thái khóa học."
     );
   },
-  // ===========================================
-  // QUIZ APIs
-  // ===========================================
+
   async getQuiz(quizId: number): Promise<any> {
     const response = await apiClient.get<ApiResponse<any>>(
       `/learning/quizzes/${quizId}`
@@ -233,7 +226,7 @@ export const courseService = {
     const url = data.question_id
       ? `/learning/quizzes/${quizId}/questions/${data.question_id}`
       : `/learning/quizzes/${quizId}/questions`;
-    
+
     const method = data.question_id ? "put" : "post";
 
     const response = await apiClient[method]<ApiResponse<any>>(url, data);
@@ -249,7 +242,7 @@ export const courseService = {
       throw new Error(response.data.message || "Xóa câu hỏi thất bại.");
     }
   },
-  
+
   async getCourseStudents(courseId: number): Promise<any[]> {
     const response = await apiClient.get<ApiResponse<any[]>>(
       `/learning/enrollments?course_id=${courseId}&role=instructor`

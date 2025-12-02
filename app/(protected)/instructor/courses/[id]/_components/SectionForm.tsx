@@ -25,7 +25,7 @@ import { toast } from "sonner";
 
 interface SectionFormProps {
   courseId: number;
-  section?: Section | null; // Dùng để chỉnh sửa
+  section?: Section | null;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (newSection: Section) => void;
@@ -49,14 +49,12 @@ export function SectionFormDialog({
     try {
       let result;
       if (section) {
-        // Chức năng cập nhật
         result = await courseService.updateSection(
           courseId,
           section.section_id,
           data
         );
       } else {
-        // Chức năng tạo mới
         result = await courseService.createSection(courseId, data);
       }
       toast.success(`Chương học đã được ${section ? "cập nhật" : "tạo"}!`);

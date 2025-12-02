@@ -1,8 +1,8 @@
 "use client";
 
 import { useAuth } from "@/lib/hooks/useAuth";
-import { UserProfile } from "@/components/shared/UserProfile"; // Import component chung
-import { Skeleton } from "@/components/ui/skeleton"; // Có thể dùng lại skeleton
+import { UserProfile } from "@/components/shared/UserProfile";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ProfilePageSkeleton } from "@/components/skeleton/ProfilePageSkeleton";
 
 export default function StudentProfilePage() {

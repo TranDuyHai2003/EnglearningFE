@@ -8,23 +8,19 @@ import {
 } from "../types";
 import { AxiosError } from "axios";
 
-// Kiểu dữ liệu cho phần `data` trong response của API login/register
 interface AuthResponseData {
   token: string;
-  user: AuthenticatedUser; // Sử dụng AuthenticatedUser để an toàn hơn
+  user: AuthenticatedUser;
 }
 
-// Hàm trợ giúp để xử lý lỗi một cách nhất quán
 const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (error instanceof AxiosError) {
-    // Lỗi từ Axios, có thể chứa response.data.message
     return error.response?.data?.message || error.message || defaultMessage;
   }
   if (error instanceof Error) {
-    // Lỗi JavaScript thông thường
     return error.message;
   }
-  // Trường hợp không xác định
+
   return defaultMessage;
 };
 

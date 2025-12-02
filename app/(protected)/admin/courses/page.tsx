@@ -82,7 +82,7 @@ export default function AdminCoursesReviewPage() {
       toast.success(
         `Đã ${isApproved ? "phê duyệt" : "từ chối"} khóa học thành công!`
       );
-      fetchPendingCourses(); // Tải lại danh sách
+      fetchPendingCourses();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Thao tác thất bại."

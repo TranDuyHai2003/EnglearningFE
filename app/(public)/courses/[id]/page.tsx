@@ -11,7 +11,6 @@ import { Clock, BarChart, Users, PlayCircle, Lock, Star } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PurchaseButton } from "@/components/courses/PurchaseButton";
 
-// Component Skeleton cho trang chi tiết
 const CourseDetailSkeleton = () => (
   <div className="container mx-auto py-12">
     <div className="grid md:grid-cols-3 gap-8">
@@ -68,7 +67,6 @@ export default function CourseDetailPage() {
     );
   }
 
-  // Xử lý giá
   const displayPrice = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
@@ -76,7 +74,6 @@ export default function CourseDetailPage() {
 
   return (
     <div className="bg-slate-50">
-      {/* Header */}
       <header className="bg-gray-800 text-white py-12">
         <div className="container mx-auto">
           <h1 className="text-4xl font-bold mb-2">{course.title}</h1>
@@ -98,10 +95,8 @@ export default function CourseDetailPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="container mx-auto py-12">
         <div className="grid md:grid-cols-3 gap-8">
-          {/* Left Column: Course Content */}
           <div className="md:col-span-2">
             <h2 className="text-2xl font-bold mb-4">Nội dung khóa học</h2>
             <div className="space-y-4">
@@ -138,7 +133,6 @@ export default function CourseDetailPage() {
             </div>
           </div>
 
-          {/* Right Column: Purchase Card */}
           <aside className="sticky top-24 self-start">
             <Card>
               <CardHeader className="p-0">

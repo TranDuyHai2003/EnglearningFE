@@ -20,7 +20,6 @@ import Link from "next/link";
 import { useDebounce } from "use-debounce";
 import Image from "next/image";
 
-// Component con cho từng thẻ khóa học
 const CourseCard = ({ course }: { course: Course }) => (
   <Link href={`/courses/${course.course_id}`}>
     <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
@@ -56,7 +55,6 @@ const CourseCard = ({ course }: { course: Course }) => (
   </Link>
 );
 
-// Component Skeleton
 const CourseGridSkeleton = () => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     {[...Array(8)].map((_, i) => (
@@ -79,7 +77,6 @@ export default function CoursesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // State cho bộ lọc, đọc giá trị ban đầu từ URL
   const [searchTerm, setSearchTerm] = useState(
     searchParams.get("search") || ""
   );
@@ -89,7 +86,6 @@ export default function CoursesPage() {
 
   const [debouncedSearch] = useDebounce(searchTerm, 500);
 
-  // ✅ 1. Di chuyển setIsLoading(true) vào các hàm handler
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsLoading(true);
     setSearchTerm(e.target.value);
@@ -100,7 +96,6 @@ export default function CoursesPage() {
     setSelectedCategory(e.target.value);
   };
 
-  // Fetch categories chỉ một lần
   useEffect(() => {
     courseService
       .listCategories()
@@ -108,7 +103,6 @@ export default function CoursesPage() {
       .catch(() => toast.error("Không thể tải danh mục."));
   }, []);
 
-  // Fetch courses khi filter thay đổi
   useEffect(() => {
     const params = new URLSearchParams();
     if (debouncedSearch) params.set("search", debouncedSearch);
@@ -178,8 +172,6 @@ export default function CoursesPage() {
           </p>
         </div>
       )}
-
-      {/* Pagination có thể thêm ở đây */}
     </div>
   );
 }

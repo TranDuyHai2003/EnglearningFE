@@ -31,20 +31,11 @@ export const ReviewTab = ({ courseId }: Props) => {
         setIsLoading(true);
         const data = await interactionService.getReviews({
           course_id: courseId,
-          status: "approved", // Only show approved reviews
+          status: "approved",
         });
         setReviews(data);
 
-        // Check if user has already reviewed
         if (user) {
-          // We might need a separate API or filter client side if the API returns all reviews
-          // But usually listReviews returns all.
-          // Let's assume we can find it in the list or we need to fetch specifically.
-          // For now, let's just check the list.
-          // Ideally, the backend should return "my review" separately or we filter.
-          // Since we only fetch "approved", if my review is pending, it won't be here.
-          // So we might not know if I reviewed.
-          // But let's assume for now we just show the form if not found.
         }
       } catch (error) {
         console.error("Failed to fetch reviews", error);
@@ -79,7 +70,6 @@ export const ReviewTab = ({ courseId }: Props) => {
 
   return (
     <div className="space-y-8">
-      {/* Review Form */}
       {!userReview && (
         <div className="bg-slate-50 p-6 rounded-lg border">
           <h3 className="font-semibold mb-4">Viết đánh giá của bạn</h3>
@@ -130,7 +120,6 @@ export const ReviewTab = ({ courseId }: Props) => {
         </div>
       )}
 
-      {/* List Reviews */}
       <div className="space-y-6">
         <h3 className="font-semibold text-lg">Đánh giá từ học viên</h3>
         {isLoading ? (

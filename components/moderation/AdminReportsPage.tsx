@@ -248,7 +248,9 @@ export function AdminReportsPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            if (selectedReport?.report_id === report.report_id) {
+                            if (
+                              selectedReport?.report_id === report.report_id
+                            ) {
                               handleUpdateStatus(
                                 report.report_id,
                                 "reviewed",
@@ -297,7 +299,6 @@ export function AdminReportsPage() {
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-6">
               <Button
@@ -322,7 +323,6 @@ export function AdminReportsPage() {
         </>
       )}
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}

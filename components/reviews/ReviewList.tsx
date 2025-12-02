@@ -55,14 +55,15 @@ export function ReviewList({
 
   return (
     <div className="space-y-4">
-      {/* Filter */}
       {onRatingFilterChange && (
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Lọc theo:</span>
           <Select
             value={ratingFilter?.toString() || "all"}
             onValueChange={(value) =>
-              onRatingFilterChange(value === "all" ? undefined : parseInt(value))
+              onRatingFilterChange(
+                value === "all" ? undefined : parseInt(value)
+              )
             }
           >
             <SelectTrigger className="w-[180px]">
@@ -80,7 +81,6 @@ export function ReviewList({
         </div>
       )}
 
-      {/* Reviews */}
       {reviews.length === 0 ? (
         <div className="text-center py-12 border rounded-lg bg-muted/50">
           <p className="text-muted-foreground">
@@ -102,7 +102,6 @@ export function ReviewList({
         </div>
       )}
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2">
           <Button

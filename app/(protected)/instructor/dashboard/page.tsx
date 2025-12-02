@@ -25,13 +25,12 @@ import {
 import { cn } from "@/lib/utils";
 import type { LucideProps } from "lucide-react";
 import { toast } from "sonner";
-import { InstructorSummary, ActionItems } from "@/lib/types/index"; // Import the new service and types
+import { InstructorSummary, ActionItems } from "@/lib/types/index";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { instructorService } from "@/lib/api/instructorService";
 import Link from "next/link";
 
-// Stat Card Component (No changes needed, but I'll fix the 'any' type for icon)
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -97,14 +96,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// ... (keep existing StatCard component)
-
 export default function InstructorDashboard() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState<InstructorSummary | null>(null);
   const [actionItems, setActionItems] = useState<ActionItems | null>(null);
-  const [chartMetric, setChartMetric] = useState<"revenue" | "enrollments">("revenue");
+  const [chartMetric, setChartMetric] = useState<"revenue" | "enrollments">(
+    "revenue"
+  );
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -134,15 +133,16 @@ export default function InstructorDashboard() {
     );
   }
 
-  const chartData = chartMetric === "revenue" 
-    ? summary?.revenue_over_time?.map(item => ({
-        period: item.month,
-        value: Number(item.revenue)
-      }))
-    : summary?.enrollments_over_time?.map(item => ({
-        period: item.month,
-        value: Number(item.enrollments)
-      }));
+  const chartData =
+    chartMetric === "revenue"
+      ? summary?.revenue_over_time?.map((item) => ({
+          period: item.month,
+          value: Number(item.revenue),
+        }))
+      : summary?.enrollments_over_time?.map((item) => ({
+          period: item.month,
+          value: Number(item.enrollments),
+        }));
 
   const formatYAxis = (value: number) => {
     if (chartMetric === "revenue") {
@@ -205,15 +205,18 @@ export default function InstructorDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl xl:text-xl">
-                    Thống kê {chartMetric === "revenue" ? "Doanh thu" : "Học viên mới"}
+                    Thống kê{" "}
+                    {chartMetric === "revenue" ? "Doanh thu" : "Học viên mới"}
                   </CardTitle>
                   <CardDescription className="text-base">
                     Dữ liệu được tổng hợp theo tháng.
                   </CardDescription>
                 </div>
-                <Select 
-                  value={chartMetric} 
-                  onValueChange={(v) => setChartMetric(v as "revenue" | "enrollments")}
+                <Select
+                  value={chartMetric}
+                  onValueChange={(v) =>
+                    setChartMetric(v as "revenue" | "enrollments")
+                  }
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Chọn chỉ số" />
@@ -232,41 +235,91 @@ export default function InstructorDashboard() {
                     {chartMetric === "revenue" ? (
                       <AreaChart data={chartData}>
                         <defs>
-                          <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                          <linearGradient
+                            id="colorRevenue"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor="#10b981"
+                              stopOpacity={0.8}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor="#10b981"
+                              stopOpacity={0}
+                            />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis 
-                          dataKey="period" 
-                          tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
+                        <XAxis
+                          dataKey="period"
+                          tickFormatter={(val) =>
+                            new Date(val).toLocaleDateString("vi-VN", {
+                              month: "2-digit",
+                              year: "2-digit",
+                            })
+                          }
                           tick={{ fontSize: 12 }}
                         />
-                        <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
-                        <Tooltip 
-                          formatter={(value: number) => [
-                            new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value),
-                            'Doanh thu'
-                          ]}
-                          labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
+                        <YAxis
+                          tickFormatter={formatYAxis}
+                          tick={{ fontSize: 12 }}
                         />
-                        <Area type="monotone" dataKey="value" stroke="#10b981" fillOpacity={1} fill="url(#colorRevenue)" />
+                        <Tooltip
+                          formatter={(value: number) => [
+                            new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(value),
+                            "Doanh thu",
+                          ]}
+                          labelFormatter={(label) =>
+                            new Date(label).toLocaleDateString("vi-VN", {
+                              month: "long",
+                              year: "numeric",
+                            })
+                          }
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="value"
+                          stroke="#10b981"
+                          fillOpacity={1}
+                          fill="url(#colorRevenue)"
+                        />
                       </AreaChart>
                     ) : (
                       <BarChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis 
-                          dataKey="period" 
-                          tickFormatter={(val) => new Date(val).toLocaleDateString('vi-VN', { month: '2-digit', year: '2-digit' })}
+                        <XAxis
+                          dataKey="period"
+                          tickFormatter={(val) =>
+                            new Date(val).toLocaleDateString("vi-VN", {
+                              month: "2-digit",
+                              year: "2-digit",
+                            })
+                          }
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip 
-                          formatter={(value: number) => [value, 'Học viên']}
-                          labelFormatter={(label) => new Date(label).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
+                        <Tooltip
+                          formatter={(value: number) => [value, "Học viên"]}
+                          labelFormatter={(label) =>
+                            new Date(label).toLocaleDateString("vi-VN", {
+                              month: "long",
+                              year: "numeric",
+                            })
+                          }
                         />
-                        <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        <Bar
+                          dataKey="value"
+                          fill="#3b82f6"
+                          radius={[4, 4, 0, 0]}
+                        />
                       </BarChart>
                     )}
                   </ResponsiveContainer>
@@ -284,31 +337,50 @@ export default function InstructorDashboard() {
               <CardTitle className="text-xl">Học viên mới nhất</CardTitle>
             </CardHeader>
             <CardContent>
-              {summary?.recent_enrollments && summary.recent_enrollments.length > 0 ? (
+              {summary?.recent_enrollments &&
+              summary.recent_enrollments.length > 0 ? (
                 <div className="space-y-4">
                   {summary.recent_enrollments.map((enrollment) => (
-                    <div key={enrollment.enrollment_id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+                    <div
+                      key={enrollment.enrollment_id}
+                      className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                    >
                       <div className="flex items-center space-x-4">
                         <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-                           {enrollment.student.avatar_url ? (
-                             <img src={enrollment.student.avatar_url} alt={enrollment.student.full_name} className="h-full w-full object-cover" />
-                           ) : (
-                             <span className="font-bold text-slate-500">{enrollment.student.full_name.charAt(0)}</span>
-                           )}
+                          {enrollment.student.avatar_url ? (
+                            <img
+                              src={enrollment.student.avatar_url}
+                              alt={enrollment.student.full_name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span className="font-bold text-slate-500">
+                              {enrollment.student.full_name.charAt(0)}
+                            </span>
+                          )}
                         </div>
                         <div>
-                          <p className="font-medium">{enrollment.student.full_name}</p>
-                          <p className="text-sm text-muted-foreground">Đăng ký: {enrollment.course.title}</p>
+                          <p className="font-medium">
+                            {enrollment.student.full_name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Đăng ký: {enrollment.course.title}
+                          </p>
                         </div>
                       </div>
                       <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(enrollment.enrolled_at), { addSuffix: true, locale: vi })}
+                        {formatDistanceToNow(new Date(enrollment.enrolled_at), {
+                          addSuffix: true,
+                          locale: vi,
+                        })}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-muted-foreground py-4">Chưa có học viên mới.</p>
+                <p className="text-center text-muted-foreground py-4">
+                  Chưa có học viên mới.
+                </p>
               )}
             </CardContent>
           </Card>
@@ -342,7 +414,9 @@ export default function InstructorDashboard() {
                   </div>
                   <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <div>
-                      <p className="font-semibold text-gray-700">Đánh giá mới</p>
+                      <p className="font-semibold text-gray-700">
+                        Đánh giá mới
+                      </p>
                       <p className="text-3xl font-bold text-gray-800">
                         {actionItems?.recent_reviews?.length ?? 0}
                       </p>
@@ -365,27 +439,44 @@ export default function InstructorDashboard() {
               {summary?.top_courses && summary.top_courses.length > 0 ? (
                 <div className="space-y-4">
                   {summary.top_courses.map((course, index) => (
-                    <div key={course.course_id} className="flex items-center justify-between">
+                    <div
+                      key={course.course_id}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center space-x-3">
-                        <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
-                          index === 0 ? "bg-yellow-100 text-yellow-700" : 
-                          index === 1 ? "bg-gray-100 text-gray-700" : 
-                          index === 2 ? "bg-orange-100 text-orange-700" : "bg-slate-50 text-slate-500"
-                        }`}>
+                        <span
+                          className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
+                            index === 0
+                              ? "bg-yellow-100 text-yellow-700"
+                              : index === 1
+                              ? "bg-gray-100 text-gray-700"
+                              : index === 2
+                              ? "bg-orange-100 text-orange-700"
+                              : "bg-slate-50 text-slate-500"
+                          }`}
+                        >
                           {index + 1}
                         </span>
-                        <p className="font-medium text-sm truncate max-w-[150px]" title={course.course.title}>
+                        <p
+                          className="font-medium text-sm truncate max-w-[150px]"
+                          title={course.course.title}
+                        >
                           {course.course.title}
                         </p>
                       </div>
                       <span className="font-semibold text-sm text-green-600">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.total_revenue)}
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(course.total_revenue)}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-muted-foreground py-4">Chưa có dữ liệu.</p>
+                <p className="text-center text-muted-foreground py-4">
+                  Chưa có dữ liệu.
+                </p>
               )}
             </CardContent>
           </Card>

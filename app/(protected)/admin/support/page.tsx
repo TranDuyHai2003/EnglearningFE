@@ -52,14 +52,14 @@ export default function AdminSupportPage() {
     setError(null);
     try {
       const data = await adminService.listSupportTickets(page);
-      setTickets(data.data); // ✅ lấy từ PaginatedResponse
-      setTotalPages(data.meta.total_pages); // ✅ meta từ server
+      setTickets(data.data);
+      setTotalPages(data.meta.total_pages);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Không thể tải danh sách ticket.";
       setError(errorMessage);
       toast.error(errorMessage);
-      setTickets([]); // fallback mảng rỗng
+      setTickets([]);
     } finally {
       setIsLoading(false);
     }

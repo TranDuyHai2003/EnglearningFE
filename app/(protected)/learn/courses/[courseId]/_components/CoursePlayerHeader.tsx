@@ -1,4 +1,3 @@
-// app/(student)/learn/courses/_components/CoursePlayerHeader.tsx
 "use client";
 
 import { ArrowLeft, PanelRightOpen, PanelLeft } from "lucide-react";
@@ -42,7 +41,6 @@ export const CoursePlayerHeader = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        {/* Nút này sẽ hiện ở màn hình lớn để đóng/mở sidebar */}
         <Button
           variant="outline"
           size="icon"

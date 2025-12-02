@@ -13,7 +13,7 @@ import { Loader2, UploadCloud } from "lucide-react";
 export default function InstructorApplyPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [cvFile, setCvFile] = useState<File | null>(null); // State giữ file CV
+  const [cvFile, setCvFile] = useState<File | null>(null);
 
   const {
     register,
@@ -29,13 +29,11 @@ export default function InstructorApplyPage() {
 
     setIsLoading(true);
     try {
-      // Bước 1: Tạo profile với các thông tin text (bao gồm Link Video)
       await instructorService.createProfile({
         ...data,
-        cv_url: "", // CV sẽ được cập nhật qua API upload sau
+        cv_url: "",
       });
 
-      // Bước 2: Upload file CV
       await instructorService.uploadCv(cvFile);
 
       toast.success("Nộp hồ sơ thành công! Vui lòng chờ xét duyệt.");
@@ -60,11 +58,9 @@ export default function InstructorApplyPage() {
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* --- KHỐI TÀI LIỆU --- */}
           <div className="p-5 bg-blue-50 rounded-lg border border-blue-100 space-y-5">
             <h3 className="font-semibold text-blue-900">Tài liệu xét duyệt</h3>
 
-            {/* 1. UPLOAD CV (FILE) */}
             <div>
               <label className="block text-sm font-medium mb-2">
                 Tải lên CV (PDF/Word) <span className="text-red-500">*</span>
@@ -84,7 +80,6 @@ export default function InstructorApplyPage() {
               </p>
             </div>
 
-            {/* 2. LINK VIDEO (URL) */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Link Video Dạy thử / Giới thiệu{" "}
@@ -110,7 +105,6 @@ export default function InstructorApplyPage() {
             </div>
           </div>
 
-          {/* --- THÔNG TIN CÁ NHÂN --- */}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">

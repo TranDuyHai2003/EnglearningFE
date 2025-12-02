@@ -2,7 +2,6 @@ import apiClient from "./apiClient";
 import { ApiResponse, QaDiscussion, QaReply, Review } from "@/lib/types";
 
 export const interactionService = {
-  // === Q&A ===
   getDiscussions: async (params: {
     lesson_id?: number;
     course_id?: number;
@@ -44,7 +43,6 @@ export const interactionService = {
     return response.data;
   },
 
-  // === REVIEWS ===
   getReviews: async (params: {
     course_id?: number;
     status?: string;

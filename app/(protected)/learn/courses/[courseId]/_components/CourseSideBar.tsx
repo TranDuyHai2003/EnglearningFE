@@ -1,8 +1,7 @@
-// app/(student)/learn/courses/_components/CourseSideBar.tsx
 "use client";
 
 import Link from "next/link";
-// Đảm bảo bạn đã import các type này
+
 import { Section, LessonProgress } from "@/lib/types";
 import { CheckCircle, Circle, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,7 +13,6 @@ import {
 } from "@/components/ui/accordion";
 import { useMemo } from "react";
 
-// THÊM ĐỊNH NGHĨA NÀY VÀO
 interface Props {
   courseId: number;
   courseTitle: string;

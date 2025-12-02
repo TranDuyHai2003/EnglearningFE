@@ -1,4 +1,3 @@
-// components/shared/FileUpload.tsx
 "use client";
 
 import { useState } from "react";
@@ -7,7 +6,7 @@ import { UploadCloud, File, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FileUploadProps {
-  onFileSelect: (file: File | null) => void; // <-- THAY ĐỔI: Thay onUpload thành onFileSelect
+  onFileSelect: (file: File | null) => void;
   acceptedTypes?: Record<string, string[]>;
   label: string;
 }
@@ -22,7 +21,7 @@ export function FileUpload({
   const onDrop = (acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles.length > 0 ? acceptedFiles[0] : null;
     setFile(selectedFile);
-    onFileSelect(selectedFile); // <-- THAY ĐỔI: Gọi callback để báo cho component cha
+    onFileSelect(selectedFile);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -33,7 +32,7 @@ export function FileUpload({
 
   const removeFile = () => {
     setFile(null);
-    onFileSelect(null); // <-- THAY ĐỔI: Báo cho component cha là đã xóa file
+    onFileSelect(null);
   };
 
   return (
@@ -58,7 +57,6 @@ export function FileUpload({
         </div>
       </div>
 
-      {/* THAY ĐỔI: Giao diện hiển thị file đã chọn đơn giản hơn */}
       {file && (
         <div className="flex items-center justify-between rounded-md border p-3">
           <div className="flex items-center gap-2">

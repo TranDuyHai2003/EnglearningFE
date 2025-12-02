@@ -23,12 +23,8 @@ export default function InstructorStudentsPage() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        // TODO: Implement getMyStudents in instructorService
-        // For now, we'll use a placeholder or reuse an existing endpoint if available
-        // Assuming we might need to add this endpoint
-        const data = await instructorService.getDashboardSummary(); 
-        // Using recent_enrollments as a temporary placeholder until we have a full list endpoint
-        // Ideally, we should add `instructorService.getMyStudents()`
+        const data = await instructorService.getDashboardSummary();
+
         setStudents(data.recent_enrollments || []);
       } catch (error) {
         console.error("Failed to fetch students", error);

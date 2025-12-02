@@ -20,7 +20,6 @@ const InfoRow = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
-// Component phụ cho Skeleton UI
 const ProfileSkeleton = () => (
   <div className="max-w-2xl mx-auto p-4 md:p-6">
     <div className="bg-white rounded-lg shadow-md border p-6 md:p-8">
@@ -43,22 +42,19 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ user: initialUser }: UserProfileProps) {
-  const { user, updateUser } = useAuth(); // Dùng user từ useAuth để luôn cập nhật
+  const { user, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, handleSubmit, reset, setValue } =
     useForm<UpdateProfileForm>();
 
-  // Dùng user từ useAuth vì nó là nguồn dữ liệu mới nhất
   const currentUser = user || initialUser;
 
   useEffect(() => {
     if (currentUser) {
       setValue("full_name", currentUser.full_name);
       setValue("phone", currentUser.phone || "");
-      // Thêm avatar_url nếu bạn muốn cho phép sửa link ảnh
-      // setValue("avatar_url", currentUser.avatar_url || "");
     }
   }, [currentUser, setValue]);
 
@@ -67,7 +63,7 @@ export function UserProfile({ user: initialUser }: UserProfileProps) {
     setIsSubmitting(true);
     try {
       const updatedUser = await userService.updateUser(currentUser.id, data);
-      updateUser(updatedUser); // Cập nhật state toàn cục
+      updateUser(updatedUser);
       toast.success("Cập nhật thông tin thành công!");
       setIsEditing(false);
     } catch (error: unknown) {
@@ -116,7 +112,7 @@ export function UserProfile({ user: initialUser }: UserProfileProps) {
               </label>
               <Input {...register("phone")} disabled={isSubmitting} />
             </div>
-            {/* Thêm input cho avatar_url nếu cần */}
+
             <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
@@ -141,34 +137,25 @@ export function UserProfile({ user: initialUser }: UserProfileProps) {
           </div>
         )}
 
-        {/* ========================================================== */}
-        {/* PHẦN HIỂN THỊ CÓ ĐIỀU KIỆN DỰA TRÊN VAI TRÒ */}
-        {/* ========================================================== */}
         {currentUser.role === "instructor" && (
           <InstructorProfileSection instructorId={currentUser.id} />
         )}
-
-        {/* Bạn có thể thêm các section khác cho student, admin nếu cần */}
       </CardContent>
     </Card>
   );
 }
 
-// Component con riêng cho phần profile của giảng viên
 const InstructorProfileSection = ({
   instructorId,
 }: {
   instructorId: number;
 }) => {
-  // TODO: Fetch và hiển thị thông tin profile giảng viên (bio, education, etc.)
-  // Bạn có thể dùng một hook riêng (ví dụ: useInstructorProfile) để lấy dữ liệu này
   return (
     <div className="mt-6 border-t pt-6">
       <h3 className="text-lg font-semibold mb-4">Hồ sơ giảng viên</h3>
       <p className="text-muted-foreground">
         (Đây là khu vực để hiển thị và chỉnh sửa bio, kinh nghiệm, học vấn...)
       </p>
-      {/* Form chỉnh sửa hồ sơ giảng viên có thể đặt ở đây */}
     </div>
   );
 };

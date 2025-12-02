@@ -9,7 +9,7 @@ import { Enrollment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress"; // Component thanh tiến độ
+import { Progress } from "@/components/ui/progress";
 
 const MyCoursesSkeleton = () => (
   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -30,8 +30,7 @@ export default function MyCoursesPage() {
       setIsLoading(true);
       try {
         const response = await learningService.getMyEnrollments();
-        // API của bạn trả về data trong data nữa, nên là response.data.data
-        // Cần kiểm tra lại cấu trúc API response của bạn nếu cần
+
         setEnrollments(response.data);
       } catch (error) {
         toast.error("Không thể tải các khóa học của bạn.");

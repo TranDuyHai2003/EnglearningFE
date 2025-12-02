@@ -10,7 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getStoredUser } from "@/lib/auth/utils";
 import { Award, BookOpenCheck, Clock } from "lucide-react";
 
-// --- Dữ liệu giả với URL ảnh thật từ Unsplash ---
 const featuredCourses = [
   {
     id: 1,
@@ -67,7 +66,7 @@ const testimonials = [
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop",
   },
 ];
-// --- END OF FAKE DATA ---
+
 export const Logo = () => (
   <Link
     href="/"
@@ -80,9 +79,7 @@ export const Logo = () => (
     <span>EngBreaking</span>
   </Link>
 );
-// --- SUB-COMPONENTS (Các thành phần con của trang) ---
 
-// Thêm import này nếu chưa có ở đầu file
 import { Header } from "@/components/layout/Header";
 import { useAuth } from "@/lib/hooks/useAuth";
 
@@ -102,15 +99,14 @@ const HeroSection = () => {
         Bạn có thể cần điều chỉnh `68px` nếu Header của bạn có chiều cao khác. 
       */}
 
-      {/* Phần nội dung text - Chiếm 1/3 */}
       <div className="w-full md:w-1/3 flex items-center justify-center p-8 lg:p-12 bg-green-300">
         <div className="max-w-md w-full text-center md:text-left">
           <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
             Chinh phục Tiếng Anh Toàn diện, Tự tin Vươn xa
           </h1>
           <p className="text-base text-gray-600 mb-8">
-            Nền tảng học trực tuyến với lộ trình cá nhân hóa, phương pháp thực tế
-            giúp bạn giao tiếp lưu loát và đạt điểm số mơ ước.
+            Nền tảng học trực tuyến với lộ trình cá nhân hóa, phương pháp thực
+            tế giúp bạn giao tiếp lưu loát và đạt điểm số mơ ước.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Link href={getDashboardLink()}>
@@ -127,7 +123,6 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Phần ảnh nền - Chiếm 2/3 */}
       <div className="relative w-full md:w-2/3">
         <Image
           src="/banner.png"
@@ -135,10 +130,8 @@ const HeroSection = () => {
           fill
           style={{ objectFit: "cover" }}
           className="z-0"
-          priority // Ưu tiên tải ảnh này để cải thiện LCP
+          priority
         />
-        {/* Bạn có thể thêm lớp phủ nhẹ nếu muốn làm dịu ảnh */}
-        {/* <div className="absolute inset-0 bg-black/5"></div> */}
       </div>
     </section>
   );
@@ -369,22 +362,8 @@ const Footer = () => (
   </footer>
 );
 
-// --- MAIN HOME PAGE COMPONENT ---
 export default function HomePage() {
   const router = useRouter();
-
-  // Giữ lại logic chuyển hướng nếu đã đăng nhập
-  // Logic chuyển hướng đã được loại bỏ để người dùng có thể xem trang chủ
-  // useEffect(() => {
-  //   const user = getStoredUser();
-  //   if (user) {
-  //     if (user.role.includes("admin")) {
-  //       router.replace(`/admin/dashboard`);
-  //     } else {
-  //       router.replace(`/${user.role}/dashboard`);
-  //     }
-  //   }
-  // }, [router]);
 
   return (
     <div className="bg-white">

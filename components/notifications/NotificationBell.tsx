@@ -22,15 +22,12 @@ export function NotificationBell() {
         params: { is_read: false, limit: 1 },
       });
       setUnreadCount(response.data.meta?.total || 0);
-    } catch (error) {
-      // Silently fail
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
     fetchUnreadCount();
-    
-    // Poll every 30 seconds
+
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);

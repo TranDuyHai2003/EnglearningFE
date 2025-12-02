@@ -26,7 +26,6 @@ import { userService } from "@/lib/api/userService";
 import { useDebounce } from "use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// ----------------- Skeleton Table -----------------
 const UsersTableSkeleton = () => (
   <TableBody>
     {[...Array(5)].map((_, i) => (
@@ -41,7 +40,6 @@ const UsersTableSkeleton = () => (
   </TableBody>
 );
 
-// ----------------- Component chính -----------------
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AuthenticatedUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,7 +94,6 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, [fetchUsers]);
 
-  // ----------------- Xử lý thay đổi bộ lọc -----------------
   const handleFilterChange = (key: "role" | "status", value: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -105,7 +102,6 @@ export default function AdminUsersPage() {
     setPage(1);
   };
 
-  // ----------------- Hiển thị bảng -----------------
   const renderTableBody = () => {
     if (isLoading && users.length === 0) return <UsersTableSkeleton />;
 
@@ -167,12 +163,10 @@ export default function AdminUsersPage() {
     );
   };
 
-  // ----------------- Render chính -----------------
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">Quản lý Người dùng</h1>
 
-      {/* Bộ lọc */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <Input
           placeholder="Tìm kiếm theo email, họ tên..."
@@ -215,7 +209,6 @@ export default function AdminUsersPage() {
         </Select>
       </div>
 
-      {/* Bảng hiển thị */}
       <div className="rounded-lg border shadow-sm">
         <Table>
           <TableHeader>
@@ -232,7 +225,6 @@ export default function AdminUsersPage() {
         </Table>
       </div>
 
-      {/* Phân trang */}
       <div className="flex items-center justify-between py-4">
         <span className="text-sm text-muted-foreground">
           Tổng cộng: {total} người dùng

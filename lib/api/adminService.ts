@@ -6,7 +6,6 @@ import {
   SupportTicket,
 } from "@/lib/types";
 
-// Kiểu dữ liệu cho response của dashboard summary
 interface DashboardSummary {
   total_users: number;
   total_courses: number;
@@ -104,16 +103,14 @@ export const adminService = {
       { params: { page, limit } }
     );
 
-    // Trả luôn response.data vì nó đã có dạng { data, meta }
     return response.data;
   },
 
-  // === APPROVALS ===
   async getPendingCourses(page = 1, limit = 10) {
     const response = await apiClient.get("/admin/approvals/courses", {
       params: { page, limit },
     });
-    return response.data; // Returns PaginatedResponse
+    return response.data;
   },
 
   async getPendingLessons(page = 1, limit = 10) {
@@ -124,22 +121,32 @@ export const adminService = {
   },
 
   async approveCourse(courseId: number) {
-    const response = await apiClient.post(`/admin/approvals/courses/${courseId}/approve`);
+    const response = await apiClient.post(
+      `/admin/approvals/courses/${courseId}/approve`
+    );
     return response.data;
   },
 
   async rejectCourse(courseId: number, reason: string) {
-    const response = await apiClient.post(`/admin/approvals/courses/${courseId}/reject`, { reason });
+    const response = await apiClient.post(
+      `/admin/approvals/courses/${courseId}/reject`,
+      { reason }
+    );
     return response.data;
   },
 
   async approveLesson(lessonId: number) {
-    const response = await apiClient.post(`/admin/approvals/lessons/${lessonId}/approve`);
+    const response = await apiClient.post(
+      `/admin/approvals/lessons/${lessonId}/approve`
+    );
     return response.data;
   },
 
   async rejectLesson(lessonId: number, reason: string) {
-    const response = await apiClient.post(`/admin/approvals/lessons/${lessonId}/reject`, { reason });
+    const response = await apiClient.post(
+      `/admin/approvals/lessons/${lessonId}/reject`,
+      { reason }
+    );
     return response.data;
   },
 };

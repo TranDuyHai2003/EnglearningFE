@@ -29,7 +29,6 @@ import {
 import { ProfilePageSkeleton } from "@/components/skeleton/ProfilePageSkeleton";
 import { Label } from "@/components/ui/label";
 
-// === Form Component ===
 const InstructorApplication = ({
   profile,
   onProfileUpdate,
@@ -38,7 +37,7 @@ const InstructorApplication = ({
   onProfileUpdate: () => void;
 }) => {
   const isUpdate = !!profile;
-  // KHÓA: Nếu đã duyệt hoặc đang phỏng vấn
+
   const isLocked =
     profile?.approval_status === "approved" ||
     profile?.approval_status === "interviewing";
@@ -63,14 +62,12 @@ const InstructorApplication = ({
   const onSubmit = async (data: InstructorApplicationForm) => {
     setIsSubmitting(true);
     try {
-      // 1. Update text info
       if (isUpdate) {
         await instructorService.updateProfile(data);
       } else {
         await instructorService.createProfile(data);
       }
 
-      // 2. Update CV File (nếu người dùng có chọn file mới)
       if (cvFile) {
         toast.info("Đang tải lên CV mới...");
         await instructorService.uploadCv(cvFile);
@@ -79,8 +76,8 @@ const InstructorApplication = ({
       toast.success(
         isUpdate ? "Cập nhật thành công!" : "Nộp hồ sơ thành công!"
       );
-      onProfileUpdate(); // Refresh data
-      setCvFile(null); // Reset file input
+      onProfileUpdate();
+      setCvFile(null);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Thao tác thất bại."
@@ -104,7 +101,6 @@ const InstructorApplication = ({
       </CardHeader>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* --- Khu vực Tài liệu --- */}
           <div
             className={`p-5 rounded-lg border transition-colors ${
               isLocked
@@ -129,13 +125,11 @@ const InstructorApplication = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 1. CV UPLOAD */}
               <div>
                 <label className="text-sm font-medium mb-1.5 block">
                   File CV
                 </label>
 
-                {/* A. Hiển thị file ĐÃ CÓ trong Database (nếu có) */}
                 {profile?.cv_file_name && !cvFile && (
                   <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 p-3 rounded border border-green-200 mb-3">
                     <FileCheck className="h-4 w-4 flex-shrink-0" />
@@ -148,14 +142,13 @@ const InstructorApplication = ({
                   </div>
                 )}
 
-                {/* B. Hiển thị file VỪA CHỌN (nếu có) */}
                 {cvFile && (
                   <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 p-3 rounded border border-blue-200 mb-3">
                     <UploadCloud className="h-4 w-4 flex-shrink-0" />
                     <span className="truncate font-medium">{cvFile.name}</span>
                     <button
                       type="button"
-                      onClick={() => setCvFile(null)} // Nút hủy chọn
+                      onClick={() => setCvFile(null)}
                       className="ml-auto hover:bg-blue-100 p-1 rounded-full transition-colors"
                     >
                       <X className="h-4 w-4 text-blue-500" />
@@ -163,7 +156,6 @@ const InstructorApplication = ({
                   </div>
                 )}
 
-                {/* C. Nút bấm chọn file (Custom UI) */}
                 {!isLocked && (
                   <div className="mt-2">
                     <Input
@@ -171,7 +163,7 @@ const InstructorApplication = ({
                       type="file"
                       accept=".pdf,.doc,.docx"
                       onChange={(e) => setCvFile(e.target.files?.[0] || null)}
-                      className="hidden" // <--- Ẩn input mặc định xấu xí đi
+                      className="hidden"
                       disabled={isSubmitting}
                     />
                     <Label
@@ -198,8 +190,6 @@ const InstructorApplication = ({
                   </div>
                 )}
 
-                {/* D. Logic hiển thị lỗi (Đã sửa) */}
-                {/* Chỉ hiện lỗi khi: Chưa bị khóa AND Chưa có file trong DB AND Chưa chọn file mới */}
                 {!isLocked && !profile?.cv_file_name && !cvFile && (
                   <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
@@ -208,7 +198,6 @@ const InstructorApplication = ({
                 )}
               </div>
 
-              {/* 2. VIDEO URL */}
               <div>
                 <label className="text-sm font-medium mb-1.5 block">
                   Link Video Demo
@@ -238,7 +227,6 @@ const InstructorApplication = ({
             )}
           </div>
 
-          {/* --- Thông tin Text (Cho phép sửa Bio/Exp) --- */}
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium mb-1.5 block">
@@ -302,7 +290,6 @@ const InstructorApplication = ({
   );
 };
 
-// === Page Chính ===
 export default function InstructorProfilePage() {
   const { user, isLoading: isAuthLoading } = useAuth({
     redirectToLoginIfFail: true,
@@ -335,7 +322,6 @@ export default function InstructorProfilePage() {
     <div className="container mx-auto py-8 space-y-6 max-w-5xl">
       <UserProfile user={user} />
 
-      {/* Notification Banners */}
       {profile?.approval_status === "approved" && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center text-green-800 font-medium">
           🎉 Chúc mừng! Hồ sơ của bạn đã được phê duyệt.
@@ -352,7 +338,6 @@ export default function InstructorProfilePage() {
         </div>
       )}
 
-      {/* Interview Info Box */}
       {(profile?.approval_status === "interviewing" ||
         profile?.interview_notes) && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 shadow-sm">

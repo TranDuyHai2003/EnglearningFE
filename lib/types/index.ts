@@ -1,7 +1,3 @@
-// ===================================================================
-// ENUM TYPES (Dựa trên schema CSDL)
-// ===================================================================
-
 export type UserRole =
   | "student"
   | "instructor"
@@ -31,10 +27,6 @@ export type SupportCategory = "technical" | "payment" | "content" | "other";
 export type SupportPriority = "low" | "medium" | "high" | "urgent";
 export type SupportStatus = "open" | "in_progress" | "resolved" | "closed";
 
-// ===================================================================
-// DATABASE TABLE INTERFACES (tuân thủ snake_case của CSDL)
-// ===================================================================
-
 export interface User {
   user_id: number;
   email: string;
@@ -62,22 +54,20 @@ export interface InstructorProfile {
   rejection_reason?: string | null;
   user?: AuthenticatedUser;
 
-  // === CÁC TRƯỜNG FILE & CV ===
   cv_url?: string | null;
   cv_file_name?: string | null;
   cv_uploaded_at?: string | null;
 
-  // === CÁC TRƯỜNG MỚI CHO LUỒNG PHỎNG VẤN (BẮT BUỘC KHỚP DB) ===
-  intro_video_url?: string | null; // Link video dạy thử
-  interview_date?: string | null; // Ngày hẹn phỏng vấn
-  interview_notes?: string | null; // Ghi chú của Admin
+  intro_video_url?: string | null;
+  interview_date?: string | null;
+  interview_notes?: string | null;
 
   certificate_files?: {
     url: string;
     file_name: string;
     file_size: number;
     uploaded_at: string;
-  }[]; // Lưu ý: Có thể là mảng nếu DB lưu JSONB
+  }[];
 }
 
 export interface Category {
@@ -133,7 +123,7 @@ export interface Section {
   description?: string | null;
   display_order: number;
   created_at: string;
-  lessons?: Lesson[]; // Quan hệ lồng nhau
+  lessons?: Lesson[];
 }
 
 export interface Lesson {
@@ -149,8 +139,8 @@ export interface Lesson {
   display_order: number;
   created_at: string;
   updated_at: string;
-  resources?: LessonResource[]; // Quan hệ lồng nhau
-  quiz?: Quiz; // Quan hệ 1-1 (hoặc 1-N nhưng ở đây lấy 1)
+  resources?: LessonResource[];
+  quiz?: Quiz;
   approval_status: ApprovalStatus;
   rejection_reason?: string | null;
 }
@@ -243,10 +233,9 @@ export interface Enrollment {
   status: EnrollmentStatus;
   completed_at?: string | null;
   certificate_issued: boolean;
-  // === THÊM CÁC DÒNG SAU ===
+
   course: Course;
   lessonProgress: LessonProgress[];
-  // === KẾT THÚC PHẦN THÊM ===
 }
 
 export interface StudentStats {
@@ -260,7 +249,6 @@ export interface RecentActivity {
   title: string;
   course_title: string;
   timestamp: string;
-  // Các trường khác tùy thuộc vào type
 }
 
 export interface LessonProgress {
@@ -410,10 +398,6 @@ export interface SystemSetting {
   updated_at: string;
 }
 
-// ===================================================================
-// API RESPONSE & FORM PAYLOAD INTERFACES
-// ===================================================================
-
 /**
  * Cấu trúc response chung từ API
  */
@@ -496,7 +480,7 @@ export interface InstructorApplicationForm {
   education: string;
   experience: string;
   certificates: string;
-  // === THÊM 2 TRƯỜNG MỚI ===
+
   cv_url: string;
   intro_video_url: string;
 }
@@ -522,7 +506,6 @@ export interface InstructorSummary {
   }[];
 }
 
-// For GET /api/instructors/dashboard/action-items
 interface ActionItemQuestion {
   discussion_id: number;
   course: { course_id: number; title: string };

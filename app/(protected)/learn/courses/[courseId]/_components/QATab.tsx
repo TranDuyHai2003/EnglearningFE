@@ -48,8 +48,7 @@ export const QATab = ({ lessonId }: Props) => {
         lessonId,
         questionText
       );
-      // Optimistically add to list (need to populate student info manually or refetch)
-      // For simplicity, we'll just add it with current user info
+
       const discussionWithUser: QaDiscussion = {
         ...newDiscussion,
         student: user ? { ...user, id: user.id } : undefined,
@@ -72,7 +71,7 @@ export const QATab = ({ lessonId }: Props) => {
         discussionId,
         text
       );
-      // Update UI
+
       setDiscussions((prev) =>
         prev.map((d) => {
           if (d.discussion_id === discussionId) {
@@ -113,7 +112,6 @@ export const QATab = ({ lessonId }: Props) => {
 
   return (
     <div className="space-y-8">
-      {/* Input Box */}
       <div className="bg-slate-50 p-4 rounded-lg border">
         <h3 className="font-semibold mb-2 flex items-center gap-2">
           <MessageSquare className="w-4 h-4" /> Đặt câu hỏi mới
@@ -131,7 +129,6 @@ export const QATab = ({ lessonId }: Props) => {
         </div>
       </div>
 
-      {/* List Discussions */}
       <div className="space-y-6">
         {isLoading ? (
           <p className="text-center text-muted-foreground">Đang tải...</p>
@@ -145,7 +142,6 @@ export const QATab = ({ lessonId }: Props) => {
               key={discussion.discussion_id}
               className="border rounded-lg p-4 space-y-4"
             >
-              {/* Question Header */}
               <div className="flex gap-3">
                 <Avatar className="w-10 h-10">
                   <AvatarImage src={discussion.student?.avatar_url || ""} />
@@ -184,7 +180,6 @@ export const QATab = ({ lessonId }: Props) => {
                 </div>
               </div>
 
-              {/* Replies */}
               {discussion.replies && discussion.replies.length > 0 && (
                 <div className="pl-12 space-y-3">
                   {discussion.replies.map((reply) => (
@@ -218,7 +213,6 @@ export const QATab = ({ lessonId }: Props) => {
                 </div>
               )}
 
-              {/* Reply Input */}
               <div className="pl-12">
                 {replyingTo === discussion.discussion_id ? (
                   <div className="space-y-2">
@@ -236,7 +230,9 @@ export const QATab = ({ lessonId }: Props) => {
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        onClick={() => handlePostReply(discussion.discussion_id)}
+                        onClick={() =>
+                          handlePostReply(discussion.discussion_id)
+                        }
                       >
                         Trả lời
                       </Button>

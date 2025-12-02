@@ -42,7 +42,6 @@ export default function CreateCoursePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CourseForm>({
-    // Không dùng zodResolver
     defaultValues: {
       title: "",
       description: "",
@@ -54,7 +53,6 @@ export default function CreateCoursePage() {
     },
   });
 
-  // Fetch dữ liệu meta (categories, tags)
   useEffect(() => {
     async function fetchMetaData() {
       setIsLoadingMeta(true);
@@ -77,7 +75,6 @@ export default function CreateCoursePage() {
   const onSubmit = async (data: CourseForm) => {
     setIsSubmitting(true);
     try {
-      // Ép kiểu các giá trị từ input (string) sang number trước khi gửi đi
       const payload: CourseForm = {
         ...data,
         category_id: Number(data.category_id),

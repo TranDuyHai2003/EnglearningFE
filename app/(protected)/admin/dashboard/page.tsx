@@ -105,14 +105,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// ... (keep existing StatCard component)
-
 export default function AdminDashboardPage() {
   const { user } = useAuth();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Chart state
+
   const [chartData, setChartData] = useState<any[]>([]);
   const [chartMetric, setChartMetric] = useState("revenue");
   const [chartPeriod, setChartPeriod] = useState("month");
@@ -141,7 +138,10 @@ export default function AdminDashboardPage() {
     const fetchChartData = async () => {
       try {
         setIsChartLoading(true);
-        const data = await adminService.getMetricsTimeseries(chartMetric, chartPeriod);
+        const data = await adminService.getMetricsTimeseries(
+          chartMetric,
+          chartPeriod
+        );
         setChartData(data.timeseries);
       } catch (error) {
         console.error("Failed to fetch chart data:", error);
@@ -233,7 +233,9 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>Biểu đồ Tăng trưởng</CardTitle>
-                <CardDescription>Theo dõi các chỉ số quan trọng theo thời gian</CardDescription>
+                <CardDescription>
+                  Theo dõi các chỉ số quan trọng theo thời gian
+                </CardDescription>
               </div>
               <div className="flex gap-2">
                 <Select value={chartMetric} onValueChange={setChartMetric}>
@@ -277,27 +279,46 @@ export default function AdminDashboardPage() {
                     }}
                   >
                     <defs>
-                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                      <linearGradient
+                        id="colorValue"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#0ea5e9"
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#0ea5e9"
+                          stopOpacity={0}
+                        />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis 
-                      dataKey="period" 
+                    <XAxis
+                      dataKey="period"
                       tick={{ fontSize: 12 }}
-                      tickFormatter={(value) => value.split('-').slice(1).join('/')}
+                      tickFormatter={(value) =>
+                        value.split("-").slice(1).join("/")
+                      }
                     />
-                    <YAxis 
+                    <YAxis
                       tick={{ fontSize: 12 }}
                       tickFormatter={formatYAxis}
                     />
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value: number) => [
-                        chartMetric === 'revenue' 
-                          ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+                        chartMetric === "revenue"
+                          ? new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(value)
                           : value,
-                        chartMetric === 'revenue' ? 'Doanh thu' : 'Số lượng'
+                        chartMetric === "revenue" ? "Doanh thu" : "Số lượng",
                       ]}
                     />
                     <Area

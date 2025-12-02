@@ -59,7 +59,6 @@ export function CourseReviewSection({
       const response = await reviewService.getMyReview(courseId);
       setMyReview(response.data);
     } catch (error: any) {
-      // No review yet
       setMyReview(null);
     }
   };
@@ -86,7 +85,6 @@ export function CourseReviewSection({
 
   return (
     <div className="space-y-6">
-      {/* Rating Summary */}
       <Card>
         <CardHeader>
           <CardTitle>Đánh giá khóa học</CardTitle>
@@ -106,7 +104,6 @@ export function CourseReviewSection({
         </CardContent>
       </Card>
 
-      {/* My Review / Write Review */}
       {user && isEnrolled && (
         <div>
           {myReview && !showForm ? (
@@ -153,7 +150,6 @@ export function CourseReviewSection({
         </div>
       )}
 
-      {/* All Reviews */}
       <div>
         <h3 className="text-lg font-semibold mb-4">
           Tất cả đánh giá ({totalReviews})

@@ -29,7 +29,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
-// === IMPORT DIALOG ===
 import {
   Dialog,
   DialogContent,
@@ -53,7 +52,6 @@ export default function InstructorProfileDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isMutating, setIsMutating] = useState(false);
 
-  // Modal State
   const [reviewModal, setReviewModal] = useState<{
     isOpen: boolean;
     type: "interviewing" | "rejected" | null;
@@ -81,8 +79,6 @@ export default function InstructorProfileDetailPage() {
     if (profileId) fetchProfile();
   }, [profileId]);
 
-  // === HANDLERS ===
-
   const openReviewModal = (type: "interviewing" | "rejected") => {
     setReviewModal({ isOpen: true, type });
     setReviewNote("");
@@ -92,7 +88,6 @@ export default function InstructorProfileDetailPage() {
   const handleSubmitReview = async () => {
     if (!reviewModal.type || !profile) return;
 
-    // Validation
     if (reviewModal.type === "rejected" && !reviewNote.trim()) {
       toast.error("Vui lòng nhập lý do từ chối.");
       return;
@@ -105,11 +100,10 @@ export default function InstructorProfileDetailPage() {
         reviewModal.type === "interviewing" ? "interviewing" : "rejected",
         reviewModal.type === "rejected" ? reviewNote : undefined,
         reviewModal.type === "interviewing" ? reviewNote : undefined
-        // reviewLink // Pass if supported
       );
       toast.success("Cập nhật trạng thái thành công!");
       setReviewModal({ isOpen: false, type: null });
-      fetchProfile(); // Reload
+      fetchProfile();
     } catch (error) {
       toast.error("Có lỗi xảy ra.");
     } finally {
@@ -188,7 +182,6 @@ export default function InstructorProfileDetailPage() {
           <Separator />
 
           <CardContent className="space-y-8 pt-8">
-            {/* 1. Document & Video */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-5 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow">
                 <h4 className="font-semibold flex items-center gap-2 mb-3 text-slate-800">
@@ -255,7 +248,6 @@ export default function InstructorProfileDetailPage() {
               </div>
             </div>
 
-            {/* 2. Details */}
             <div className="space-y-6">
               <div>
                 <h4 className="font-semibold text-lg border-b pb-2 mb-3 text-slate-800">
@@ -293,7 +285,6 @@ export default function InstructorProfileDetailPage() {
               </div>
             </div>
 
-            {/* 3. Admin Info (Interview/Reject) */}
             <div className="space-y-4">
               {(profile.approval_status === "interviewing" ||
                 profile.interview_notes) && (
@@ -328,9 +319,7 @@ export default function InstructorProfileDetailPage() {
             </div>
           </CardContent>
 
-          {/* FOOTER BUTTONS */}
           <CardFooter className="flex justify-end gap-3 bg-slate-50 p-6 rounded-b-xl border-t">
-            {/* Button Interview (Show if not Approved) */}
             {profile.approval_status !== "approved" && (
               <Button
                 variant="outline"
@@ -345,7 +334,6 @@ export default function InstructorProfileDetailPage() {
               </Button>
             )}
 
-            {/* Button Reject (Always show unless Rejected) */}
             {profile.approval_status !== "rejected" && (
               <Button
                 variant="destructive"
@@ -359,7 +347,6 @@ export default function InstructorProfileDetailPage() {
               </Button>
             )}
 
-            {/* Button Approve (Show if not Approved) */}
             {profile.approval_status !== "approved" && (
               <Button
                 className="bg-green-600 hover:bg-green-700"
@@ -376,7 +363,6 @@ export default function InstructorProfileDetailPage() {
         </Card>
       )}
 
-      {/* === MODAL === */}
       <Dialog
         open={reviewModal.isOpen}
         onOpenChange={(open) =>
@@ -398,7 +384,6 @@ export default function InstructorProfileDetailPage() {
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
-            {/* Link Input */}
             {reviewModal.type === "interviewing" && (
               <div className="grid gap-2">
                 <Label htmlFor="link">Link cuộc họp (Google Meet / Zoom)</Label>

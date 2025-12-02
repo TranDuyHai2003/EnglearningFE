@@ -37,9 +37,9 @@ export const instructorService = {
       return null;
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.status === 404) {
-        return null; // Trả về null nếu chưa có hồ sơ (404 Not Found)
+        return null;
       }
-      throw error; // Ném các lỗi khác
+      throw error;
     }
   },
 
@@ -81,7 +81,6 @@ export const instructorService = {
   async listProfiles(
     params: ListProfilesParams
   ): Promise<PaginatedResponse<InstructorProfile>> {
-    // ✅ SỬA LỖI Ở ĐÂY:
     const response = await apiClient.get<ListProfilesApiResponse>(
       "/instructors/profiles",
       { params }

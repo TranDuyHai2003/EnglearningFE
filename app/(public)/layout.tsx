@@ -20,9 +20,7 @@ export default function PublicLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="grow">{children}</main>{" "}
-      {/* Sửa lại className từ 'flex-grow' thành 'grow' cho tailwindcss v4 */}
-      <PublicFooter />
+      <main className="grow">{children}</main> <PublicFooter />
     </div>
   );
 }

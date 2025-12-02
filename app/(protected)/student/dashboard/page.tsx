@@ -30,7 +30,6 @@ import { Enrollment, RecentActivity, StudentStats } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 
-// StatCard (giữ nguyên, không thay đổi)
 interface StatCardProps {
   title: string;
   value: number;
@@ -116,12 +115,12 @@ export default function StudentDashboard() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        // Gọi 3 API song song để tối ưu tốc độ tải
+
         const [enrollmentsResponse, statsResponse, activitiesResponse] =
           await Promise.all([
-            learningService.getMyEnrollments({ limit: 3 }), // Chỉ lấy 3 khóa gần nhất
+            learningService.getMyEnrollments({ limit: 3 }),
             learningService.getMyStats(),
-            learningService.getActivityFeed(5), // Lấy 5 hoạt động gần nhất
+            learningService.getActivityFeed(5),
           ]);
 
         setEnrollments(enrollmentsResponse.data);

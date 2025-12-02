@@ -42,7 +42,8 @@ export default function AdminTransactionsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isRefunding, setIsRefunding] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
   const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
 
   const fetchTransactions = async () => {
@@ -54,7 +55,7 @@ export default function AdminTransactionsPage() {
         statusFilter === "all" ? undefined : statusFilter
       );
       setTransactions(response.data);
-      // @ts-ignore
+
       setTotalPages(response.meta?.total_pages || 1);
     } catch (error) {
       toast.error("Không thể tải danh sách giao dịch");
@@ -87,9 +88,18 @@ export default function AdminTransactionsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-500 hover:bg-green-600">Thành công</Badge>;
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">Thành công</Badge>
+        );
       case "pending":
-        return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Đang chờ</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-yellow-600 border-yellow-600"
+          >
+            Đang chờ
+          </Badge>
+        );
       case "failed":
         return <Badge variant="destructive">Thất bại</Badge>;
       case "refunded":
@@ -110,7 +120,9 @@ export default function AdminTransactionsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quản lý Giao dịch</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Quản lý Giao dịch
+          </h1>
           <p className="text-muted-foreground">
             Xem lịch sử thanh toán và xử lý hoàn tiền.
           </p>
@@ -190,7 +202,10 @@ export default function AdminTransactionsPage() {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate" title={txn.details?.[0]?.course?.title}>
+                  <TableCell
+                    className="max-w-[200px] truncate"
+                    title={txn.details?.[0]?.course?.title}
+                  >
                     {txn.details?.[0]?.course?.title || "N/A"}
                   </TableCell>
                   <TableCell className="font-medium">
@@ -224,7 +239,6 @@ export default function AdminTransactionsPage() {
         </Table>
       </div>
 
-      {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-end gap-2">
           <Button
@@ -249,7 +263,6 @@ export default function AdminTransactionsPage() {
         </div>
       )}
 
-      {/* Refund Dialog */}
       <Dialog open={isRefundDialogOpen} onOpenChange={setIsRefundDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -285,9 +298,7 @@ export default function AdminTransactionsPage() {
               onClick={handleRefund}
               disabled={isRefunding}
             >
-              {isRefunding && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isRefunding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Xác nhận hoàn tiền
             </Button>
           </DialogFooter>

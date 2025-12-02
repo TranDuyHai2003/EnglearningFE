@@ -8,7 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Mail, Calendar, Shield, User as UserIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  Calendar,
+  Shield,
+  User as UserIcon,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -37,7 +43,9 @@ export default function AdminUserDetailPage() {
       setUser(userData);
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể tải thông tin người dùng.";
+        err instanceof Error
+          ? err.message
+          : "Không thể tải thông tin người dùng.";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -52,7 +60,9 @@ export default function AdminUserDetailPage() {
   const handleStatusChange = async (newStatus: UserStatus) => {
     if (!user) return;
     try {
-      const updatedUser = await userService.updateUser(user.id, { status: newStatus });
+      const updatedUser = await userService.updateUser(user.id, {
+        status: newStatus,
+      });
       setUser(updatedUser);
       toast.success("Cập nhật trạng thái thành công");
     } catch (err: unknown) {
@@ -98,7 +108,6 @@ export default function AdminUserDetailPage() {
       </Button>
 
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Profile Card */}
         <Card className="md:col-span-1">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4">
@@ -111,15 +120,23 @@ export default function AdminUserDetailPage() {
             </div>
             <CardTitle>{user.full_name}</CardTitle>
             <div className="mt-2 flex flex-col items-center gap-2">
-              <Badge variant={user.role.includes("admin") ? "destructive" : "secondary"}>
+              <Badge
+                variant={
+                  user.role.includes("admin") ? "destructive" : "secondary"
+                }
+              >
                 {user.role}
               </Badge>
-              
+
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-sm text-muted-foreground">Trạng thái:</span>
+                <span className="text-sm text-muted-foreground">
+                  Trạng thái:
+                </span>
                 <Select
                   value={user.status}
-                  onValueChange={(value) => handleStatusChange(value as UserStatus)}
+                  onValueChange={(value) =>
+                    handleStatusChange(value as UserStatus)
+                  }
                 >
                   <SelectTrigger className="w-[120px] h-8">
                     <SelectValue />
@@ -150,7 +167,6 @@ export default function AdminUserDetailPage() {
           </CardContent>
         </Card>
 
-        {/* Details Card */}
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Thông tin chi tiết</CardTitle>
@@ -162,7 +178,8 @@ export default function AdminUserDetailPage() {
                   <div>
                     <h3 className="font-medium mb-2">Giới thiệu (Bio)</h3>
                     <p className="text-sm text-muted-foreground">
-                      {user.instructor_profile.bio || "Chưa có thông tin giới thiệu."}
+                      {user.instructor_profile.bio ||
+                        "Chưa có thông tin giới thiệu."}
                     </p>
                   </div>
                   <div>
@@ -181,7 +198,8 @@ export default function AdminUserDetailPage() {
               )}
               {!user.instructor_profile && (
                 <p className="text-sm text-muted-foreground">
-                  Người dùng này không phải là giảng viên nên không có thông tin hồ sơ chi tiết.
+                  Người dùng này không phải là giảng viên nên không có thông tin
+                  hồ sơ chi tiết.
                 </p>
               )}
             </div>

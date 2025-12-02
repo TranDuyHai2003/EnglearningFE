@@ -180,9 +180,7 @@ export function NotificationCenter() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="font-semibold">
-                          {notification.title}
-                        </h3>
+                        <h3 className="font-semibold">{notification.title}</h3>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -212,7 +210,6 @@ export function NotificationCenter() {
                 </Card>
               ))}
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-6">
                   <Button

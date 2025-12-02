@@ -25,7 +25,6 @@ export default function CourseLearnRedirectPage() {
           return;
         }
 
-        // Tìm bài học đầu tiên chưa hoàn thành
         const completedLessonIds = new Set(
           enrollment.lessonProgress
             .filter((p) => p.status === "completed")
@@ -35,7 +34,6 @@ export default function CourseLearnRedirectPage() {
           (l) => !completedLessonIds.has(l.lesson_id)
         );
 
-        // Nếu tất cả đã hoàn thành, đi đến bài đầu tiên. Nếu không, đi đến bài chưa hoàn thành đầu tiên.
         const targetLesson = firstUncompletedLesson || allLessons[0];
 
         router.replace(

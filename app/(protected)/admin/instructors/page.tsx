@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// === DIALOG COMPONENTS ===
 import {
   Dialog,
   DialogContent,
@@ -37,7 +36,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
-// Skeleton loading
 const InstructorSkeleton = () => (
   <div className="space-y-4">
     {[...Array(3)].map((_, i) => (
@@ -59,8 +57,6 @@ const InstructorSkeleton = () => (
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
-// ...
-
 export default function AdminInstructorsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -75,11 +71,12 @@ export default function AdminInstructorsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
-  // Filter State - Initialize from URL
-  const initialStatus = searchParams.get("status") === "interviewing" ? "interviewing" : "pending";
-  const [statusFilter, setStatusFilter] = useState<"pending" | "interviewing">(initialStatus);
+  const initialStatus =
+    searchParams.get("status") === "interviewing" ? "interviewing" : "pending";
+  const [statusFilter, setStatusFilter] = useState<"pending" | "interviewing">(
+    initialStatus
+  );
 
-  // Sync URL with state
   const handleTabChange = (status: "pending" | "interviewing") => {
     setStatusFilter(status);
     setPage(1);
@@ -88,7 +85,6 @@ export default function AdminInstructorsPage() {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  // Modal State
   const [reviewModal, setReviewModal] = useState<{
     isOpen: boolean;
     profileId: number | null;
@@ -99,9 +95,8 @@ export default function AdminInstructorsPage() {
     type: null,
   });
   const [reviewNote, setReviewNote] = useState("");
-  const [reviewLink, setReviewLink] = useState(""); // For meeting link
+  const [reviewLink, setReviewLink] = useState("");
 
-  // Fetch API
   const fetchProfiles = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -130,7 +125,6 @@ export default function AdminInstructorsPage() {
     fetchProfiles();
   }, [fetchProfiles]);
 
-  // === 1. OPEN MODAL ===
   const openReviewModal = (
     profileId: number,
     type: "interviewing" | "rejected"
@@ -140,28 +134,21 @@ export default function AdminInstructorsPage() {
     setReviewLink("");
   };
 
-  // === 2. SUBMIT FROM MODAL ===
   const handleSubmitReview = async () => {
     if (!reviewModal.profileId || !reviewModal.type) return;
 
-    // Basic validation
     if (reviewModal.type === "rejected" && !reviewNote.trim()) {
       toast.error("Vui lòng nhập lý do từ chối.");
       return;
     }
-
-    // If interviewing, combine note and link (or send separately if backend supports it)
-    // Assuming backend supports 'meeting_link' as discussed previously, otherwise append to note.
-    // Here I assume backend supports 'meeting_link' from previous steps. If not, append to note.
 
     setIsMutating(true);
     try {
       await instructorService.reviewProfile(
         reviewModal.profileId,
         reviewModal.type === "interviewing" ? "interviewing" : "rejected",
-        reviewModal.type === "rejected" ? reviewNote : undefined, // reason
-        reviewModal.type === "interviewing" ? reviewNote : undefined // interview_notes
-        // reviewLink // Pass this if you updated the service to accept a 5th argument
+        reviewModal.type === "rejected" ? reviewNote : undefined,
+        reviewModal.type === "interviewing" ? reviewNote : undefined
       );
 
       toast.success(
@@ -179,7 +166,6 @@ export default function AdminInstructorsPage() {
     }
   };
 
-  // === 3. DIRECT APPROVE ===
   const handleApprove = async (profileId: number) => {
     if (statusFilter === "pending") {
       if (
@@ -202,7 +188,6 @@ export default function AdminInstructorsPage() {
     }
   };
 
-  // Render Content
   const renderContent = () => {
     if (isLoading) return <InstructorSkeleton />;
     if (error)
@@ -289,7 +274,6 @@ export default function AdminInstructorsPage() {
               )}
 
               <div className="flex flex-wrap gap-3 pt-4 border-t">
-                {/* Show Interview Button only in Pending tab */}
                 {statusFilter === "pending" && (
                   <Button
                     size="sm"
@@ -352,7 +336,6 @@ export default function AdminInstructorsPage() {
           </p>
         </div>
 
-        {/* FILTER TABS */}
         <div className="flex p-1 bg-slate-100 rounded-lg">
           <Button
             variant={statusFilter === "pending" ? "default" : "ghost"}
@@ -375,7 +358,6 @@ export default function AdminInstructorsPage() {
 
       {renderContent()}
 
-      {/* Pagination */}
       {!isLoading && total > 0 && (
         <div className="flex items-center justify-between py-6 mt-4 border-t">
           <span className="text-sm text-muted-foreground">
@@ -402,7 +384,6 @@ export default function AdminInstructorsPage() {
         </div>
       )}
 
-      {/* === MODAL === */}
       <Dialog
         open={reviewModal.isOpen}
         onOpenChange={(open) =>
@@ -424,7 +405,6 @@ export default function AdminInstructorsPage() {
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
-            {/* Only show Link input for Interviewing */}
             {reviewModal.type === "interviewing" && (
               <div className="grid gap-2">
                 <Label htmlFor="link">Link cuộc họp (Google Meet / Zoom)</Label>
