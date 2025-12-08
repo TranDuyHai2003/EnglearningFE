@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { NotificationDropdown } from "./NotificationDropdown";
-import api from "@/lib/api/api";
+import api from "@/lib/api/apiClient";
 
 export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);

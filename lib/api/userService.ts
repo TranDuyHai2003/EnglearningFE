@@ -97,4 +97,27 @@ export const userService = {
       throw new Error(response.data.message || "Đổi mật khẩu thất bại.");
     }
   },
+
+  /**
+   * Upload Avatar.
+   */
+  async uploadAvatar(userId: number, file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    const response = await apiClient.post<ApiResponse<{ avatar_url: string }>>(
+      `/users/${userId}/upload-avatar`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.data.success && response.data.data) {
+      return response.data.data.avatar_url;
+    }
+    throw new Error(response.data.message || "Upload avatar thất bại.");
+  },
 };

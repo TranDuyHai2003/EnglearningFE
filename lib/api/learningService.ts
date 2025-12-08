@@ -132,6 +132,18 @@ class LearningService {
     }
     throw new Error(response.data.message || "Nộp bài thất bại.");
   }
+  /**
+   * Tải chứng chỉ khóa học.
+   */
+  async downloadCertificate(courseId: number): Promise<Blob> {
+    const response = await apiClient.get(
+      `/learning/certificates/${courseId}/download`,
+      {
+        responseType: "blob",
+      }
+    );
+    return response.data;
+  }
 }
 
 export const learningService = new LearningService();

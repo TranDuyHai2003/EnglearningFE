@@ -405,6 +405,12 @@ export interface ApiResponse<T> {
   success: boolean;
   data: T;
   message: string;
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    total_pages: number;
+  };
 }
 
 /**
@@ -470,6 +476,7 @@ export interface UpdateProfileForm {
 export interface ChangePasswordForm {
   current_password: string;
   new_password: string;
+  confirm_new_password: string;
 }
 
 /**

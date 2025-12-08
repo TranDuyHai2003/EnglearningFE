@@ -126,15 +126,12 @@ export const Header = () => {
           ) : (
             <>
               <Link href="/login">
-                <Button
-                  variant="ghost"
-                  className="text-base font-medium text-gray-600 hover:text-primary"
-                >
+                <Button className="rounded-full text-base font-semibold px-6 bg-green-500 hover:bg-green-600 text-white border-none">
                   Đăng nhập
                 </Button>
               </Link>
               <Link href="/register">
-                <Button className="rounded-full text-base font-semibold px-6">
+                <Button className="rounded-full text-base font-semibold px-6 bg-blue-600 hover:bg-blue-700 text-white border-none">
                   Đăng ký
                 </Button>
               </Link>

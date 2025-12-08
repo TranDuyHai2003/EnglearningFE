@@ -14,12 +14,14 @@ import {
   BookMarked,
   BookOpenCheck,
   History,
+  Award,
 } from "lucide-react";
 import { useEffect } from "react";
 
 const navItems = [
   { href: "/student/dashboard", icon: LayoutDashboard, label: "Tổng quan" },
   { href: "/student/my-courses", icon: BookMarked, label: "Khóa học của tôi" },
+  { href: "/student/certificates", icon: Award, label: "Chứng chỉ" },
   { href: "/courses", icon: BookOpenCheck, label: "Tìm khóa học" },
   { href: "/student/transactions", icon: History, label: "Lịch sử giao dịch" },
 ];
@@ -70,7 +72,7 @@ export default function StudentLayout({
           </nav>
           <div className="flex items-center gap-4">
             <Link
-              href="/instructor/profile"
+              href="/student/profile"
               className="flex items-center gap-2 text-sm lg:text-lg font-semibold text-gray-700 hover:text-primary"
             >
               <User className="h-5 w-5" />

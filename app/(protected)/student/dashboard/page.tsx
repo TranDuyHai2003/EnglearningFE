@@ -118,7 +118,7 @@ export default function StudentDashboard() {
 
         const [enrollmentsResponse, statsResponse, activitiesResponse] =
           await Promise.all([
-            learningService.getMyEnrollments({ limit: 3 }),
+            learningService.getMyEnrollments({ limit: 4, status: "active" }),
             learningService.getMyStats(),
             learningService.getActivityFeed(5),
           ]);
@@ -136,8 +136,7 @@ export default function StudentDashboard() {
     fetchData();
   }, []);
 
-  const coursesInProgress =
-    enrollments?.filter((e) => e.status === "active") || [];
+  const coursesInProgress = enrollments || [];
 
   return (
     <div className="space-y-10">

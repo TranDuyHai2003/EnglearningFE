@@ -31,6 +31,7 @@ import {
 import { courseService } from "@/lib/api/courseService";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 interface LessonFormProps {
   sectionId: number;
@@ -64,6 +65,7 @@ export function LessonFormDialog({
       description: lesson?.description || "",
       lesson_type: lesson?.lesson_type || "video",
       video_url: lesson?.video_url || "",
+      content: lesson?.content || "",
       allow_preview: lesson?.allow_preview || false,
     },
   });
@@ -103,7 +105,7 @@ export function LessonFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {activeLesson ? "Chỉnh sửa bài học" : "Tạo bài học mới"}
@@ -131,67 +133,89 @@ export function LessonFormDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              name="lesson_type"
-              control={form.control}
-              rules={{ required: "Vui lòng chọn loại bài học" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Loại bài học</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                name="lesson_type"
+                control={form.control}
+                rules={{ required: "Vui lòng chọn loại bài học" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Loại bài học</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {lessonTypes.map((type) => (
+                          <SelectItem
+                            key={type}
+                            value={type}
+                            className="capitalize"
+                          >
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="video_url"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Link Video (tùy chọn)</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <Input placeholder="https://youtube.com/..." {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {lessonTypes.map((type) => (
-                        <SelectItem
-                          key={type}
-                          value={type}
-                          className="capitalize"
-                        >
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="video_url"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Link Video (tùy chọn)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://youtube.com/..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               name="description"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mô tả (tùy chọn)</FormLabel>
+                  <FormLabel>Mô tả ngắn</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Mô tả ngắn về nội dung bài học..."
                       {...field}
+                      className="h-20"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              name="content"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nội dung chi tiết</FormLabel>
+                  <FormControl>
+                    <RichTextEditor
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               name="allow_preview"
               control={form.control}
@@ -209,7 +233,7 @@ export function LessonFormDialog({
                 </FormItem>
               )}
             />
-            <DialogFooter className="flex justify-between sm:justify-between">
+            <DialogFooter className="flex justify-between sm:justify-between sticky bottom-0 bg-background pt-2">
               {activeLesson && (
                 <Button
                   type="button"
@@ -222,6 +246,35 @@ export function LessonFormDialog({
                 </Button>
               )}
 
+              {form.watch("lesson_type") === "document" && (
+                 <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const content = form.getValues("content");
+                      const title = form.getValues("title");
+                      const previewWindow = window.open("", "_blank");
+                      if (previewWindow) {
+                        previewWindow.document.write(`
+                          <html>
+                            <head>
+                              <title>Preview: ${title}</title>
+                              <script src="https://cdn.tailwindcss.com"></script>
+                            </head>
+                            <body class="p-8 max-w-3xl mx-auto prose">
+                              <h1 class="text-3xl font-bold mb-4">${title}</h1>
+                              <div>${content}</div>
+                            </body>
+                          </html>
+                        `);
+                        previewWindow.document.close();
+                      }
+                    }}
+                  >
+                    Xem trước
+                  </Button>
+              )}
+
               {!activeLesson && form.watch("lesson_type") === "quiz" && (
                 <Button
                   type="button"
@@ -232,7 +285,7 @@ export function LessonFormDialog({
                 </Button>
               )}
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 ml-auto">
                 <Button type="button" variant="ghost" onClick={onClose}>
                   Hủy
                 </Button>

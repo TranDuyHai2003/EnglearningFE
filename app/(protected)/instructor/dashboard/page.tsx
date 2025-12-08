@@ -115,7 +115,15 @@ export default function InstructorDashboard() {
         ]);
         setSummary(summaryData);
         setActionItems(actionItemsData);
-      } catch (error) {
+      } catch (error: any) {
+        if (
+          error?.response?.status === 403 &&
+          error?.response?.data?.code === "ACCOUNT_NOT_APPROVED"
+        ) {
+          // Should be handled by layout, but if we get here, reload to force layout check
+          window.location.reload();
+          return;
+        }
         toast.error("Không thể tải dữ liệu dashboard. Vui lòng thử lại.");
         console.error("Dashboard fetch error:", error);
       } finally {

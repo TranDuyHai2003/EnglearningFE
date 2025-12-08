@@ -124,6 +124,24 @@ export default function CoursePlayerPage() {
     }
   };
 
+  const handleDownloadCertificate = async () => {
+    if (!courseId) return;
+    try {
+      const blob = await learningService.downloadCertificate(courseId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Certificate-${enrollment?.course?.title || "Course"}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Download failed:", error);
+      toast.error("Không thể tải chứng chỉ. Vui lòng thử lại sau.");
+    }
+  };
+
   if (isLoading) return <PlayerSkeleton />;
 
   if (!enrollment || !enrollment.course || !currentLesson) {
@@ -145,6 +163,8 @@ export default function CoursePlayerPage() {
         completedLessons={completedLessons}
         totalLessons={totalLessons}
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        isCompleted={enrollment.status === "completed"}
+        onDownloadCertificate={handleDownloadCertificate}
       />
       <div className="flex flex-1 overflow-hidden">
         <main

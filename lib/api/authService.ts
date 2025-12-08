@@ -41,6 +41,9 @@ const login = async (credentials: LoginRequest): Promise<AuthResponseData> => {
       throw new Error(apiResponse.message || "Email hoặc mật khẩu không đúng.");
     }
   } catch (error: unknown) {
+    if (error instanceof AxiosError && error.response?.data?.message) {
+         throw new Error(error.response.data.message);
+    }
     throw new Error(getErrorMessage(error, "Đã xảy ra lỗi kết nối."));
   }
 };
@@ -86,8 +89,32 @@ const getMe = async (): Promise<AuthenticatedUser> => {
   }
 };
 
+const forgotPassword = async (email: string): Promise<void> => {
+  try {
+    const response = await apiClient.post<ApiResponse<null>>("/auth/forgot-password", { email });
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Gửi yêu cầu thất bại.");
+    }
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error, "Lỗi khi gửi yêu cầu quên mật khẩu."));
+  }
+};
+
+const resetPassword = async (token: string, new_password: string): Promise<void> => {
+  try {
+    const response = await apiClient.post<ApiResponse<null>>("/auth/reset-password", { token, new_password });
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Đặt lại mật khẩu thất bại.");
+    }
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error, "Lỗi khi đặt lại mật khẩu."));
+  }
+};
+
 export const authService = {
   login,
   register,
   getMe,
+  forgotPassword,
+  resetPassword,
 };

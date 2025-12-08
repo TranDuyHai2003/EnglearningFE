@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, PanelRightOpen, PanelLeft } from "lucide-react";
+import { ArrowLeft, PanelRightOpen, PanelLeft, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
@@ -10,6 +10,8 @@ interface Props {
   completedLessons: number;
   totalLessons: number;
   onToggleSidebar: () => void;
+  isCompleted?: boolean;
+  onDownloadCertificate?: () => void;
 }
 
 export const CoursePlayerHeader = ({
@@ -17,6 +19,8 @@ export const CoursePlayerHeader = ({
   completedLessons,
   totalLessons,
   onToggleSidebar,
+  isCompleted,
+  onDownloadCertificate,
 }: Props) => {
   const progressPercentage =
     totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
@@ -41,6 +45,17 @@ export const CoursePlayerHeader = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        {isCompleted && (
+          <Button
+            variant="default"
+            size="sm"
+            onClick={onDownloadCertificate}
+            className="hidden md:flex bg-yellow-600 hover:bg-yellow-700 text-white"
+          >
+            <Award className="mr-2 h-4 w-4" />
+            Chứng chỉ
+          </Button>
+        )}
         <Button
           variant="outline"
           size="icon"

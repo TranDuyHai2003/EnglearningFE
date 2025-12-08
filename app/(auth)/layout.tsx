@@ -38,9 +38,9 @@ export default function AuthLayout({
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
-      <div className="w-full max-w-xl max-h-[100vh] bg-white rounded-2xl shadow-xl p-6 overflow-auto border border-gray-100">
-        <div className="mb-6 flex justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 border border-gray-100">
+        <div className="mb-4 flex justify-center">
           <Logo />
         </div>
 

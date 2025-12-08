@@ -69,28 +69,27 @@ export default function LoginPage() {
   const redirectQuery = searchParams.get("redirect");
 
   return (
-    <div className="w-full h-full overflow-auto p-4 flex flex-col justify-center">
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold text-gray-900">Chào mừng trở lại</h2>
-        <p className="mt-1 text-base text-gray-600">
+    <div className="w-full p-2 flex flex-col justify-center">
+      <div className="mb-2">
+        <h2 className="text-xl font-bold text-gray-900">Chào mừng trở lại</h2>
+        <p className="mt-1 text-sm text-gray-600">
           Đăng nhập để tiếp tục học tập
         </p>
       </div>
 
-      <Alert className="mb-4 p-3 text-sm border-blue-200 bg-blue-50">
+      <Alert className="mb-3 p-2 text-xs border-blue-200 bg-blue-50">
         <AlertDescription className="text-gray-700">
-          <p className="font-semibold mb-2 text-gray-900">Tài khoản demo:</p>
-          <ul className="space-y-1">
+          <p className="font-semibold mb-1 text-gray-900">Tài khoản demo:</p>
+          <ul className="space-y-0.5">
             <li>👨‍🎓 student@gmail.com / password</li>
             <li>👨‍🏫 teacher@gmail.com / password</li>
             <li>⚙️ sysadmin@englearning.test / Password123!</li>
-            <li>⚙️ support@englearning.test / Password123!</li>
           </ul>
         </AlertDescription>
       </Alert>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField
             control={form.control}
             name="email"
@@ -102,15 +101,15 @@ export default function LoginPage() {
               },
             }}
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-1">
                 <FormLabel className="text-sm font-semibold">Email</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       placeholder="example@gmail.com"
                       type="email"
-                      className="pl-10 h-10"
+                      className="pl-9 h-9 text-sm"
                       disabled={isLoading}
                       {...field}
                     />
@@ -126,17 +125,17 @@ export default function LoginPage() {
             name="password"
             rules={{ required: "Mật khẩu không được để trống." }}
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-1">
                 <FormLabel className="text-sm font-semibold">
                   Mật khẩu
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       placeholder="••••••••"
                       type="password"
-                      className="pl-10 h-10"
+                      className="pl-9 h-9 text-sm"
                       disabled={isLoading}
                       {...field}
                     />
@@ -147,10 +146,19 @@ export default function LoginPage() {
             )}
           />
 
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-blue-600 hover:text-blue-500"
+            >
+              Quên mật khẩu?
+            </Link>
+          </div>
+
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full h-10 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white"
+            className="w-full h-9 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white"
           >
             {isLoading ? (
               <>
@@ -167,13 +175,13 @@ export default function LoginPage() {
         </form>
       </Form>
 
-      <div className="my-4 text-center text-sm text-gray-500">
+      <div className="my-2 text-center text-xs text-gray-500">
         Chưa có tài khoản?
       </div>
 
       <Link
         href={`/register${redirectQuery ? `?redirect=${redirectQuery}` : ""}`}
-        className="block w-full text-center py-2 rounded-lg border border-blue-300 bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100"
+        className="block w-full text-center py-1.5 rounded-lg border border-blue-300 bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100"
       >
         Đăng ký tài khoản mới
       </Link>

@@ -258,4 +258,19 @@ export const courseService = {
     if (response.data.success && response.data.data) return response.data.data;
     return [];
   },
+
+  async reorderSections(
+    courseId: number,
+    sections: { section_id: number; display_order: number }[]
+  ): Promise<void> {
+    const response = await apiClient.patch<ApiResponse<null>>(
+      `/courses/${courseId}/sections/reorder`,
+      { sections }
+    );
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Cập nhật thứ tự chương học thất bại."
+      );
+    }
+  },
 };

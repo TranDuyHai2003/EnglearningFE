@@ -143,6 +143,25 @@ export default function ManageCoursePage() {
     }
   };
 
+  const handleReorderSections = async (newSections: Section[]) => {
+    // Optimistic update
+    if (course) {
+      setCourse({ ...course, sections: newSections });
+    }
+
+    try {
+      const reorderPayload = newSections.map((section, index) => ({
+        section_id: section.section_id,
+        display_order: index + 1,
+      }));
+      await courseService.reorderSections(courseId, reorderPayload);
+      // Optional: No toast to keep it smooth, or use a subtle one
+    } catch (error) {
+       toast.error("Cập nhật thứ tự thất bại.");
+       fetchCourseDetails(); // Revert
+    }
+  };
+
   if (isLoading) return <CourseManageSkeleton />;
   if (!course)
     return (
@@ -208,6 +227,7 @@ export default function ManageCoursePage() {
               onDeleteSection={handleDeleteSection}
               onOpenLessonForm={handleOpenLessonForm}
               onDeleteLesson={handleDeleteLesson}
+              onReorderSections={handleReorderSections}
             />
           </TabsContent>
 

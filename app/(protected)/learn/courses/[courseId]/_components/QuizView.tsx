@@ -48,6 +48,15 @@ export function QuizView({
         const newAttempt = await learningService.startQuizAttempt(quizId);
         setAttempt(newAttempt);
       } catch (e: any) {
+        if (e.response?.data?.code === "ATTEMPT_LIMIT_REACHED") {
+           // We can handle this by showing a specific UI state, 
+           // but for now let's just show a clear warning and maybe disable the quiz.
+           // Better yet, let's treat it as a "completed" state visually or a locked state.
+           // However, since we don't have a "limit reached" UI state in state variables, 
+           // I'll show a warning toast and maybe redirect or just show a message locally.
+           toast.warning("Bạn đã hết lượt làm bài quiz này.");
+           return;
+        }
         toast.error(e.message || "Không thể tải bài quiz.");
       } finally {
         setIsLoading(false);
