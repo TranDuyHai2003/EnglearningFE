@@ -10,6 +10,7 @@ import { CheckCircle, XCircle, PlayCircle, FileText, HelpCircle, AlertCircle } f
 import { adminService } from "@/lib/api/adminService";
 import { toast } from "sonner";
 import { ReviewDialog } from "../../../approvals/_components/ReviewDialog";
+import { useLessonVideoUrl } from "@/lib/hooks/useLessonVideoUrl";
 
 interface AdminLessonPreviewProps {
   lesson: Lesson;
@@ -18,6 +19,7 @@ interface AdminLessonPreviewProps {
 
 export function AdminLessonPreview({ lesson, onUpdate }: AdminLessonPreviewProps) {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const { url: playbackUrl, isLoading, error, refresh } = useLessonVideoUrl(lesson);
 
   const handleApprove = async () => {
     try {
@@ -97,15 +99,40 @@ export function AdminLessonPreview({ lesson, onUpdate }: AdminLessonPreviewProps
       <Separator />
 
       <div className="flex-1 overflow-y-auto">
-        {lesson.lesson_type === "video" && lesson.video_url && (
+        {lesson.lesson_type === "video" && (
           <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
-            <iframe
-              className="w-full h-full"
-              src={`https://www.youtube.com/embed/${getVideoId(lesson.video_url)}`}
-              title={lesson.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            {lesson.video_key ? (
+              playbackUrl ? (
+                <video controls className="w-full h-full bg-black" src={playbackUrl}>
+                  Trình duyệt không hỗ trợ video.
+                </video>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-white gap-2 text-sm px-4 text-center">
+                  {error ? (
+                    <>
+                      <p>{error}</p>
+                      <Button size="sm" variant="secondary" onClick={refresh}>
+                        Thử tải lại video
+                      </Button>
+                    </>
+                  ) : (
+                    <p>{isLoading ? "Đang tạo liên kết phát..." : "Không thể phát video"}</p>
+                  )}
+                </div>
+              )
+            ) : lesson.video_url ? (
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${getVideoId(lesson.video_url)}`}
+                title={lesson.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-white text-sm">
+                Chưa có video cho bài học này.
+              </div>
+            )}
           </div>
         )}
 

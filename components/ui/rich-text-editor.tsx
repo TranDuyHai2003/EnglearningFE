@@ -32,6 +32,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       Youtube.configure({ controls: true, nocookie: true }),
     ],
     content: value,
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class:

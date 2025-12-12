@@ -32,6 +32,7 @@ import { courseService } from "@/lib/api/courseService";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { storageService } from "@/lib/api/storageService";
 
 interface LessonFormProps {
   sectionId: number;
@@ -54,10 +55,21 @@ export function LessonFormDialog({
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(
     lesson || null
   );
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
   useEffect(() => {
     setActiveLesson(lesson || null);
   }, [lesson]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setVideoFile(null);
+      setIsSaving(false);
+      setIsUploadingVideo(false);
+    }
+  }, [isOpen]);
 
   const form = useForm<LessonForm>({
     defaultValues: {
@@ -65,18 +77,25 @@ export function LessonFormDialog({
       description: lesson?.description || "",
       lesson_type: lesson?.lesson_type || "video",
       video_url: lesson?.video_url || "",
+      video_bucket: lesson?.video_bucket || "",
+      video_key: lesson?.video_key || "",
+      video_uploaded_at: lesson?.video_uploaded_at || "",
       content: lesson?.content || "",
       allow_preview: lesson?.allow_preview || false,
+      display_order: lesson?.display_order || 0,
     },
   });
 
   const onSubmit = async (data: LessonForm, shouldOpenQuizEditor = false) => {
+    setIsSaving(true);
     try {
-      let result;
+      let result: Lesson;
       const payload = {
         ...data,
         video_duration: data.video_duration ? Number(data.video_duration) : 0,
       };
+
+      const isEditingExisting = Boolean(activeLesson?.lesson_id);
 
       if (activeLesson) {
         result = await courseService.updateLesson(
@@ -88,7 +107,32 @@ export function LessonFormDialog({
         result = await courseService.createLesson(sectionId, payload);
       }
 
-      toast.success(`Bài học đã được ${activeLesson ? "cập nhật" : "tạo"}!`);
+      if (!result?.lesson_id) {
+        throw new Error("Không nhận được ID bài học sau khi lưu.");
+      }
+
+      if (videoFile) {
+        setIsUploadingVideo(true);
+        try {
+          const uploadResult = await storageService.uploadLessonVideo(
+            result.lesson_id,
+            videoFile
+          );
+          toast.success("Đã tải video bài giảng lên SeaweedFS!");
+          result = {
+            ...result,
+            video_bucket: uploadResult.bucket,
+            video_key: uploadResult.key,
+            video_url: uploadResult.key,
+            video_uploaded_at: uploadResult.uploaded_at,
+          };
+          setVideoFile(null);
+        } finally {
+          setIsUploadingVideo(false);
+        }
+      }
+
+      toast.success(`Bài học đã được ${isEditingExisting ? "cập nhật" : "tạo"}!`);
 
       setActiveLesson(result);
       onSuccess(result);
@@ -100,6 +144,8 @@ export function LessonFormDialog({
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Đã xảy ra lỗi.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -180,6 +226,45 @@ export function LessonFormDialog({
                 )}
               />
             </div>
+
+            {form.watch("lesson_type") === "video" && (
+              <div className="p-4 border rounded-lg space-y-3 bg-slate-50">
+                <p className="text-base font-semibold">
+                  Upload video bài giảng
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Hỗ trợ file MP4/AVI/MOV dung lượng tối đa 1GB. Nếu bạn nhập
+                  link YouTube, phần upload có thể bỏ qua.
+                </p>
+                <Input
+                  type="file"
+                  accept="video/*"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    setVideoFile(file || null);
+                  }}
+                  disabled={isSaving}
+                />
+                {videoFile && (
+                  <p className="text-sm">
+                    Đã chọn:{" "}
+                    <span className="font-medium">{videoFile.name}</span>{" "}
+                    ({(videoFile.size / (1024 * 1024)).toFixed(2)} MB)
+                  </p>
+                )}
+                {activeLesson?.video_uploaded_at && !videoFile && (
+                  <p className="text-sm text-muted-foreground">
+                    Video hiện tại đã tải lên lúc{" "}
+                    {new Date(activeLesson.video_uploaded_at).toLocaleString()}
+                  </p>
+                )}
+                {(isUploadingVideo || isSaving) && videoFile && (
+                  <p className="text-sm text-blue-600">
+                    Đang tải video lên, vui lòng không đóng cửa sổ này...
+                  </p>
+                )}
+              </div>
+            )}
 
             <FormField
               name="description"
@@ -280,16 +365,27 @@ export function LessonFormDialog({
                   type="button"
                   variant="outline"
                   onClick={form.handleSubmit((data) => onSubmit(data, true))}
+                  disabled={isSaving || isUploadingVideo}
                 >
                   Lưu & Soạn câu hỏi
                 </Button>
               )}
 
               <div className="flex gap-2 ml-auto">
-                <Button type="button" variant="ghost" onClick={onClose}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={onClose}
+                  disabled={isSaving || isUploadingVideo}
+                >
                   Hủy
                 </Button>
-                <Button type="submit">Lưu</Button>
+                <Button
+                  type="submit"
+                  disabled={isSaving || isUploadingVideo}
+                >
+                  {isSaving || isUploadingVideo ? "Đang lưu..." : "Lưu"}
+                </Button>
               </div>
             </DialogFooter>
           </form>

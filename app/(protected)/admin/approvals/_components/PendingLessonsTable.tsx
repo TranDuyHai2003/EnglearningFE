@@ -14,11 +14,18 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, Video, FileText, HelpCircle } from "lucide-react";
 import { ReviewDialog } from "./ReviewDialog";
 import { toast } from "sonner";
+import { useLessonVideoUrl } from "@/lib/hooks/useLessonVideoUrl";
 
 export function PendingLessonsTable() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const {
+    url: playbackUrl,
+    isLoading: isVideoLoading,
+    error: videoError,
+    refresh: refreshVideo,
+  } = useLessonVideoUrl(selectedLesson || undefined);
 
   const fetchLessons = async () => {
     setIsLoading(true);
@@ -56,6 +63,13 @@ export function PendingLessonsTable() {
     } catch (error) {
       toast.error("Từ chối thất bại");
     }
+  };
+
+  const getYoutubeId = (url?: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
   };
 
   const getIcon = (type: string) => {
@@ -120,14 +134,37 @@ export function PendingLessonsTable() {
           title={`Duyệt bài học: ${selectedLesson.title}`}
         >
           <div className="space-y-4">
-            {selectedLesson.lesson_type === "video" && selectedLesson.video_url && (
-                <div className="aspect-video bg-black rounded overflow-hidden">
-                    <iframe 
-                        src={`https://www.youtube.com/embed/${selectedLesson.video_url.split("v=")[1]?.split("&")[0]}`} 
-                        className="w-full h-full" 
-                        allowFullScreen 
-                    />
-                </div>
+            {selectedLesson.lesson_type === "video" && (
+              <div className="aspect-video bg-black rounded overflow-hidden flex items-center justify-center">
+                {selectedLesson.video_key ? (
+                  playbackUrl ? (
+                    <video controls className="w-full h-full" src={playbackUrl}>
+                      Trình duyệt không hỗ trợ video.
+                    </video>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-white text-sm px-4 text-center">
+                      {videoError ? (
+                        <>
+                          <p>{videoError}</p>
+                          <Button size="sm" variant="secondary" onClick={refreshVideo}>
+                            Thử tải lại video
+                          </Button>
+                        </>
+                      ) : (
+                        <p>{isVideoLoading ? "Đang tạo liên kết phát video..." : "Không thể phát video"}</p>
+                      )}
+                    </div>
+                  )
+                ) : selectedLesson.video_url && getYoutubeId(selectedLesson.video_url) ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${getYoutubeId(selectedLesson.video_url)}`}
+                    className="w-full h-full"
+                    allowFullScreen
+                  />
+                ) : (
+                  <p className="text-white text-sm">Chưa có video cho bài học này.</p>
+                )}
+              </div>
             )}
             {selectedLesson.lesson_type === "document" && (
                 <div className="p-4 bg-slate-50 rounded border max-h-60 overflow-y-auto" dangerouslySetInnerHTML={{ __html: selectedLesson.content || "" }} />

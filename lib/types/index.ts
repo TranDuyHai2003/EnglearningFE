@@ -133,6 +133,9 @@ export interface Lesson {
   description?: string | null;
   lesson_type: LessonType;
   video_url?: string | null;
+  video_bucket?: string | null;
+  video_key?: string | null;
+  video_uploaded_at?: string | null;
   video_duration: number;
   content?: string | null;
   allow_preview: boolean;
@@ -185,10 +188,22 @@ export interface LessonForm {
   description?: string;
   lesson_type: LessonType;
   video_url?: string;
+  video_bucket?: string;
+  video_key?: string;
+  video_uploaded_at?: string;
   video_duration?: number;
   content?: string;
   allow_preview: boolean;
   display_order: number;
+}
+
+export interface LessonUploadResponse {
+  lesson_id: number;
+  bucket: string;
+  key: string;
+  mime_type: string;
+  file_size: number;
+  uploaded_at: string;
 }
 
 export interface Quiz {

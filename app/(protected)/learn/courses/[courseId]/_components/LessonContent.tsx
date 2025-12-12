@@ -18,6 +18,7 @@ import { learningService } from "@/lib/api/learningService";
 import { QuizView } from "./QuizView";
 import { QATab } from "./QATab";
 import { ReviewTab } from "./ReviewTab";
+import { useLessonVideoUrl } from "@/lib/hooks/useLessonVideoUrl";
 
 interface Props {
   lesson: Lesson;
@@ -52,6 +53,12 @@ export const LessonContent = ({
   isCompleted,
 }: Props) => {
   const lastProgressUpdate = useRef<number>(0);
+  const {
+    url: playbackUrl,
+    isLoading: isVideoLoading,
+    error: videoError,
+    refresh: refreshVideoUrl,
+  } = useLessonVideoUrl(lesson);
 
   const handleProgress = (progress: any) => {
     if (!progress || !progress.playedSeconds) return;
@@ -69,39 +76,77 @@ export const LessonContent = ({
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {lesson.lesson_type === "video" ? (
         <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg mb-6">
-          {(() => {
-            const videoId = lesson.video_url?.split("v=")[1]?.split("&")[0];
-
-            return videoId && hasWindow ? (
-              <>
-                <iframe
-                  className="w-full h-full"
-                  src={`https://www.youtube.com/embed/${videoId}`}
-                  title={lesson.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                />
-                <div className="absolute bottom-2 right-2 z-10">
-                  <a
-                    href={`https://www.youtube.com/watch?v=${videoId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-white/50 hover:text-white bg-black/50 px-2 py-1 rounded"
-                  >
-                    Mở trong tab mới
-                  </a>
-                </div>
-              </>
+          {lesson.video_key ? (
+            playbackUrl ? (
+              <video
+                key={lesson.lesson_id}
+                controls
+                className="w-full h-full bg-black"
+                src={playbackUrl}
+              >
+                Trình duyệt của bạn không hỗ trợ video.
+              </video>
             ) : (
-              <div className="flex items-center justify-center h-full text-white">
-                <p>
-                  {lesson.video_url
-                    ? "Đang tải video..."
-                    : "Bài học này chưa có video."}
-                </p>
+              <div className="flex flex-col items-center justify-center h-full text-white gap-2">
+                {videoError ? (
+                  <>
+                    <p className="text-center max-w-md text-sm">
+                      {videoError}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={refreshVideoUrl}
+                    >
+                      Thử tải lại video
+                    </Button>
+                  </>
+                ) : (
+                  <p>
+                    {isVideoLoading
+                      ? "Đang tạo liên kết phát video..."
+                      : "Không thể tải video"}
+                  </p>
+                )}
               </div>
-            );
-          })()}
+            )
+          ) : (
+            (() => {
+              const videoId = lesson.video_url
+                ?.split("v=")[1]
+                ?.split("&")[0];
+
+              return videoId && hasWindow ? (
+                <>
+                  <iframe
+                    className="w-full h-full"
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    title={lesson.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                  <div className="absolute bottom-2 right-2 z-10">
+                    <a
+                      href={`https://www.youtube.com/watch?v=${videoId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-white/50 hover:text-white bg-black/50 px-2 py-1 rounded"
+                    >
+                      Mở trong tab mới
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center justify-center h-full text-white">
+                  <p>
+                    {lesson.video_url
+                      ? "Đang tải video..."
+                      : "Bài học này chưa có video."}
+                  </p>
+                </div>
+              );
+            })()
+          )}
         </div>
       ) : null}
 
