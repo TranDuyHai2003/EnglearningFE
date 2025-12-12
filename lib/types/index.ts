@@ -206,6 +206,49 @@ export interface LessonUploadResponse {
   uploaded_at: string;
 }
 
+export type LiveSessionType = "group" | "one_on_one" | "webinar";
+export type LiveSessionStatus = "scheduled" | "completed" | "cancelled";
+export type AttendanceStatus = "registered" | "attended" | "absent";
+
+export interface SessionRegistration {
+  registration_id: number;
+  session_id: number;
+  student_id: number;
+  attendance_status: AttendanceStatus;
+  joined_at?: string | null;
+  left_at?: string | null;
+  student?: {
+    user_id: number;
+    full_name: string;
+    avatar_url?: string | null;
+  };
+}
+
+export interface LiveSession {
+  session_id: number;
+  course_id?: number | null;
+  instructor_id: number;
+  session_type: LiveSessionType;
+  title: string;
+  description?: string | null;
+  scheduled_start: string;
+  scheduled_end: string;
+  capacity: number;
+  meeting_provider: string;
+  meeting_link?: string | null;
+  status: LiveSessionStatus;
+  calendar_event_id?: string | null;
+  course?: Course;
+  instructor?: {
+    user_id: number;
+    full_name: string;
+    email?: string;
+  };
+  registrations?: SessionRegistration[];
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Quiz {
   quiz_id: number;
   lesson_id: number;
