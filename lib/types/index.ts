@@ -592,3 +592,112 @@ export interface ActionItems {
   pending_questions: ActionItemQuestion[];
   recent_reviews: ActionItemReview[];
 }
+
+export type DeckVisibility = "private" | "unlisted" | "public";
+
+export interface DeckStats {
+  total_cards: number;
+  due_cards: number;
+  new_cards: number;
+  learned_cards: number;
+}
+
+export interface FlashcardDeck {
+  id: string;
+  owner_user_id?: number | null;
+  title: string;
+  description?: string | null;
+  visibility: DeckVisibility;
+  language_pair: string;
+  lesson_id?: number | null;
+  created_at: string;
+  updated_at: string;
+  total_cards?: number;
+  due_cards?: number;
+  new_cards?: number;
+}
+
+export interface FlashcardDeckDetail {
+  deck: FlashcardDeck;
+  stats: DeckStats;
+}
+
+export interface FlashcardCardState {
+  status: "new" | "learning" | "review" | "suspended";
+  due_at?: string;
+  repetitions: number;
+  interval_days: number;
+  ease_factor?: number;
+  lapses?: number;
+  last_reviewed_at?: string | null;
+}
+
+export interface FlashcardCard {
+  id: string;
+  deck_id: string;
+  owner_user_id?: number | null;
+  front_text: string;
+  back_text: string;
+  ipa_text?: string | null;
+  example_text?: string | null;
+  audio_url?: string | null;
+  image_url?: string | null;
+  tags: string[];
+  dict_entry_id?: number | null;
+  dict_sense_ids?: number[];
+  dict_source?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  state?: FlashcardCardState | null;
+}
+
+export interface ReviewQueueItem {
+  card: FlashcardCard;
+  state: FlashcardCardState;
+}
+
+export interface FlashcardSummary extends DeckStats {
+  accuracy_7d: number;
+  accuracy_30d: number;
+  streak_days: number;
+}
+
+export interface DictionaryLookupItem {
+  id: number;
+  headword: string;
+  pronunciation?: string | null;
+}
+
+export interface DictionaryLookupResponse {
+  term: string;
+  items: DictionaryLookupItem[];
+}
+
+export interface DictionaryExample {
+  id: number;
+  en: string;
+  vi?: string | null;
+}
+
+export interface DictionarySense {
+  id: number;
+  senseText: string;
+  tags: string[];
+  examples: DictionaryExample[];
+}
+
+export interface DictionaryPosBlock {
+  id: number;
+  pos: string;
+  posTag: string;
+  posMeta?: string | null;
+  senses: DictionarySense[];
+}
+
+export interface DictionaryEntryDetail {
+  id: number;
+  headword: string;
+  pronunciation?: string | null;
+  raw_header?: string | null;
+  pos: DictionaryPosBlock[];
+}

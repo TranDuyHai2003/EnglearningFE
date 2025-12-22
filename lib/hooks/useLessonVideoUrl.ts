@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Lesson } from "@/lib/types";
-import { storageService } from "@/lib/api/storageService";
+import { getAuthToken } from "@/lib/auth/utils";
 
 interface LessonVideoState {
   url: string | null;
@@ -11,7 +11,7 @@ interface LessonVideoState {
 
 export const useLessonVideoUrl = (lesson?: Lesson | null): LessonVideoState => {
   const [url, setUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const isLoading = false;
   const [error, setError] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState(0);
 
@@ -20,44 +20,23 @@ export const useLessonVideoUrl = (lesson?: Lesson | null): LessonVideoState => {
   }, []);
 
   useEffect(() => {
-    let isActive = true;
-
-    if (!lesson?.video_key) {
+    if (!lesson?.video_key || !lesson?.lesson_id) {
       setUrl(null);
       setError(null);
-      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    storageService
-      .getLecturePlaybackUrl(lesson.video_key)
-      .then((signedUrl) => {
-        if (isActive) {
-          setUrl(signedUrl);
-          setError(null);
-        }
-      })
-      .catch((err) => {
-        if (isActive) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Không thể tải video. Vui lòng thử lại."
-          );
-          setUrl(null);
-        }
-      })
-      .finally(() => {
-        if (isActive) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isActive = false;
-    };
-  }, [lesson?.video_key, refreshToken]);
+    const apiBase =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    const normalizedBase = apiBase.replace(/\/$/, "");
+    const authToken = getAuthToken();
+    const tokenQuery = authToken
+      ? `&token=${encodeURIComponent(authToken)}`
+      : "";
+    const streamUrl = `${normalizedBase}/videos/${lesson.lesson_id}/stream?t=${refreshToken}${tokenQuery}`;
+    setUrl(streamUrl);
+    setError(null);
+  }, [lesson?.lesson_id, lesson?.video_key, refreshToken]);
 
   return { url, isLoading, error, refresh };
 };

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, User, LayoutDashboard } from "lucide-react";
+import { LogOut, User, LayoutDashboard, Sparkles, ChevronDown } from "lucide-react";
 import { clearAuthData } from "@/lib/auth/utils";
 
 export const Header = () => {
@@ -60,6 +60,20 @@ export const Header = () => {
           >
             Khóa học
           </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="text-lg font-medium text-gray-600 hover:text-primary transition-colors inline-flex items-center gap-1 focus:outline-none">
+              Học liệu
+              <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem asChild>
+                <Link href="/flashcards">Flashcards</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/flashcards/dictionary">Từ điển</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Link
             href="/#features"
             className="text-lg font-medium text-gray-600 hover:text-primary transition-colors"
@@ -100,6 +114,13 @@ export const Header = () => {
                     </p>
                   </div>
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/flashcards">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Flashcards &amp; Từ điển
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href={getDashboardLink()}>

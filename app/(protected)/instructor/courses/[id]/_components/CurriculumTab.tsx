@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -25,6 +26,7 @@ import {
   Trash2,
   PlayCircle,
 } from "lucide-react";
+import { LessonVocabularyDialog } from "./LessonVocabularyDialog";
 
 interface CurriculumTabProps {
   course: Course;
@@ -41,6 +43,7 @@ interface SortableSectionProps {
   onDeleteSection: (sectionId: number) => void;
   onOpenLessonForm: (sectionId: number, lesson?: Lesson | null) => void;
   onDeleteLesson: (sectionId: number, lessonId: number) => void;
+  onOpenVocabulary: (lesson: Lesson) => void;
 }
 
 function SortableSection({
@@ -49,6 +52,7 @@ function SortableSection({
   onDeleteSection,
   onOpenLessonForm,
   onDeleteLesson,
+  onOpenVocabulary,
 }: SortableSectionProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: section.section_id });
@@ -114,13 +118,20 @@ function SortableSection({
                     : "Chờ duyệt"}
                 </span>
               </p>
-              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onOpenLessonForm(section.section_id, lesson)}
                 >
                   Sửa
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onOpenVocabulary(lesson)}
+                >
+                  Flashcards
                 </Button>
                 <Button
                   variant="ghost"
@@ -161,6 +172,8 @@ export function CurriculumTab({
   onDeleteLesson,
   onReorderSections,
 }: CurriculumTabProps) {
+  const [lessonForVocab, setLessonForVocab] = useState<Lesson | null>(null);
+  const openVocabulary = (lesson: Lesson) => setLessonForVocab(lesson);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -187,12 +200,13 @@ export function CurriculumTab({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between items-center">
-        <CardTitle>Chương trình giảng dạy</CardTitle>
-        <Button variant="outline" onClick={() => onOpenSectionForm()}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Thêm chương
-        </Button>
+    <>
+      <Card>
+        <CardHeader className="flex flex-row justify-between items-center">
+          <CardTitle>Chương trình giảng dạy</CardTitle>
+          <Button variant="outline" onClick={() => onOpenSectionForm()}>
+            <PlusCircle className="mr-2 h-4 w-4" /> Thêm chương
+          </Button>
       </CardHeader>
       <CardContent>
         {course.sections && course.sections.length > 0 ? (
@@ -214,6 +228,7 @@ export function CurriculumTab({
                     onDeleteSection={onDeleteSection}
                     onOpenLessonForm={onOpenLessonForm}
                     onDeleteLesson={onDeleteLesson}
+                    onOpenVocabulary={openVocabulary}
                   />
                 ))}
               </div>
@@ -226,6 +241,12 @@ export function CurriculumTab({
           </p>
         )}
       </CardContent>
-    </Card>
+      </Card>
+      <LessonVocabularyDialog
+        lesson={lessonForVocab}
+        open={Boolean(lessonForVocab)}
+        onClose={() => setLessonForVocab(null)}
+      />
+    </>
   );
 }

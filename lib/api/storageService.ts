@@ -28,21 +28,4 @@ export const storageService = {
       response.data.message || "Không thể tải lên video. Vui lòng thử lại."
     );
   },
-
-  async getLecturePlaybackUrl(key: string): Promise<string> {
-    const response = await apiClient.get<
-      ApiResponse<{ url: string; expires_in: number }>
-    >("/lecture/url", {
-      params: { key },
-    });
-
-    if (response.data.success && response.data.data?.url) {
-      return response.data.data.url;
-    }
-
-    throw new Error(
-      response.data.message ||
-        "Không thể lấy liên kết phát video. Vui lòng thử lại."
-    );
-  },
 };

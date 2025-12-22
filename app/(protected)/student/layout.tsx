@@ -15,7 +15,14 @@ import {
   BookOpenCheck,
   History,
   Award,
+  ChevronDown,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useEffect } from "react";
 
 const navItems = [
@@ -69,6 +76,20 @@ export default function StudentLayout({
                 {item.label}
               </Link>
             ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 text-base lg:text-lg font-medium text-gray-600 hover:text-primary transition-colors focus:outline-none">
+                Học liệu
+                <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem asChild>
+                  <Link href="/flashcards">Flashcards</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/flashcards/dictionary">Từ điển</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
           <div className="flex items-center gap-4">
             <Link
