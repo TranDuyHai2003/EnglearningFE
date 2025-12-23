@@ -45,17 +45,20 @@ export function QuizView({
         const quizData = await learningService.getQuiz(quizId);
         setQuiz(quizData);
 
-        const newAttempt = await learningService.startQuizAttempt(quizId);
-        setAttempt(newAttempt);
+        // Check for existing attempts first
+        const attempts = await learningService.getQuizAttempts(quizId);
+        if (attempts && attempts.length > 0) {
+            // Use the latest attempt
+            setAttempt(attempts[0]);
+        } else {
+            // Start a new attempt only if none exist
+            const newAttempt = await learningService.startQuizAttempt(quizId);
+            setAttempt(newAttempt);
+        }
       } catch (e: any) {
         if (e.response?.data?.code === "ATTEMPT_LIMIT_REACHED") {
-           // We can handle this by showing a specific UI state, 
-           // but for now let's just show a clear warning and maybe disable the quiz.
-           // Better yet, let's treat it as a "completed" state visually or a locked state.
-           // However, since we don't have a "limit reached" UI state in state variables, 
-           // I'll show a warning toast and maybe redirect or just show a message locally.
-           toast.warning("Bạn đã hết lượt làm bài quiz này.");
-           return;
+            toast.warning("Bạn đã hết lượt làm bài quiz này.");
+            return;
         }
         toast.error(e.message || "Không thể tải bài quiz.");
       } finally {
@@ -143,6 +146,28 @@ export function QuizView({
             </p>
           )}
         </CardContent>
+        <CardFooter className="justify-center gap-4">
+            <Button variant="outline" onClick={async () => {
+                setIsLoading(true);
+                try {
+                    const newAttempt = await learningService.startQuizAttempt(quizId!);
+                    setAttempt(newAttempt);
+                    setAnswers({});
+                } catch (e: any) {
+                    toast.error(e.message || "Không thể thử lại.");
+                } finally {
+                    setIsLoading(false);
+                }
+            }}>
+                <Loader2 className={isLoading ? "mr-2 h-4 w-4 animate-spin" : "hidden"} />
+                {!isLoading && "Thử lại"}
+            </Button>
+            {attempt.passed && (
+                <Button onClick={onQuizPassed}>
+                    Tiếp tục bài học
+                </Button>
+            )}
+        </CardFooter>
       </Card>
     );
   }

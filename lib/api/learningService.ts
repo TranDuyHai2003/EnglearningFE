@@ -144,6 +144,19 @@ class LearningService {
     );
     return response.data;
   }
+
+  /**
+   * Lấy lịch sử làm bài quiz.
+   */
+  async getQuizAttempts(quizId: number): Promise<any[]> {
+    const response = await apiClient.get<ApiResponse<any[]>>(
+      `/learning/quizzes/${quizId}/attempts`
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    return [];
+  }
 }
 
 export const learningService = new LearningService();

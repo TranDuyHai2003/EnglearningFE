@@ -183,7 +183,7 @@ export default function InstructorLayout({
           <div className="flex justify-between items-center h-20 w-full max-w-[95%] mx-auto px-4">
             <Logo />
 
-            <nav className="hidden md:flex items-center gap-1 bg-gray-100/50 p-1.5 rounded-full border">
+            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
               {navItems.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 return (
@@ -191,10 +191,10 @@ export default function InstructorLayout({
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-2 text-sm font-medium py-2 px-4 rounded-full transition-all duration-200",
+                      "flex items-center gap-2 text-sm lg:text-base font-medium transition-all duration-200",
                       isActive
-                        ? "bg-white text-blue-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-200/50"
+                        ? "text-blue-600 font-bold"
+                        : "text-gray-600 hover:text-blue-600"
                     )}
                   >
                     <item.icon className="h-4 w-4" />

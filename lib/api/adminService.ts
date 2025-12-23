@@ -106,6 +106,43 @@ export const adminService = {
     return response.data;
   },
 
+  async createSupportTicket(data: {
+    category: string;
+    subject: string;
+    description: string;
+    priority: string;
+  }) {
+    const response = await apiClient.post("/admin/support/tickets", data);
+    return response.data;
+  },
+
+  async getSupportTicketDetails(id: number | string) {
+    const response = await apiClient.get<{
+      success: boolean;
+      data: SupportTicket;
+    }>(`/admin/support/tickets/${id}`);
+    return response.data;
+  },
+
+  async replySupportTicket(id: number | string, reply_text: string) {
+    const response = await apiClient.post(
+      `/admin/support/tickets/${id}/replies`,
+      { reply_text }
+    );
+    return response.data;
+  },
+
+  async updateSupportTicket(
+    id: number | string,
+    data: { status?: string; priority?: string; assigned_to?: number }
+  ) {
+    const response = await apiClient.patch(
+      `/admin/support/tickets/${id}`,
+      data
+    );
+    return response.data;
+  },
+
   async getPendingCourses(page = 1, limit = 10) {
     const response = await apiClient.get("/admin/approvals/courses", {
       params: { page, limit },

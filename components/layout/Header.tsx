@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,11 @@ export const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isLoading } = useAuth({ redirectToLoginIfFail: false });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     clearAuthData();
@@ -44,7 +51,7 @@ export const Header = () => {
             href="/"
             className={`text-lg font-medium transition-colors ${
               pathname === "/"
-                ? "text-primary font-semibold"
+                ? "text-primary font-bold"
                 : "text-gray-600 hover:text-primary"
             }`}
           >
@@ -54,7 +61,7 @@ export const Header = () => {
             href="/courses"
             className={`text-lg font-medium transition-colors ${
               pathname === "/courses"
-                ? "text-primary font-semibold"
+                ? "text-primary font-bold"
                 : "text-gray-600 hover:text-primary"
             }`}
           >
@@ -69,7 +76,21 @@ export const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          {isLoading ? (
+          {!mounted ? (
+            // Server-side and initial client render: Show Guest View
+            <>
+              <Link href="/login">
+                <Button className="rounded-full text-base font-semibold px-6 bg-green-500 hover:bg-green-600 text-white border-none">
+                  Đăng nhập
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button className="rounded-full text-base font-semibold px-6 bg-blue-600 hover:bg-blue-700 text-white border-none">
+                  Đăng ký
+                </Button>
+              </Link>
+            </>
+          ) : isLoading ? (
             <div className="h-10 w-20 bg-gray-100 animate-pulse rounded-full" />
           ) : user ? (
             <DropdownMenu>

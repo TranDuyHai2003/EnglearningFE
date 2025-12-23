@@ -371,6 +371,19 @@ export function LessonFormDialog({
                 </Button>
               )}
 
+              {!activeLesson && form.watch("lesson_type") !== "quiz" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={form.handleSubmit((data) => onSubmit(data, true))}
+                  disabled={isSaving || isUploadingVideo}
+                >
+                  Lưu & Thêm Quiz
+                </Button>
+              )}
+
+
+
               <div className="flex gap-2 ml-auto">
                 <Button
                   type="button"

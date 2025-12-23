@@ -446,6 +446,7 @@ export interface SupportReply {
   user_id: number;
   reply_text: string;
   created_at: string;
+  user?: User;
 }
 
 export interface SystemSetting {
