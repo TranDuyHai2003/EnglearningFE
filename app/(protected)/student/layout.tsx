@@ -16,6 +16,7 @@ import {
   History,
   Award,
   ChevronDown,
+  LifeBuoy,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -67,17 +68,41 @@ export default function StudentLayout({
       <header className="bg-white sticky top-0 z-50 border-b">
         <div className="flex justify-between items-center h-15 w-full px-4 md:px-8 lg:px-12 py-5">
           <Logo />
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-2 text-base lg:text-lg font-medium text-gray-600 hover:text-primary transition-colors"
-              >
-                <item.icon className="h-5 w-5 lg:h-6 lg:w-6" />
-                {item.label}
-              </Link>
-            ))}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 text-base lg:text-lg font-medium text-gray-600 hover:text-primary transition-colors focus:outline-none">
+              Học liệu
+              <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <Link href="/flashcards">Flashcards</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/flashcards/dictionary">Từ điển</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <nav className="hidden md:flex items-center gap-2 lg:gap-4">
+            {navItems.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/" && pathname?.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-base lg:text-lg font-medium transition-colors ${
+                    isActive
+                      ? "text-indigo-600 font-bold"
+                      : "text-gray hover:text-primary hover:bg-gray-50"
+                  }`}
+                >
+                  <item.icon className="h-5 w-5 lg:h-6 lg:w-6" />
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="flex items-center gap-4">
             <Link
