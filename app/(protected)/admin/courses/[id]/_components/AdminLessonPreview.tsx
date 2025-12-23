@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lesson } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,11 @@ interface AdminLessonPreviewProps {
 export function AdminLessonPreview({ lesson, onUpdate }: AdminLessonPreviewProps) {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const { url: playbackUrl, isLoading, error, refresh } = useLessonVideoUrl(lesson);
+  const [playerError, setPlayerError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPlayerError(null);
+  }, [lesson.lesson_id]);
 
   const handleApprove = async () => {
     try {
@@ -103,15 +108,31 @@ export function AdminLessonPreview({ lesson, onUpdate }: AdminLessonPreviewProps
           <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
             {lesson.video_key ? (
               playbackUrl ? (
-                <video controls className="w-full h-full bg-black" src={playbackUrl}>
+                <video
+                  controls
+                  className="w-full h-full bg-black"
+                  src={playbackUrl}
+                  key={playbackUrl}
+                  onError={() =>
+                    setPlayerError("Không thể phát video. Vui lòng thử lại.")
+                  }
+                  onLoadedData={() => setPlayerError(null)}
+                >
                   Trình duyệt không hỗ trợ video.
                 </video>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-white gap-2 text-sm px-4 text-center">
-                  {error ? (
+                  {playerError || error ? (
                     <>
-                      <p>{error}</p>
-                      <Button size="sm" variant="secondary" onClick={refresh}>
+                      <p>{playerError || error}</p>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                          setPlayerError(null);
+                          refresh();
+                        }}
+                      >
                         Thử tải lại video
                       </Button>
                     </>

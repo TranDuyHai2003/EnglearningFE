@@ -26,6 +26,7 @@ export function PendingLessonsTable() {
     error: videoError,
     refresh: refreshVideo,
   } = useLessonVideoUrl(selectedLesson || undefined);
+  const [playerError, setPlayerError] = useState<string | null>(null);
 
   const fetchLessons = async () => {
     setIsLoading(true);
@@ -42,6 +43,10 @@ export function PendingLessonsTable() {
   useEffect(() => {
     fetchLessons();
   }, []);
+
+  useEffect(() => {
+    setPlayerError(null);
+  }, [selectedLesson?.lesson_id]);
 
   const handleApprove = async () => {
     if (!selectedLesson) return;
@@ -138,15 +143,31 @@ export function PendingLessonsTable() {
               <div className="aspect-video bg-black rounded overflow-hidden flex items-center justify-center">
                 {selectedLesson.video_key ? (
                   playbackUrl ? (
-                    <video controls className="w-full h-full" src={playbackUrl}>
+                    <video
+                      controls
+                      className="w-full h-full"
+                      src={playbackUrl}
+                      key={playbackUrl}
+                      onError={() =>
+                        setPlayerError("Không thể phát video. Vui lòng thử lại.")
+                      }
+                      onLoadedData={() => setPlayerError(null)}
+                    >
                       Trình duyệt không hỗ trợ video.
                     </video>
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-white text-sm px-4 text-center">
-                      {videoError ? (
+                      {playerError || videoError ? (
                         <>
-                          <p>{videoError}</p>
-                          <Button size="sm" variant="secondary" onClick={refreshVideo}>
+                          <p>{playerError || videoError}</p>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => {
+                              setPlayerError(null);
+                              refreshVideo();
+                            }}
+                          >
                             Thử tải lại video
                           </Button>
                         </>

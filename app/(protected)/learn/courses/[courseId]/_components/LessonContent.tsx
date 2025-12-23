@@ -59,6 +59,7 @@ export const LessonContent = ({
     error: videoError,
     refresh: refreshVideoUrl,
   } = useLessonVideoUrl(lesson);
+  const [playerError, setPlayerError] = useState<string | null>(null);
 
   const handleProgress = (progress: any) => {
     if (!progress || !progress.playedSeconds) return;
@@ -72,6 +73,25 @@ export const LessonContent = ({
     }
   }, []);
 
+  useEffect(() => {
+    setPlayerError(null);
+  }, [lesson.lesson_id]);
+
+  const handleVideoError = () => {
+    setPlayerError("Không thể phát video bài học. Vui lòng thử lại.");
+  };
+
+  const handleVideoLoaded = () => {
+    setPlayerError(null);
+  };
+
+  const handleRefreshVideo = () => {
+    setPlayerError(null);
+    refreshVideoUrl();
+  };
+
+  const renderedError = playerError || videoError;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {lesson.lesson_type === "video" ? (
@@ -79,24 +99,26 @@ export const LessonContent = ({
           {lesson.video_key ? (
             playbackUrl ? (
               <video
-                key={lesson.lesson_id}
+                key={playbackUrl}
                 controls
                 className="w-full h-full bg-black"
                 src={playbackUrl}
+                onError={handleVideoError}
+                onLoadedData={handleVideoLoaded}
               >
                 Trình duyệt của bạn không hỗ trợ video.
               </video>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-white gap-2">
-                {videoError ? (
+                {renderedError ? (
                   <>
                     <p className="text-center max-w-md text-sm">
-                      {videoError}
+                      {renderedError}
                     </p>
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={refreshVideoUrl}
+                      onClick={handleRefreshVideo}
                     >
                       Thử tải lại video
                     </Button>
