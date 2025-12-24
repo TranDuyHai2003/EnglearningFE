@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -85,6 +85,12 @@ import { useAuth } from "@/lib/hooks/useAuth";
 
 const HeroSection = () => {
   const { user } = useAuth({ redirectToLoginIfFail: false });
+  const [mounted, setMounted] = useState(false);
+
+  // Đánh dấu đã mount thành công lên trình duyệt
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getDashboardLink = () => {
     if (!user) return "/courses";
@@ -92,13 +98,12 @@ const HeroSection = () => {
     return `/${user.role}/dashboard`;
   };
 
+  // Logic hiển thị: Nếu chưa mounted (đang SSR), luôn hiển thị trạng thái mặc định (Guest)
+  const buttonLink = mounted && user ? getDashboardLink() : "/courses";
+  const buttonText = mounted && user ? "Vào Dashboard" : "Khám phá khóa học";
+
   return (
     <section className="flex flex-col md:flex-row min-h-[calc(100vh-68px)]">
-      {/* 
-        min-h-[calc(100vh-68px)]: Đặt chiều cao tối thiểu của section bằng chiều cao của viewport trừ đi chiều cao của Header.
-        Bạn có thể cần điều chỉnh `68px` nếu Header của bạn có chiều cao khác. 
-      */}
-
       <div className="w-full md:w-1/3 flex items-center justify-center p-8 lg:p-12 bg-green-300">
         <div className="max-w-md w-full text-center md:text-left">
           <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
@@ -109,9 +114,9 @@ const HeroSection = () => {
             tế giúp bạn giao tiếp lưu loát và đạt điểm số mơ ước.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <Link href={getDashboardLink()}>
+            <Link href={buttonLink}>
               <Button size="lg" className="w-full sm:w-auto">
-                {user ? "Vào Dashboard" : "Khám phá khóa học"}
+                {buttonText}
               </Button>
             </Link>
             <a href="#features">
@@ -275,29 +280,38 @@ const StatsBanner = () => (
 
 const FinalCTASection = () => {
   const { user } = useAuth({ redirectToLoginIfFail: false });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Chỉ hiển thị nội dung cá nhân hóa sau khi đã mount
+  const isUserLoggedIn = mounted && !!user;
 
   return (
     <section className="py-20 text-center bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-4">
-          {user
+          {isUserLoggedIn
             ? "Tiếp tục hành trình học tập của bạn"
             : "Sẵn sàng để bắt đầu hành trình của bạn?"}
         </h2>
         <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-          {user
+          {isUserLoggedIn
             ? "Khám phá thêm nhiều khóa học thú vị và nâng cao kỹ năng ngay hôm nay!"
             : "Đăng ký ngay hôm nay để nhận ưu đãi đặc biệt và bắt đầu chinh phục mục tiêu tiếng Anh của bạn!"}
         </p>
-        <Link href={user ? "/courses" : "/register"}>
+        <Link href={isUserLoggedIn ? "/courses" : "/register"}>
           <Button size="lg" className="px-10 py-6 text-base">
-            {user ? "Xem thêm khóa học" : "Đăng ký ngay"}
+            {isUserLoggedIn ? "Xem thêm khóa học" : "Đăng ký ngay"}
           </Button>
         </Link>
       </div>
     </section>
   );
 };
+
 
 const Footer = () => (
   <footer className="bg-gray-900 text-gray-400">

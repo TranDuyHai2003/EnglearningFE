@@ -111,30 +111,43 @@ export default function StudentDashboard() {
   const [activities, setActivities] = useState<RecentActivity[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
+useEffect(() => {
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Sử dụng Promise.allSettled để nếu 1 cái lỗi, những cái khác vẫn chạy
+      const results = await Promise.allSettled([
+        learningService.getMyEnrollments({ limit: 4, status: "active" }),
+        learningService.getMyStats(),
+        learningService.getActivityFeed(5),
+      ]);
 
-        const [enrollmentsResponse, statsResponse, activitiesResponse] =
-          await Promise.all([
-            learningService.getMyEnrollments({ limit: 4, status: "active" }),
-            learningService.getMyStats(),
-            learningService.getActivityFeed(5),
-          ]);
-
-        setEnrollments(enrollmentsResponse.data);
-        setStats(statsResponse);
-        setActivities(activitiesResponse);
-      } catch (error) {
-        toast.error("Không thể tải dữ liệu dashboard. Vui lòng thử lại.");
-        console.error("Dashboard fetch error:", error);
-      } finally {
-        setIsLoading(false);
+      if (results[0].status === "fulfilled") {
+        setEnrollments(results[0].value.data);
+      } else {
+        console.error("Enrollments error:", results[0].reason);
       }
-    };
-    fetchData();
-  }, []);
+
+      if (results[1].status === "fulfilled") {
+        setStats(results[1].value);
+      } else {
+        console.error("Stats error:", results[1].reason);
+        // Có thể set stats mặc định để tránh lỗi giao diện
+      }
+
+      if (results[2].status === "fulfilled") {
+        setActivities(results[2].value);
+      } else {
+        console.error("Activities error:", results[2].reason);
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi kết nối server.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchData();
+}, []);
 
   const coursesInProgress = enrollments || [];
 

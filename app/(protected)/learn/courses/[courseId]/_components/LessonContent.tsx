@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Notebook,
   Star,
+  Brain,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +19,7 @@ import { learningService } from "@/lib/api/learningService";
 import { QuizView } from "./QuizView";
 import { QATab } from "./QATab";
 import { ReviewTab } from "./ReviewTab";
+import { FlashcardTab } from "./FlashcardTab";
 import { useLessonVideoUrl } from "@/lib/hooks/useLessonVideoUrl";
 
 interface Props {
@@ -192,7 +194,7 @@ export const LessonContent = ({
       <Separator className="mb-6" />
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-6">
           <TabsTrigger value="overview">
             <Info className="w-4 h-4 mr-2" />
             Mô tả
@@ -200,6 +202,10 @@ export const LessonContent = ({
           <TabsTrigger value="resources">
             <Download className="w-4 h-4 mr-2" />
             Tài liệu
+          </TabsTrigger>
+          <TabsTrigger value="flashcards">
+             <Brain className="w-4 h-4 mr-2" />
+             Flashcards
           </TabsTrigger>
           <TabsTrigger value="qna">
             <MessageSquare className="w-4 h-4 mr-2" />
@@ -209,10 +215,6 @@ export const LessonContent = ({
             <Star className="w-4 h-4 mr-2" />
             Đánh giá
           </TabsTrigger>
-          {/* <TabsTrigger value="notes">
-            <Notebook className="w-4 h-4 mr-2" />
-            Ghi chú
-          </TabsTrigger> */}
         </TabsList>
         <TabsContent value="overview">
           <div className="prose max-w-none p-6 border rounded-lg bg-white">
@@ -244,6 +246,9 @@ export const LessonContent = ({
               </p>
             )}
           </div>
+        </TabsContent>
+        <TabsContent value="flashcards">
+           <FlashcardTab decks={lesson.flashcardDecks || []} />
         </TabsContent>
         <TabsContent value="qna">
           <div className="p-6 border rounded-lg bg-white">

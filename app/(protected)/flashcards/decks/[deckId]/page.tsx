@@ -114,8 +114,8 @@ export default function DeckDetailPage() {
     loadCards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deckId]);
-
-  const canManageCards = detail?.deck.owner_user_id === user?.user_id;
+ console.log(detail,user,"log");
+  const canManageCards = detail?.deck.owner_user_id === user?.id;
 
   const splitLines = (value?: string | null) =>
     value

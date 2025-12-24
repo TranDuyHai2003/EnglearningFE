@@ -107,7 +107,14 @@ export const Header = () => {
           ) : isLoading ? (
             <div className="h-10 w-20 bg-gray-100 animate-pulse rounded-full" />
           ) : user ? (
-            <DropdownMenu>
+            <div className="flex items-center gap-2">
+              <Link href={getDashboardLink()}>
+                <Button variant="ghost" className="hidden md:flex items-center gap-2 font-medium text-gray-700 hover:text-primary hover:bg-gray-100">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Vào Dashboard
+                </Button>
+              </Link>
+              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
@@ -165,6 +172,7 @@ export const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           ) : (
             <>
               <Link href="/login">

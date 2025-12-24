@@ -64,16 +64,26 @@ class LearningService {
   /**
    * Lấy thống kê tổng quan của học viên.
    */
-  async getMyStats(): Promise<StudentStats> {
+async getMyStats(): Promise<StudentStats> {
+  try {
     const response = await apiClient.get<ApiResponse<StudentStats>>(
       "/learning/my-stats"
     );
-    if (response.data.success && response.data.data) {
+    
+    // Debug: log response để xem backend trả về gì
+    console.log("Stats API Response:", response.data);
+
+    if (response.data && response.data.success && response.data.data) {
       return response.data.data;
     }
-    throw new Error(response.data.message || "Không thể tải thống kê.");
+    
+    throw new Error(response.data?.message || "Dữ liệu thống kê không hợp lệ");
+  } catch (error: any) {
+    // Nếu lỗi do backend trả về 401, 404, 500 nó sẽ rơi vào đây
+    console.error("API Error in getMyStats:", error.response?.data || error.message);
+    throw error;
   }
-
+}
   /**
    * Lấy hoạt động gần đây của học viên.
    */

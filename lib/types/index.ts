@@ -146,6 +146,7 @@ export interface Lesson {
   quiz?: Quiz;
   approval_status: ApprovalStatus;
   rejection_reason?: string | null;
+  flashcardDecks?: FlashcardDeck[];
 }
 
 export interface LessonResource {

@@ -396,11 +396,18 @@ export function LessonVocabularyDialog({
                 </div>
                 <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
                   {cards.map((card, idx) => (
-                    <button
-                      type="button"
+                    <div
+                      role="button"
+                      tabIndex={0}
                       key={`draft-${idx}`}
                       onClick={() => setSelectedIndex(idx)}
-                      className={`w-full border rounded-md p-3 text-left transition hover:bg-slate-50 ${
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedIndex(idx);
+                        }
+                      }}
+                      className={`w-full border rounded-md p-3 text-left transition hover:bg-slate-50 cursor-pointer ${
                         idx === safeIndex ? "border-primary" : "border-slate-200"
                       }`}
                     >
@@ -412,7 +419,6 @@ export function LessonVocabularyDialog({
                           </p>
                         </div>
                         <Button
-                          type="button"
                           variant="ghost"
                           size="icon"
                           onClick={(event) => {
@@ -423,7 +429,7 @@ export function LessonVocabularyDialog({
                           <Trash2 className="h-4 w-4 text-muted-foreground" />
                         </Button>
                       </div>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>

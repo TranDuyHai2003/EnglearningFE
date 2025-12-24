@@ -113,20 +113,19 @@ export function DictionaryAssist({
   const visibleExamplesCount = selectedExampleIds.size;
 
   const toggleSense = (senseId: number) => {
-    setSelectedSenseIds((prev) => {
-      if (prev.includes(senseId)) {
-        const next = prev.filter((id) => id !== senseId);
-        onReferenceChange(selectedEntry?.id ?? null, next);
-        return next;
-      }
-      if (prev.length >= 3) {
-        toast.info("Bạn chỉ nên chọn tối đa 3 nghĩa cho mỗi thẻ");
-        return prev;
-      }
-      const next = [...prev, senseId];
+    if (selectedSenseIds.includes(senseId)) {
+      const next = selectedSenseIds.filter((id) => id !== senseId);
+      setSelectedSenseIds(next);
       onReferenceChange(selectedEntry?.id ?? null, next);
-      return next;
-    });
+    } else {
+      if (selectedSenseIds.length >= 3) {
+        toast.info("Bạn chỉ nên chọn tối đa 3 nghĩa cho mỗi thẻ");
+        return;
+      }
+      const next = [...selectedSenseIds, senseId];
+      setSelectedSenseIds(next);
+      onReferenceChange(selectedEntry?.id ?? null, next);
+    }
   };
 
   const toggleExample = (exampleId: number) => {
