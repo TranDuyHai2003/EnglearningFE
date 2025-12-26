@@ -61,11 +61,13 @@ export default function PaymentSuccessPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Số tiền:</span>
-                <span className="font-semibold">${transaction.final_amount}</span>
+                <span className="font-semibold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(transaction.final_amount)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Khóa học:</span>
-                <span>{transaction.details[0]?.course?.title}</span>
+                <span className="text-muted-foreground">Sản phẩm:</span>
+                <span className="font-medium text-right">
+                  {transaction.details[0]?.course?.title || transaction.details[0]?.package?.name || "Unknown Item"}
+                </span>
               </div>
             </div>
           )}
@@ -73,9 +75,15 @@ export default function PaymentSuccessPage() {
           <div className="flex gap-2">
             <Button
               className="flex-1"
-              onClick={() => router.push("/student/my-courses")}
+              onClick={() => {
+                 if (transaction?.details[0]?.package_id) {
+                    router.push("/student/speaking");
+                 } else {
+                    router.push("/student/my-courses");
+                 }
+              }}
             >
-              Khóa học của tôi
+              {transaction?.details[0]?.package_id ? "Vào Speaking Club" : "Khóa học của tôi"}
             </Button>
             <Button
               variant="outline"

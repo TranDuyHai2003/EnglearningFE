@@ -11,6 +11,7 @@ import {
   LogOut,
   Loader2,
   LayoutDashboard,
+  Video,
   BookMarked,
   BookOpenCheck,
   History,
@@ -34,6 +35,7 @@ import { useEffect } from "react";
 const mainNavItems = [
   { href: "/student/dashboard", icon: LayoutDashboard, label: "Tổng quan" },
   { href: "/student/my-courses", icon: BookMarked, label: "Khóa học của tôi" },
+  // { href: "/student/speaking", icon: Video, label: "Speaking Club" },
   { href: "/courses", icon: BookOpenCheck, label: "Khám phá" },
 ];
 

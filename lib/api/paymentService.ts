@@ -23,6 +23,17 @@ class PaymentService {
     throw new Error(response.data.message || "Không thể tạo thanh toán");
   }
 
+  async createPackageCheckout(packageId: number): Promise<CreateCheckoutResponse> {
+    const response = await apiClient.post<ApiResponse<CreateCheckoutResponse>>(
+      "/payments/create-checkout",
+      { packageId }
+    );
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể tạo thanh toán gói");
+  }
+
   async getSessionStatus(sessionId: string): Promise<SessionStatusResponse> {
     const response = await apiClient.get<ApiResponse<SessionStatusResponse>>(
       `/payments/session/${sessionId}`
