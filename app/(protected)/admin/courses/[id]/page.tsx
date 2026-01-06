@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { ReviewDialog } from "../../approvals/_components/ReviewDialog";
 import { AdminLessonPreview } from "./_components/AdminLessonPreview";
-import { cn } from "@/lib/utils";
+import { cn, getImageUrl } from "@/lib/utils";
 
 export default function AdminCourseDetailPage() {
   const params = useParams();
@@ -223,7 +223,7 @@ export default function AdminCourseDetailPage() {
               <div className="aspect-video relative rounded-lg overflow-hidden bg-slate-100 shadow-sm">
                 {course.thumbnail_url ? (
                   <Image
-                    src={course.thumbnail_url}
+                    src={getImageUrl(course.thumbnail_url)}
                     alt={course.title}
                     fill
                     className="object-cover"

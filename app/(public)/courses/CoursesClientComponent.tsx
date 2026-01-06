@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useDebounce } from "use-debounce";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 const CourseCard = ({ course }: { course: Course }) => (
   <Link href={`/courses/${course.course_id}`}>
@@ -26,7 +27,7 @@ const CourseCard = ({ course }: { course: Course }) => (
       <CardHeader className="p-0">
         <div className="relative w-full h-40">
           <Image
-            src={course.thumbnail_url || "/placeholder.png"}
+            src={getImageUrl(course.thumbnail_url)}
             alt={course.title}
             fill
             style={{ objectFit: "cover" }}

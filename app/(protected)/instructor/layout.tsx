@@ -21,6 +21,7 @@ import { InstructorProfile } from "@/lib/types";
 import { clearAuthData } from "@/lib/auth/utils";
 import { Logo } from "@/app/page";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 type PromptStatus = "pending" | "rejected" | "interviewing" | "no_profile";
 const ApplicationPrompt = ({
@@ -204,6 +205,7 @@ export default function InstructorLayout({
               })}
             </nav>
             <div className="flex items-center gap-4">
+              <NotificationBell />
               <Link
                 href="/instructor/profile"
                 className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
@@ -236,6 +238,7 @@ export default function InstructorLayout({
           <div className="flex justify-between items-center mb-6">
             <Logo />
             <div className="flex items-center gap-3">
+              <NotificationBell />
               <span className="text-sm text-muted-foreground hidden sm:inline">
                 {user.full_name} ({user.role})
               </span>

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 export function PendingCoursesTable() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -63,7 +64,7 @@ export function PendingCoursesTable() {
                   <div className="flex items-center gap-3">
                     {course.thumbnail_url && (
                         <div className="relative w-16 h-9 rounded overflow-hidden">
-                            <Image src={course.thumbnail_url} alt={course.title} fill className="object-cover" />
+                            <Image src={getImageUrl(course.thumbnail_url)} alt={course.title} fill className="object-cover" />
                         </div>
                     )}
                     <div>
@@ -76,7 +77,7 @@ export function PendingCoursesTable() {
                   <div className="flex items-center gap-2">
                     {course.instructor?.avatar_url && (
                         <div className="relative w-6 h-6 rounded-full overflow-hidden">
-                            <Image src={course.instructor.avatar_url} alt={course.instructor.full_name} fill className="object-cover" />
+                            <Image src={getImageUrl(course.instructor.avatar_url)} alt={course.instructor.full_name} fill className="object-cover" />
                         </div>
                     )}
                     <span>{course.instructor?.full_name}</span>

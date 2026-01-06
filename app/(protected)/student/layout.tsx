@@ -30,21 +30,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useEffect } from "react";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
-// Items shown in the top bar on Desktop
-const mainNavItems = [
+// Primary items shown on the left
+const primaryNavItems = [
   { href: "/student/dashboard", icon: LayoutDashboard, label: "Tổng quan" },
   { href: "/student/my-courses", icon: BookMarked, label: "Khóa học của tôi" },
-  // { href: "/student/speaking", icon: Video, label: "Speaking Club" },
   { href: "/courses", icon: BookOpenCheck, label: "Khám phá" },
 ];
 
-// Items moved to User Dropdown on Desktop
-const userDropdownItems = [
+// Secondary items shown on the right (after Resources)
+const secondaryNavItems = [
   { href: "/student/certificates", icon: Award, label: "Chứng chỉ" },
   { href: "/student/transactions", icon: History, label: "Lịch sử giao dịch" },
   { href: "/student/support", icon: LifeBuoy, label: "Hỗ trợ" },
 ];
+
+// Items moved to User Dropdown on Desktop
+const userDropdownItems: { href: string; icon: any; label: string }[] = [];
 
 export default function StudentLayout({
   children,
@@ -86,7 +89,7 @@ export default function StudentLayout({
           mobile ? "w-full text-base" : "text-sm lg:text-base"
         } ${
           isActive
-            ? "text-primary font-bold bg-primary/5"
+            ? "text-gray-900 font-bold bg-gray-200"
             : "text-gray-600 hover:text-primary hover:bg-gray-50"
         }`}
       >
@@ -105,7 +108,7 @@ export default function StudentLayout({
 
             {/* Desktop Main Nav */}
             <nav className="hidden md:flex items-center gap-1">
-              {mainNavItems.map((item) => (
+              {primaryNavItems.map((item) => (
                 <NavLink key={item.href} item={item} />
               ))}
               
@@ -125,6 +128,10 @@ export default function StudentLayout({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {secondaryNavItems.map((item) => (
+                <NavLink key={item.href} item={item} />
+              ))}
             </nav>
           </div>
 
@@ -139,7 +146,7 @@ export default function StudentLayout({
               <DropdownMenuContent align="end" className="w-56">
                  <DropdownMenuLabel>Menu</DropdownMenuLabel>
                  <DropdownMenuSeparator />
-                 {mainNavItems.map((item) => (
+                 {primaryNavItems.map((item) => (
                     <DropdownMenuItem key={item.href} asChild>
                       <Link href={item.href} className="flex items-center gap-2 cursor-pointer">
                         <item.icon className="h-4 w-4" />
@@ -147,6 +154,7 @@ export default function StudentLayout({
                       </Link>
                     </DropdownMenuItem>
                  ))}
+                 
                  <DropdownMenuSeparator />
                  <DropdownMenuLabel>Học liệu</DropdownMenuLabel>
                  <DropdownMenuItem asChild>
@@ -159,9 +167,10 @@ export default function StudentLayout({
                        <Book className="h-4 w-4" /> Từ điển
                     </Link>
                  </DropdownMenuItem>
+                 
                  <DropdownMenuSeparator />
-                 <DropdownMenuLabel>Cá nhân</DropdownMenuLabel>
-                 {userDropdownItems.map((item) => (
+                 <DropdownMenuLabel>Khác</DropdownMenuLabel>
+                 {secondaryNavItems.map((item) => (
                     <DropdownMenuItem key={item.href} asChild>
                       <Link href={item.href} className="flex items-center gap-2 cursor-pointer">
                         <item.icon className="h-4 w-4" />
@@ -169,13 +178,36 @@ export default function StudentLayout({
                       </Link>
                     </DropdownMenuItem>
                  ))}
+
+                 {/* Desktop: Show secondary items in User Dropdown */}
+                 {userDropdownItems.length > 0 && (
+                   <>
+                     <DropdownMenuSeparator />
+                     <DropdownMenuLabel>Cá nhân</DropdownMenuLabel>
+                     {userDropdownItems.map((item) => (
+                        <DropdownMenuItem key={item.href} asChild>
+                          <Link href={item.href} className="flex items-center gap-2 cursor-pointer">
+                            <item.icon className="h-4 w-4" />
+                            {item.label}
+                          </Link>
+                        </DropdownMenuItem>
+                     ))}
+                   </>
+                 )}
+                 
+                 <DropdownMenuSeparator />
+                 <DropdownMenuItem className="text-red-600 cursor-pointer focus:text-red-600" onClick={handleLogout}>
+                   <LogOut className="mr-2 h-4 w-4" /> Đăng xuất
+                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* User Profile Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 overflow-hidden border border-gray-200 hover:border-primary">
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 overflow-hidden border border-gray-200 hover:border-primary">
                    {user.avatar_url ? (
                       <img src={user.avatar_url} alt={user.full_name} className="h-full w-full object-cover" />
                    ) : (
@@ -199,17 +231,19 @@ export default function StudentLayout({
                   </Link>
                 </DropdownMenuItem>
                 
-                {/* Desktop: Show secondary items in User Dropdown */}
-                <div className="hidden md:block">
-                  <DropdownMenuSeparator />
-                  {userDropdownItems.map((item) => (
-                    <DropdownMenuItem key={item.href} asChild>
-                      <Link href={item.href} className="cursor-pointer">
-                        <item.icon className="mr-2 h-4 w-4" /> {item.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </div>
+                {/* Desktop: Show secondary items in User Dropdown (if any remain) */}
+                {userDropdownItems.length > 0 && (
+                  <div className="hidden md:block">
+                    <DropdownMenuSeparator />
+                    {userDropdownItems.map((item) => (
+                      <DropdownMenuItem key={item.href} asChild>
+                        <Link href={item.href} className="cursor-pointer">
+                          <item.icon className="mr-2 h-4 w-4" /> {item.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                )}
 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-600 cursor-pointer focus:text-red-600" onClick={handleLogout}>
@@ -217,6 +251,7 @@ export default function StudentLayout({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           </div>
         </div>
       </header>

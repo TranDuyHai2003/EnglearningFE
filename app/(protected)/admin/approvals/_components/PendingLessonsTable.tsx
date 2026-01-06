@@ -26,6 +26,45 @@ export function PendingLessonsTable() {
     error: videoError,
     refresh: refreshVideo,
   } = useLessonVideoUrl(selectedLesson || undefined);
+  
+  // Custom hook logic for document url (or inline it since it's simple)
+  const [docUrl, setDocUrl] = useState<string | null>(null);
+  const [isDocLoading, setIsDocLoading] = useState(false);
+
+  useEffect(() => {
+    if (selectedLesson?.lesson_type === "document" && selectedLesson.document_key) {
+        setIsDocLoading(true);
+        // Assuming we add a method to adminService or just fetch directly/use a hook
+        // For now, let's fetch directly to avoid changing too many files if not needed, 
+        // OR better, add it to adminService? adminService usually uses /api/admin...
+        // But the endpoint is /api/storage/document/url.
+        // Let's use a simple fetch here for expediency or create a helper.
+        // Actually, we should probably just fetch it.
+        const fetchDocUrl = async () => {
+            try {
+                // We need to use the axios instance or fetch with token. 
+                // Since this file uses adminService which uses an axios instance `api`, let's import `api`
+                // But `api` might not be exported.
+                // Let's rely on adminService having a method or add it.
+                // Plan: Add `getDocumentUrl` to adminService (or storageService where it belongs).
+                // Wait, useLessonVideoUrl is a hook. Let's look at `useLessonVideoUrl` implementation? 
+                // No, I can't see it.
+                // Quick fix: Add `getDocumentUrl` to `adminService` which calls the storage endpoint.
+                const res = await adminService.getLessonDocumentUrl(selectedLesson.document_key!);
+                setDocUrl(res.data.url);
+            } catch (e) {
+                console.error(e);
+                toast.error("Không thể lấy link tài liệu");
+            } finally {
+                setIsDocLoading(false);
+            }
+        };
+        fetchDocUrl();
+    } else {
+        setDocUrl(null);
+    }
+  }, [selectedLesson]);
+
   const [playerError, setPlayerError] = useState<string | null>(null);
 
   const fetchLessons = async () => {
@@ -188,7 +227,32 @@ export function PendingLessonsTable() {
               </div>
             )}
             {selectedLesson.lesson_type === "document" && (
-                <div className="p-4 bg-slate-50 rounded border max-h-60 overflow-y-auto" dangerouslySetInnerHTML={{ __html: selectedLesson.content || "" }} />
+                <div className="p-4 bg-slate-50 rounded border">
+                    <h4 className="font-semibold mb-2 text-sm">Nội dung tài liệu</h4>
+                    <div className="flex flex-col gap-4">
+                        {isDocLoading ? (
+                            <div className="text-sm text-muted-foreground">Đang lấy link tài liệu...</div>
+                        ) : docUrl ? (
+                             <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <FileText className="h-4 w-4 text-blue-600" />
+                                    <a href={docUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                                        Xem tài liệu đính kèm (Nhấn để mở)
+                                    </a>
+                                </div>
+                                <iframe src={docUrl} className="w-full h-[500px] border rounded bg-white" title="Document Preview" />
+                             </div>
+                        ) : (
+                            <div className="text-sm text-muted-foreground">Không tìm thấy tài liệu đính kèm.</div>
+                        )}
+                        {/* Keep existing HTML content if any, for legacy or text based documents */}
+                        {selectedLesson.content && (
+                             <div className="mt-4 border-t pt-4">
+                                <div dangerouslySetInnerHTML={{ __html: selectedLesson.content }} className="prose prose-sm max-w-none" />
+                             </div>
+                        )}
+                    </div>
+                </div>
             )}
              {selectedLesson.lesson_type === "quiz" && (
                 <div className="space-y-4">

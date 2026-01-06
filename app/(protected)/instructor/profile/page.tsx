@@ -355,6 +355,19 @@ export default function InstructorProfilePage() {
               <strong>Ghi chú từ Admin:</strong>{" "}
               {profile?.interview_notes || "Vui lòng chờ Admin liên hệ."}
             </p>
+            {profile?.meeting_link && (
+              <p>
+                <strong>Link cuộc họp:</strong>{" "}
+                <a
+                  href={profile.meeting_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline hover:text-blue-800"
+                >
+                  {profile.meeting_link}
+                </a>
+              </p>
+            )}
           </div>
         </div>
       )}

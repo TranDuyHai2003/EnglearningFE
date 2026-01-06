@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { getImageUrl } from "@/lib/utils";
 
 const MyCoursesSkeleton = () => (
   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -54,7 +55,7 @@ export default function MyCoursesPage() {
             <Card key={enrollment.enrollment_id} className="flex flex-col">
               <CardHeader className="p-0">
                 <Image
-                  src={enrollment.course.thumbnail_url || "/placeholder.png"}
+                  src={getImageUrl(enrollment.course.thumbnail_url)}
                   alt={enrollment.course.title}
                   width={400}
                   height={200}

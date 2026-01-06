@@ -102,11 +102,12 @@ export const instructorService = {
     profileId: number,
     status: "approved" | "rejected" | "interviewing",
     reason?: string,
-    interview_notes?: string
+    interview_notes?: string,
+    meeting_link?: string
   ): Promise<InstructorProfile> {
     const response = await apiClient.patch<ApiResponse<InstructorProfile>>(
       `/instructors/profiles/${profileId}/review`,
-      { status, reason, interview_notes }
+      { status, reason, interview_notes, meeting_link }
     );
     if (response.data.success && response.data.data) {
       return response.data.data;
@@ -149,6 +150,26 @@ export const instructorService = {
       return response.data.data;
     }
     throw new Error(response.data.message || "Không thể tải hồ sơ giảng viên.");
+  },
+
+  /**
+   * Tải ảnh bìa khóa học.
+   */
+  async uploadCourseThumbnail(courseId: number, file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append("course_id", courseId.toString());
+    formData.append("file", file);
+
+    const response = await apiClient.post("/upload/thumbnail", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Tải ảnh bìa thất bại.");
   },
 
   /**

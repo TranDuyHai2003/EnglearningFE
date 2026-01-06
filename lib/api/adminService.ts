@@ -186,4 +186,11 @@ export const adminService = {
     );
     return response.data;
   },
+
+  async getLessonDocumentUrl(key: string) {
+    const response = await apiClient.get<ApiResponse<{ url: string }>>("/storage/document/url", {
+        params: { key }
+    });
+    return response.data;
+  }
 };

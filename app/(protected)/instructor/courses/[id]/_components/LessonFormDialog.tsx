@@ -56,6 +56,7 @@ export function LessonFormDialog({
     lesson || null
   );
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
@@ -65,7 +66,12 @@ export function LessonFormDialog({
 
   useEffect(() => {
     if (!isOpen) {
+      if (!isOpen) {
       setVideoFile(null);
+      setDocumentFile(null);
+      setIsSaving(false);
+      setIsUploadingVideo(false);
+    }
       setIsSaving(false);
       setIsUploadingVideo(false);
     }
@@ -127,6 +133,27 @@ export function LessonFormDialog({
             video_uploaded_at: uploadResult.uploaded_at,
           };
           setVideoFile(null);
+        } finally {
+          setIsUploadingVideo(false);
+        }
+      }
+
+      if (documentFile) {
+        setIsUploadingVideo(true); // Re-use loading state or create new one
+        try {
+          const uploadResult = await storageService.uploadLessonDocument(
+            result.lesson_id,
+            documentFile
+          );
+          toast.success("Đã tải tài liệu lên!");
+          result = {
+            ...result,
+            document_bucket: uploadResult.bucket,
+            document_key: uploadResult.key,
+            document_url: uploadResult.key,
+            document_uploaded_at: uploadResult.uploaded_at,
+          };
+          setDocumentFile(null);
         } finally {
           setIsUploadingVideo(false);
         }
@@ -262,6 +289,36 @@ export function LessonFormDialog({
                   <p className="text-sm text-blue-600">
                     Đang tải video lên, vui lòng không đóng cửa sổ này...
                   </p>
+                )}
+              </div>
+            )}
+
+            {form.watch("lesson_type") === "document" && (
+              <div className="p-4 border rounded-lg space-y-3 bg-slate-50">
+                <p className="text-base font-semibold">
+                  Tải lên tài liệu (PDF, DOC, DOCX)
+                </p>
+                <Input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    setDocumentFile(file || null);
+                  }}
+                  disabled={isSaving}
+                />
+                {documentFile && (
+                  <p className="text-sm">
+                    Đã chọn:{" "}
+                    <span className="font-medium">{documentFile.name}</span>{" "}
+                    ({(documentFile.size / (1024 * 1024)).toFixed(2)} MB)
+                  </p>
+                )}
+                {activeLesson?.document_url && !documentFile && (
+                   <div className="text-sm text-muted-foreground">
+                    <p>Tài liệu hiện tại: <a href={`/api/courses/${sectionId}/thumbnails/${activeLesson.document_url}`} target="_blank" className="text-blue-600 hover:underline">Xem tài liệu</a></p>
+                    <p>Đã tải lên lúc {activeLesson.document_uploaded_at ? new Date(activeLesson.document_uploaded_at).toLocaleString() : 'N/A'}</p>
+                   </div>
                 )}
               </div>
             )}

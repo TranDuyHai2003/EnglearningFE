@@ -81,8 +81,13 @@ export default function InstructorProfileDetailPage() {
 
   const openReviewModal = (type: "interviewing" | "rejected") => {
     setReviewModal({ isOpen: true, type });
-    setReviewNote("");
-    setReviewLink("");
+    if (type === "interviewing" && profile) {
+      setReviewNote(profile.interview_notes || "");
+      setReviewLink(profile.meeting_link || "");
+    } else {
+      setReviewNote("");
+      setReviewLink("");
+    }
   };
 
   const handleSubmitReview = async () => {
@@ -99,7 +104,8 @@ export default function InstructorProfileDetailPage() {
         profile.profile_id,
         reviewModal.type === "interviewing" ? "interviewing" : "rejected",
         reviewModal.type === "rejected" ? reviewNote : undefined,
-        reviewModal.type === "interviewing" ? reviewNote : undefined
+        reviewModal.type === "interviewing" ? reviewNote : undefined,
+        reviewModal.type === "interviewing" ? reviewLink : undefined
       );
       toast.success("Cập nhật trạng thái thành công!");
       setReviewModal({ isOpen: false, type: null });
@@ -302,6 +308,19 @@ export default function InstructorProfileDetailPage() {
                     <strong>Ghi chú Admin:</strong>{" "}
                     {profile.interview_notes || "Không có ghi chú"}
                   </p>
+                  {profile.meeting_link && (
+                    <p className="text-sm text-blue-900 mt-1">
+                      <strong>Link cuộc họp:</strong>{" "}
+                      <a
+                        href={profile.meeting_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-blue-700"
+                      >
+                        {profile.meeting_link}
+                      </a>
+                    </p>
+                  )}
                 </div>
               )}
 

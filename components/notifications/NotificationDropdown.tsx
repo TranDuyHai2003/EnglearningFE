@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/hooks/useAuth";
 import api from "@/lib/api/apiClient";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -30,6 +31,7 @@ export function NotificationDropdown({
   onClose,
 }: NotificationDropdownProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -207,7 +209,11 @@ export function NotificationDropdown({
             variant="ghost"
             className="w-full"
             onClick={() => {
-              router.push("/notifications");
+              const targetPath =
+                user?.role === "instructor"
+                  ? "/instructor/notifications"
+                  : "/student/notifications";
+              router.push(targetPath);
               onClose?.();
             }}
           >

@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlusCircle } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 const CourseCardSkeleton = () => (
   <Card>
@@ -96,7 +97,7 @@ export default function MyCoursesPage() {
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader className="p-0">
                   <Image
-                    src={course.thumbnail_url || "/placeholder.png"}
+                    src={getImageUrl(course.thumbnail_url)}
                     alt={course.title}
                     width={400}
                     height={200}

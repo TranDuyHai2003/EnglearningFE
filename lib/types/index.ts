@@ -61,6 +61,7 @@ export interface InstructorProfile {
   intro_video_url?: string | null;
   interview_date?: string | null;
   interview_notes?: string | null;
+  meeting_link?: string | null;
 
   certificate_files?: {
     url: string;
@@ -137,6 +138,12 @@ export interface Lesson {
   video_key?: string | null;
   video_uploaded_at?: string | null;
   video_duration: number;
+  document_url?: string | null;
+  document_bucket?: string | null;
+  document_key?: string | null;
+  document_mime_type?: string | null;
+  document_size_bytes?: number | null;
+  document_uploaded_at?: string | null;
   content?: string | null;
   allow_preview: boolean;
   display_order: number;
@@ -193,12 +200,27 @@ export interface LessonForm {
   video_key?: string;
   video_uploaded_at?: string;
   video_duration?: number;
+  document_url?: string;
+  document_bucket?: string;
+  document_key?: string;
+  document_mime_type?: string;
+  document_size_bytes?: number;
+  document_uploaded_at?: string;
   content?: string;
   allow_preview: boolean;
   display_order: number;
 }
 
 export interface LessonUploadResponse {
+  lesson_id: number;
+  bucket: string;
+  key: string;
+  mime_type: string;
+  file_size: number;
+  uploaded_at: string;
+}
+
+export interface DocumentUploadResponse {
   lesson_id: number;
   bucket: string;
   key: string;
