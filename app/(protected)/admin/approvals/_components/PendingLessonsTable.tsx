@@ -32,25 +32,11 @@ export function PendingLessonsTable() {
   const [isDocLoading, setIsDocLoading] = useState(false);
 
   useEffect(() => {
-    if (selectedLesson?.lesson_type === "document" && selectedLesson.document_key) {
+    if (selectedLesson?.document_key) {
         setIsDocLoading(true);
-        // Assuming we add a method to adminService or just fetch directly/use a hook
-        // For now, let's fetch directly to avoid changing too many files if not needed, 
-        // OR better, add it to adminService? adminService usually uses /api/admin...
-        // But the endpoint is /api/storage/document/url.
-        // Let's use a simple fetch here for expediency or create a helper.
-        // Actually, we should probably just fetch it.
         const fetchDocUrl = async () => {
             try {
-                // We need to use the axios instance or fetch with token. 
-                // Since this file uses adminService which uses an axios instance `api`, let's import `api`
-                // But `api` might not be exported.
-                // Let's rely on adminService having a method or add it.
-                // Plan: Add `getDocumentUrl` to adminService (or storageService where it belongs).
-                // Wait, useLessonVideoUrl is a hook. Let's look at `useLessonVideoUrl` implementation? 
-                // No, I can't see it.
-                // Quick fix: Add `getDocumentUrl` to `adminService` which calls the storage endpoint.
-                const res = await adminService.getLessonDocumentUrl(selectedLesson.document_key!);
+                const res = await adminService.getLessonDocumentUrl(selectedLesson.lesson_id);
                 setDocUrl(res.data.url);
             } catch (e) {
                 console.error(e);
@@ -178,55 +164,61 @@ export function PendingLessonsTable() {
           title={`Duyệt bài học: ${selectedLesson.title}`}
         >
           <div className="space-y-4">
-            {selectedLesson.lesson_type === "video" && (
-              <div className="aspect-video bg-black rounded overflow-hidden flex items-center justify-center">
-                {selectedLesson.video_key ? (
-                  playbackUrl ? (
-                    <video
-                      controls
+            {/* Video Section */}
+            {(selectedLesson.video_key || selectedLesson.video_url) && (
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm">Video bài giảng</h4>
+                <div className="aspect-video bg-black rounded overflow-hidden flex items-center justify-center">
+                  {selectedLesson.video_key ? (
+                    playbackUrl ? (
+                      <video
+                        controls
+                        className="w-full h-full"
+                        src={playbackUrl}
+                        key={playbackUrl}
+                        onError={() =>
+                          setPlayerError("Không thể phát video. Vui lòng thử lại.")
+                        }
+                        onLoadedData={() => setPlayerError(null)}
+                      >
+                        Trình duyệt không hỗ trợ video.
+                      </video>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-white text-sm px-4 text-center">
+                        {playerError || videoError ? (
+                          <>
+                            <p>{playerError || videoError}</p>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => {
+                                setPlayerError(null);
+                                refreshVideo();
+                              }}
+                            >
+                              Thử tải lại video
+                            </Button>
+                          </>
+                        ) : (
+                          <p>{isVideoLoading ? "Đang tạo liên kết phát video..." : "Không thể phát video"}</p>
+                        )}
+                      </div>
+                    )
+                  ) : selectedLesson.video_url && getYoutubeId(selectedLesson.video_url) ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${getYoutubeId(selectedLesson.video_url)}`}
                       className="w-full h-full"
-                      src={playbackUrl}
-                      key={playbackUrl}
-                      onError={() =>
-                        setPlayerError("Không thể phát video. Vui lòng thử lại.")
-                      }
-                      onLoadedData={() => setPlayerError(null)}
-                    >
-                      Trình duyệt không hỗ trợ video.
-                    </video>
+                      allowFullScreen
+                    />
                   ) : (
-                    <div className="flex flex-col items-center gap-2 text-white text-sm px-4 text-center">
-                      {playerError || videoError ? (
-                        <>
-                          <p>{playerError || videoError}</p>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => {
-                              setPlayerError(null);
-                              refreshVideo();
-                            }}
-                          >
-                            Thử tải lại video
-                          </Button>
-                        </>
-                      ) : (
-                        <p>{isVideoLoading ? "Đang tạo liên kết phát video..." : "Không thể phát video"}</p>
-                      )}
-                    </div>
-                  )
-                ) : selectedLesson.video_url && getYoutubeId(selectedLesson.video_url) ? (
-                  <iframe
-                    src={`https://www.youtube.com/embed/${getYoutubeId(selectedLesson.video_url)}`}
-                    className="w-full h-full"
-                    allowFullScreen
-                  />
-                ) : (
-                  <p className="text-white text-sm">Chưa có video cho bài học này.</p>
-                )}
+                    <p className="text-white text-sm">Chưa có video cho bài học này.</p>
+                  )}
+                </div>
               </div>
             )}
-            {selectedLesson.lesson_type === "document" && (
+
+            {/* Document Section */}
+            {selectedLesson.document_key && (
                 <div className="p-4 bg-slate-50 rounded border">
                     <h4 className="font-semibold mb-2 text-sm">Nội dung tài liệu</h4>
                     <div className="flex flex-col gap-4">
@@ -245,16 +237,20 @@ export function PendingLessonsTable() {
                         ) : (
                             <div className="text-sm text-muted-foreground">Không tìm thấy tài liệu đính kèm.</div>
                         )}
-                        {/* Keep existing HTML content if any, for legacy or text based documents */}
-                        {selectedLesson.content && (
-                             <div className="mt-4 border-t pt-4">
-                                <div dangerouslySetInnerHTML={{ __html: selectedLesson.content }} className="prose prose-sm max-w-none" />
-                             </div>
-                        )}
                     </div>
                 </div>
             )}
-             {selectedLesson.lesson_type === "quiz" && (
+
+            {/* Legacy Content Field (Rich Text) */}
+            {selectedLesson.content && (
+                 <div className="mt-4 border-t pt-4">
+                    <h4 className="font-semibold mb-2 text-sm">Nội dung văn bản (Legacy)</h4>
+                    <div dangerouslySetInnerHTML={{ __html: selectedLesson.content }} className="prose prose-sm max-w-none" />
+                 </div>
+            )}
+
+            {/* Quiz Section */}
+            {selectedLesson.quiz && (
                 <div className="space-y-4">
                     <div className="p-4 bg-slate-50 rounded border">
                         <h4 className="font-semibold mb-2 text-sm">Thông tin bài kiểm tra</h4>

@@ -60,6 +60,7 @@ export default function MyCoursesPage() {
                   width={400}
                   height={200}
                   className="rounded-t-lg w-full object-cover"
+                  unoptimized={true}
                 />
               </CardHeader>
               <CardContent className="p-4 flex flex-col grow">

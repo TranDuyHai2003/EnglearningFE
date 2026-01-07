@@ -29,6 +29,14 @@ export const storageService = {
     );
   },
 
+  async getLessonDocUrl(lessonId: number): Promise<{ success: boolean; url: string }> {
+      const response = await apiClient.get<ApiResponse<{ url: string }>>(`/document/url?lessonId=${lessonId}`);
+      if (response.data.success && response.data.data) {
+          return { success: true, url: response.data.data.url };
+      }
+      throw new Error("Cannot get document URL");
+  },
+
   async uploadLessonDocument(
     lessonId: number,
     file: File

@@ -227,6 +227,8 @@ export default function AdminCourseDetailPage() {
                     alt={course.title}
                     fill
                     className="object-cover"
+                    priority
+                    unoptimized={true}
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-muted-foreground">

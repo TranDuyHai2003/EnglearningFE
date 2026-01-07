@@ -187,9 +187,9 @@ export const adminService = {
     return response.data;
   },
 
-  async getLessonDocumentUrl(key: string) {
-    const response = await apiClient.get<ApiResponse<{ url: string }>>("/storage/document/url", {
-        params: { key }
+  async getLessonDocumentUrl(lessonId: number) {
+    const response = await apiClient.get<ApiResponse<{ url: string }>>("/document/url", {
+        params: { lessonId }
     });
     return response.data;
   }

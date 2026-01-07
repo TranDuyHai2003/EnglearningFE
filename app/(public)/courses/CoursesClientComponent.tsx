@@ -32,6 +32,7 @@ const CourseCard = ({ course }: { course: Course }) => (
             fill
             style={{ objectFit: "cover" }}
             className="rounded-t-lg"
+            unoptimized={true}
           />
         </div>
       </CardHeader>

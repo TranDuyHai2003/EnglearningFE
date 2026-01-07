@@ -102,6 +102,7 @@ export default function MyCoursesPage() {
                     width={400}
                     height={200}
                     className="rounded-t-lg w-full object-cover aspect-[16/9]"
+                    unoptimized={true}
                   />
                 </CardHeader>
                 <CardContent className="p-4">

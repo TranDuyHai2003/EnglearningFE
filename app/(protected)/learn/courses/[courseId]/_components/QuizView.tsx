@@ -118,6 +118,14 @@ export function QuizView({
       </div>
     );
 
+  if (!quiz.questions || quiz.questions.length === 0) {
+      return (
+          <div className="p-8 text-center text-muted-foreground border rounded-lg bg-slate-50">
+              <p>Bài tập trắc nghiệm này chưa có câu hỏi nào.</p>
+          </div>
+      );
+  }
+
   if (attempt?.submitted_at) {
     return (
       <Card className="bg-slate-50">

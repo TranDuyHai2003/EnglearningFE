@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { getImageUrl } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -14,6 +15,18 @@ import {
 import { Course } from "@/lib/types";
 import { courseService } from "@/lib/api/courseService";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface SettingsTabProps {
   course: Course;
@@ -21,6 +34,8 @@ interface SettingsTabProps {
 }
 
 export function SettingsTab({ course, onUpdate }: SettingsTabProps) {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     title: course.title,
     description: course.description || "",
@@ -84,7 +99,8 @@ export function SettingsTab({ course, onUpdate }: SettingsTabProps) {
   };
 
   return (
-    <Card>
+    <div className="space-y-6">
+      <Card>
       <CardHeader>
         <CardTitle>Cài đặt khóa học</CardTitle>
       </CardHeader>
@@ -97,7 +113,7 @@ export function SettingsTab({ course, onUpdate }: SettingsTabProps) {
                 <div className="relative aspect-video w-full max-w-sm rounded-lg overflow-hidden border">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={course.thumbnail_url.startsWith("http") ? course.thumbnail_url : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}${course.thumbnail_url.startsWith("/") ? "" : "/"}${course.thumbnail_url}`}
+                    src={getImageUrl(course.thumbnail_url)}
                     alt="Course thumbnail"
                     className="object-cover w-full h-full"
                   />
@@ -197,6 +213,56 @@ export function SettingsTab({ course, onUpdate }: SettingsTabProps) {
           </form>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+
+      {course.approval_status !== "approved" && (
+        <Card className="border-red-200">
+          <CardHeader>
+            <CardTitle className="text-red-500">Xóa khóa học</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500 mb-4">
+              Hành động này không thể hoàn tác. Khóa học sẽ bị xóa vĩnh viễn khỏi hệ thống.
+              Bạn chỉ có thể hủy các khóa học chưa được duyệt.
+            </p>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={isDeleting}>
+                  {isDeleting ? "Đang xóa..." : "Xóa khóa học này"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Hành động này không thể hoàn tác. Khóa học <strong className="text-foreground">{course.title}</strong> sẽ bị xóa vĩnh viễn cùng với toàn bộ bài học và tài liệu liên quan.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-red-500 hover:bg-red-600 focus:ring-red-500"
+                    onClick={async (e) => {
+                      e.preventDefault(); // Prevent auto-close to handle async
+                      setIsDeleting(true);
+                       try {
+                        await courseService.deleteCourse(course.course_id);
+                        toast.success("Đã xóa khóa học thành công.");
+                        router.push("/instructor/my-courses");
+                      } catch (error: any) {
+                        toast.error(error.message || "Xóa khóa học thất bại.");
+                        setIsDeleting(false);
+                      }
+                    }}
+                  >
+                    Xóa ngay
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }

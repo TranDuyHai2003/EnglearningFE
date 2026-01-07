@@ -9,7 +9,9 @@ import { Course } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, BarChart, Users, PlayCircle, Lock, Star } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PurchaseButton } from "@/components/courses/PurchaseButton";
+import { getImageUrl } from "@/lib/utils";
 
 const CourseDetailSkeleton = () => (
   <div className="container mx-auto py-12">
@@ -137,11 +139,17 @@ export default function CourseDetailPage() {
             <Card>
               <CardHeader className="p-0">
                 <Image
-                  src={course.thumbnail_url || "/placeholder.png"}
+                  src={getImageUrl(course.thumbnail_url)}
+                  alt={course.title}
+                  width={400}
+                  height={200}
+                <Image
+                  src={getImageUrl(course.thumbnail_url)}
                   alt={course.title}
                   width={400}
                   height={200}
                   className="rounded-t-lg w-full object-cover"
+                  unoptimized={true}
                 />
               </CardHeader>
               <CardContent className="p-6">

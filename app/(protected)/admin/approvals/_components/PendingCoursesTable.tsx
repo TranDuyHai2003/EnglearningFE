@@ -64,7 +64,7 @@ export function PendingCoursesTable() {
                   <div className="flex items-center gap-3">
                     {course.thumbnail_url && (
                         <div className="relative w-16 h-9 rounded overflow-hidden">
-                            <Image src={getImageUrl(course.thumbnail_url)} alt={course.title} fill className="object-cover" />
+                            <Image src={getImageUrl(course.thumbnail_url)} alt={course.title} fill className="object-cover" unoptimized={true} />
                         </div>
                     )}
                     <div>
@@ -77,7 +77,7 @@ export function PendingCoursesTable() {
                   <div className="flex items-center gap-2">
                     {course.instructor?.avatar_url && (
                         <div className="relative w-6 h-6 rounded-full overflow-hidden">
-                            <Image src={getImageUrl(course.instructor.avatar_url)} alt={course.instructor.full_name} fill className="object-cover" />
+                            <Image src={getImageUrl(course.instructor.avatar_url)} alt={course.instructor.full_name} fill className="object-cover" unoptimized={true} />
                         </div>
                     )}
                     <span>{course.instructor?.full_name}</span>

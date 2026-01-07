@@ -48,6 +48,48 @@ const ResourceItem = ({ resource }: { resource: LessonResource }) => (
   </a>
 );
 
+const DocumentViewer = ({ lessonId }: { lessonId: number }) => {
+    const [url, setUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const fetchUrl = async () => {
+            setLoading(true);
+            setError(false);
+            try {
+                const res = await learningService.getLessonDocumentUrl(lessonId);
+                setUrl(res.data.url);
+            } catch (error) {
+                console.error("Failed to fetch doc url", error);
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUrl();
+    }, [lessonId]);
+
+    if (loading) return <div className="text-sm text-muted-foreground">Đang tải tài liệu...</div>;
+    if (error) return <div className="text-sm text-red-500">Không thể tải tài liệu. Vui lòng thử lại sau.</div>;
+    if (!url) return null;
+
+    return (
+        <div className="mt-2 text-sm flex flex-col gap-3">
+             <Button variant="outline" className="w-fit" asChild>
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                    <Download className="w-4 h-4 mr-2" /> Tải về / Xem tài liệu
+                </a>
+            </Button>
+            <iframe src={url} className="w-full h-[600px] border rounded bg-slate-50" title="Document Preview" />
+        </div>
+    );
+};
+
+// ... inside TabsContent value="resources" ...
+
+
+
 export const LessonContent = ({
   lesson,
   courseId,
@@ -96,7 +138,8 @@ export const LessonContent = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {lesson.lesson_type === "video" ? (
+      {/* 1. Video Section */}
+      {(lesson.video_key || lesson.video_url) && (
         <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg mb-6">
           {lesson.video_key ? (
             playbackUrl ? (
@@ -172,7 +215,7 @@ export const LessonContent = ({
             })()
           )}
         </div>
-      ) : null}
+      )}
 
       <header className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -217,30 +260,57 @@ export const LessonContent = ({
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <div className="prose max-w-none p-6 border rounded-lg bg-white">
-            {lesson.description && <p className="lead">{lesson.description}</p>}
-            {lesson.lesson_type === "document" && lesson.content && (
-              <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
-            )}
+          <div className="prose max-w-none p-6 border rounded-lg bg-white space-y-6">
+            
+
+
+            {/* Quiz Section */}
             {lesson.quiz && (
-              <QuizView
-                lessonId={lesson.lesson_id}
-                quizId={lesson.quiz.quiz_id}
-                onQuizPassed={() => onMarkComplete(lesson.lesson_id)}
-              />
+              <div className="not-prose border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-purple-600" />
+                      Bài tập trắc nghiệm
+                  </h3>
+                  <QuizView
+                    lessonId={lesson.lesson_id}
+                    quizId={lesson.quiz.quiz_id}
+                    onQuizPassed={() => onMarkComplete(lesson.lesson_id)}
+                  />
+              </div>
+            )}
+
+            {lesson.description && <p className="lead border-t pt-4">{lesson.description}</p>}
+            
+            {lesson.content && (
+              <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
             )}
           </div>
         </TabsContent>
         <TabsContent value="resources">
-          <div className="p-6 border rounded-lg bg-white">
+          <div className="p-6 border rounded-lg bg-white space-y-6">
             <h3 className="text-lg font-semibold mb-4">Tài liệu bài học</h3>
+            
+            {/* Document Section */}
+            {lesson.document_key && (
+               <div className="p-4 bg-slate-50 border rounded-lg">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                      <Notebook className="w-5 h-5 text-blue-600" />
+                      Tài liệu đính kèm
+                  </h4>
+                   <div className="flex flex-col gap-2">
+                        <p className="text-sm text-muted-foreground">Tài liệu chính cho bài học này.</p>
+                       <DocumentViewer lessonId={lesson.lesson_id} />
+                   </div>
+               </div>
+            )}
+
             {lesson.resources && lesson.resources.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {lesson.resources.map((res) => (
                   <ResourceItem key={res.resource_id} resource={res} />
                 ))}
               </div>
-            ) : (
+            ) : !lesson.document_key && (
               <p className="text-muted-foreground">
                 Không có tài liệu nào cho bài học này.
               </p>

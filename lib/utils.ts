@@ -15,9 +15,14 @@ export function formatDate(date: string | Date): string {
 
 export function getImageUrl(path: string | null | undefined): string {
   if (!path) return "/placeholder.png";
-  if (path.startsWith("http") || path.startsWith("blob:")) return path;
   
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  // Sanitize absolute URLs to replace localhost with 127.0.0.1 to avoid Next.js lookup issues
+  if (path.startsWith("http") || path.startsWith("blob:")) {
+    return path.replace("http://localhost:5000", "http://127.0.0.1:5000");
+  }
+  
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000/api";
+  const baseUrl = apiUrl.replace("localhost", "127.0.0.1");
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
   
   return `${baseUrl}${cleanPath}`;

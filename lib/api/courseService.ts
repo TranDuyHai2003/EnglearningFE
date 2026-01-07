@@ -93,6 +93,16 @@ export const courseService = {
   },
 
   /**
+   * Xóa một khóa học.
+   */
+  async deleteCourse(id: number): Promise<void> {
+    const response = await apiClient.delete<ApiResponse<null>>(`/courses/${id}`);
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Xóa khóa học thất bại.");
+    }
+  },
+
+  /**
    * Lấy danh sách tất cả các danh mục.
    */
   async listCategories(): Promise<Category[]> {

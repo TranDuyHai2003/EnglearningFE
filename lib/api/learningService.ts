@@ -143,6 +143,14 @@ async getMyStats(): Promise<StudentStats> {
     throw new Error(response.data.message || "Nộp bài thất bại.");
   }
   /**
+   * Lấy URL tài liệu bài học.
+   */
+  async getLessonDocumentUrl(lessonId: number): Promise<ApiResponse<{ url: string }>> {
+    const response = await apiClient.get<ApiResponse<{ url: string }>>(`/document/url?lessonId=${lessonId}`);
+    return response.data;
+  }
+
+  /**
    * Tải chứng chỉ khóa học.
    */
   async downloadCertificate(courseId: number): Promise<Blob> {
