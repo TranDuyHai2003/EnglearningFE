@@ -148,7 +148,8 @@ export default function AdminInstructorsPage() {
         reviewModal.profileId,
         reviewModal.type === "interviewing" ? "interviewing" : "rejected",
         reviewModal.type === "rejected" ? reviewNote : undefined,
-        reviewModal.type === "interviewing" ? reviewNote : undefined
+        reviewModal.type === "interviewing" ? reviewNote : undefined,
+        reviewModal.type === "interviewing" ? reviewLink : undefined
       );
 
       toast.success(
@@ -268,8 +269,23 @@ export default function AdminInstructorsPage() {
               </div>
 
               {statusFilter === "interviewing" && profile.interview_notes && (
-                <div className="mb-4 p-3 bg-blue-50 rounded text-sm text-blue-800">
-                  <strong>Ghi chú PV:</strong> {profile.interview_notes}
+                <div className="mb-4 p-3 bg-blue-50 rounded text-sm text-blue-800 space-y-1">
+                  <div>
+                    <strong>Ghi chú PV:</strong> {profile.interview_notes}
+                  </div>
+                  {profile.meeting_link && (
+                    <div>
+                      <strong>Link Meet:</strong>{" "}
+                      <a
+                        href={profile.meeting_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-blue-600"
+                      >
+                        {profile.meeting_link}
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
 

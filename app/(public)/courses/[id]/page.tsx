@@ -9,7 +9,6 @@ import { Course } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, BarChart, Users, PlayCircle, Lock, Star } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PurchaseButton } from "@/components/courses/PurchaseButton";
 import { getImageUrl } from "@/lib/utils";
 
@@ -138,11 +137,6 @@ export default function CourseDetailPage() {
           <aside className="sticky top-24 self-start">
             <Card>
               <CardHeader className="p-0">
-                <Image
-                  src={getImageUrl(course.thumbnail_url)}
-                  alt={course.title}
-                  width={400}
-                  height={200}
                 <Image
                   src={getImageUrl(course.thumbnail_url)}
                   alt={course.title}

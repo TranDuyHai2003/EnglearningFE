@@ -10,15 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Bell,
   CheckCheck,
-  Trash2,
-  MessageSquare,
-  Star,
-  BookOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { NotificationItem } from "./NotificationItem";
 
 export function NotificationCenter() {
   const router = useRouter();
@@ -80,29 +77,7 @@ export function NotificationCenter() {
     }
   };
 
-  const handleClick = async (notification: any) => {
-    if (!notification.is_read) {
-      await handleMarkAsRead(notification.notification_id);
-    }
-    if (notification.link) {
-      router.push(notification.link);
-    }
-  };
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "discussion":
-      case "reply":
-        return <MessageSquare className="h-5 w-5" />;
-      case "review":
-        return <Star className="h-5 w-5" />;
-      case "lesson_approved":
-      case "lesson_rejected":
-        return <BookOpen className="h-5 w-5" />;
-      default:
-        return <Bell className="h-5 w-5" />;
-    }
-  };
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -158,56 +133,12 @@ export function NotificationCenter() {
           ) : (
             <>
               {notifications.map((notification) => (
-                <Card
+                <NotificationItem
                   key={notification.notification_id}
-                  className={cn(
-                    "p-4 hover:bg-muted/50 transition-colors cursor-pointer group",
-                    !notification.is_read &&
-                      "border-l-4 border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20"
-                  )}
-                  onClick={() => handleClick(notification)}
-                >
-                  <div className="flex gap-4">
-                    <div
-                      className={cn(
-                        "h-12 w-12 rounded-full flex items-center justify-center flex-shrink-0",
-                        !notification.is_read
-                          ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-                          : "bg-muted text-muted-foreground"
-                      )}
-                    >
-                      {getIcon(notification.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="font-semibold">{notification.title}</h3>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(notification.notification_id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className="text-muted-foreground mb-2">
-                        {notification.message}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatDistanceToNow(
-                          new Date(notification.created_at),
-                          {
-                            addSuffix: true,
-                            locale: vi,
-                          }
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
+                  notification={notification}
+                  onMarkRead={handleMarkAsRead}
+                  onDelete={handleDelete}
+                />
               ))}
 
               {totalPages > 1 && (

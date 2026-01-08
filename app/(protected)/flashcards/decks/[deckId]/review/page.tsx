@@ -13,11 +13,18 @@ import { Loader2, ArrowLeft, Repeat, ExternalLink } from "lucide-react";
 import { SpeechButton } from "@/components/flashcards/speech-button";
 import { FlashcardImage } from "@/components/flashcards/flashcard-image";
 
-const gradeButtons = [
-  { key: "1", label: "Again", grade: "again", variant: "destructive" as const },
-  { key: "2", label: "Hard", grade: "hard", variant: "secondary" as const },
-  { key: "3", label: "Good", grade: "good", variant: "default" as const },
-  { key: "4", label: "Easy", grade: "easy", variant: "outline" as const },
+type Grade = "again" | "hard" | "good" | "easy";
+
+const gradeButtons: {
+  key: string;
+  label: string;
+  grade: Grade;
+  variant: "destructive" | "secondary" | "default" | "outline";
+}[] = [
+  { key: "1", label: "Again", grade: "again", variant: "destructive" },
+  { key: "2", label: "Hard", grade: "hard", variant: "secondary" },
+  { key: "3", label: "Good", grade: "good", variant: "default" },
+  { key: "4", label: "Easy", grade: "easy", variant: "outline" },
 ];
 
 export default function ReviewModePage() {
@@ -89,7 +96,7 @@ useEffect(() => {
 const current = queue[0];
 
 const handleGrade = useCallback(
-  async (grade: "again" | "hard" | "good" | "easy") => {
+  async (grade: Grade) => {
     const currentCard = queue[0];
     if (!currentCard || !deckId) return;
     try {

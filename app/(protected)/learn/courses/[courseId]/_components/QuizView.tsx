@@ -162,6 +162,10 @@ export function QuizView({
                     setAttempt(newAttempt);
                     setAnswers({});
                 } catch (e: any) {
+                    if (e.response?.data?.code === "ATTEMPT_LIMIT_REACHED") {
+                        toast.warning("Bạn đã đạt giới hạn số lần làm bài trong ngày (3 lần). Vui lòng quay lại sau.");
+                        return;
+                    }
                     toast.error(e.message || "Không thể thử lại.");
                 } finally {
                     setIsLoading(false);

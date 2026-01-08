@@ -10,16 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Bell,
   CheckCheck,
-  Trash2,
-  MessageSquare,
-  Star,
-  BookOpen,
-  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { NotificationItem } from "./NotificationItem";
 
 interface NotificationDropdownProps {
   onUpdate?: () => void;
@@ -95,20 +91,7 @@ export function NotificationDropdown({
     }
   };
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "discussion":
-      case "reply":
-        return <MessageSquare className="h-4 w-4" />;
-      case "review":
-        return <Star className="h-4 w-4" />;
-      case "lesson_approved":
-      case "lesson_rejected":
-        return <BookOpen className="h-4 w-4" />;
-      default:
-        return <Bell className="h-4 w-4" />;
-    }
-  };
+
 
   if (loading) {
     return (
@@ -150,54 +133,15 @@ export function NotificationDropdown({
             <p>Không có thông báo mới</p>
           </div>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y max-h-[400px]">
             {notifications.map((notification) => (
-              <div
+              <NotificationItem
                 key={notification.notification_id}
-                className={cn(
-                  "p-4 hover:bg-muted/50 transition-colors cursor-pointer group",
-                  !notification.is_read && "bg-blue-50/50 dark:bg-blue-950/20"
-                )}
-                onClick={() => handleClick(notification)}
-              >
-                <div className="flex gap-3">
-                  <div
-                    className={cn(
-                      "h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0",
-                      !notification.is_read
-                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {getIcon(notification.type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm mb-1">
-                      {notification.title}
-                    </p>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {notification.content}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatDistanceToNow(new Date(notification.created_at), {
-                        addSuffix: true,
-                        locale: vi,
-                      })}
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(notification.notification_id);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+                notification={notification}
+                onMarkRead={handleMarkAsRead}
+                onDelete={handleDelete}
+                onClose={onClose}
+              />
             ))}
           </div>
         )}

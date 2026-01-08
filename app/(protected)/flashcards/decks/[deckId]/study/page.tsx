@@ -147,11 +147,13 @@ export default function StudyModePage() {
               </div>
             ) : null}
           </div>
-          <FlashcardImage
-            src={currentCard.image_url}
-            alt={currentCard.front_text}
-            className="h-32 w-full"
-          />
+          <div className="flex items-center justify-center">
+            <FlashcardImage
+              src={currentCard.image_url}
+              alt={currentCard.front_text}
+              className="h-32 w-full"
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {isFlipped && (
