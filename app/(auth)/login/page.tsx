@@ -23,7 +23,9 @@ import { LoginRequest } from "@/lib/types";
 
 type LoginFormData = LoginRequest;
 
-export default function LoginPage() {
+import { Suspense } from "react";
+
+function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -186,5 +188,13 @@ export default function LoginPage() {
         Đăng ký tài khoản mới
       </Link>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-8"><Loader2 className="animate-spin h-8 w-8 text-blue-600" /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

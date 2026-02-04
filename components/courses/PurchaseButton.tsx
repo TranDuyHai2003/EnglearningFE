@@ -62,7 +62,10 @@ export function PurchaseButton({
       ) : (
         <>
           <ShoppingCart className="mr-2 h-4 w-4" />
-          Mua khóa học - ${displayPrice}
+          Mua khóa học - {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(displayPrice)}
         </>
       )}
     </Button>

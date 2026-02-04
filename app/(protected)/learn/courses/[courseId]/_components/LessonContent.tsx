@@ -146,6 +146,8 @@ export const LessonContent = ({
               <video
                 key={playbackUrl}
                 controls
+                controlsList="nodownload"
+                onContextMenu={(e) => e.preventDefault()}
                 className="w-full h-full bg-black"
                 src={playbackUrl}
                 onError={handleVideoError}

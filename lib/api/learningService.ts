@@ -17,7 +17,6 @@ export interface ListEnrollmentsParams {
 class LearningService {
   /**
    * Lấy danh sách các khóa học mà học viên đã ghi danh.
-   * @param params - Các tùy chọn filter như limit, page, status.
    */
   async getMyEnrollments(
     params: ListEnrollmentsParams = {}
@@ -64,26 +63,30 @@ class LearningService {
   /**
    * Lấy thống kê tổng quan của học viên.
    */
-async getMyStats(): Promise<StudentStats> {
-  try {
-    const response = await apiClient.get<ApiResponse<StudentStats>>(
-      "/learning/my-stats"
-    );
-    
-    // Debug: log response để xem backend trả về gì
-    console.log("Stats API Response:", response.data);
+  async getMyStats(): Promise<StudentStats> {
+    try {
+      const response = await apiClient.get<ApiResponse<StudentStats>>(
+        "/learning/my-stats"
+      );
 
-    if (response.data && response.data.success && response.data.data) {
-      return response.data.data;
+      console.log("Stats API Response:", response.data);
+
+      if (response.data && response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      throw new Error(
+        response.data?.message || "Dữ liệu thống kê không hợp lệ"
+      );
+    } catch (error: any) {
+      // Nếu lỗi do backend trả về 401, 404, 500 nó sẽ rơi vào đây
+      console.error(
+        "API Error in getMyStats:",
+        error.response?.data || error.message
+      );
+      throw error;
     }
-    
-    throw new Error(response.data?.message || "Dữ liệu thống kê không hợp lệ");
-  } catch (error: any) {
-    // Nếu lỗi do backend trả về 401, 404, 500 nó sẽ rơi vào đây
-    console.error("API Error in getMyStats:", error.response?.data || error.message);
-    throw error;
   }
-}
   /**
    * Lấy hoạt động gần đây của học viên.
    */
@@ -145,8 +148,12 @@ async getMyStats(): Promise<StudentStats> {
   /**
    * Lấy URL tài liệu bài học.
    */
-  async getLessonDocumentUrl(lessonId: number): Promise<ApiResponse<{ url: string }>> {
-    const response = await apiClient.get<ApiResponse<{ url: string }>>(`/document/url?lessonId=${lessonId}`);
+  async getLessonDocumentUrl(
+    lessonId: number
+  ): Promise<ApiResponse<{ url: string }>> {
+    const response = await apiClient.get<ApiResponse<{ url: string }>>(
+      `/document/url?lessonId=${lessonId}`
+    );
     return response.data;
   }
 

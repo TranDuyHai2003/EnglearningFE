@@ -23,7 +23,7 @@ import { getImageUrl } from "@/lib/utils";
 
 const CourseCard = ({ course }: { course: Course }) => (
   <Link href={`/courses/${course.course_id}`}>
-    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
+    <Card className={`h-full flex flex-col hover:shadow-lg transition-shadow ${course.is_enrolled ? "border-green-200 bg-green-50/10" : ""}`}>
       <CardHeader className="p-0">
         <div className="relative w-full h-40">
           <Image
@@ -34,6 +34,11 @@ const CourseCard = ({ course }: { course: Course }) => (
             className="rounded-t-lg"
             unoptimized={true}
           />
+          {course.is_enrolled && (
+            <div className="absolute top-2 right-2">
+              <Badge className="bg-green-600 hover:bg-green-700">Đã sở hữu</Badge>
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent className="flex-grow p-4">
@@ -43,12 +48,18 @@ const CourseCard = ({ course }: { course: Course }) => (
         <h3 className="font-semibold text-lg line-clamp-2">{course.title}</h3>
       </CardContent>
       <CardFooter className="p-4 flex justify-between items-center">
-        <p className="text-lg font-bold text-primary">
-          {new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(course.price)}
-        </p>
+        {course.is_enrolled ? (
+           <span className="text-sm font-medium text-green-700 flex items-center gap-1">
+             Đã đăng ký
+           </span>
+        ) : (
+          <p className="text-lg font-bold text-primary">
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(course.price)}
+          </p>
+        )}
         <Badge variant="outline" className="capitalize">
           {course.level}
         </Badge>

@@ -57,7 +57,10 @@ const InstructorSkeleton = () => (
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
-export default function AdminInstructorsPage() {
+
+import { Suspense } from "react";
+
+function AdminInstructorsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -478,5 +481,13 @@ export default function AdminInstructorsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AdminInstructorsPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-8"><InstructorSkeleton /></div>}>
+      <AdminInstructorsContent />
+    </Suspense>
   );
 }

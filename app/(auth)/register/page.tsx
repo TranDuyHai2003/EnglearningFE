@@ -29,7 +29,9 @@ import { RegisterRequest } from "@/lib/types";
 
 type RegisterFormData = RegisterRequest;
 
-export default function RegisterPage() {
+import { Suspense } from "react";
+
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -233,5 +235,13 @@ export default function RegisterPage() {
         Đăng nhập ngay
       </Link>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-8"><Loader2 className="animate-spin h-8 w-8 text-blue-600" /></div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }

@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Loader2 } from "lucide-react";
 
-export default function PaymentSuccessPage() {
+
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get("session_id");
@@ -96,5 +97,15 @@ export default function PaymentSuccessPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+import { Suspense } from "react";
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-4rem)]"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

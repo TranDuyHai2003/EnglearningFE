@@ -40,14 +40,14 @@ const primaryNavItems = [
 ];
 
 // Secondary items shown on the right (after Resources)
-const secondaryNavItems = [
+const secondaryNavItems: { href: string; icon: any; label: string }[] = [];
+
+// Items moved to User Dropdown
+const userDropdownItems = [
   { href: "/student/certificates", icon: Award, label: "Chứng chỉ" },
   { href: "/student/transactions", icon: History, label: "Lịch sử giao dịch" },
   { href: "/student/support", icon: LifeBuoy, label: "Hỗ trợ" },
 ];
-
-// Items moved to User Dropdown on Desktop
-const userDropdownItems: { href: string; icon: any; label: string }[] = [];
 
 export default function StudentLayout({
   children,
@@ -231,9 +231,9 @@ export default function StudentLayout({
                   </Link>
                 </DropdownMenuItem>
                 
-                {/* Desktop: Show secondary items in User Dropdown (if any remain) */}
+                {/* Show secondary items in User Dropdown */}
                 {userDropdownItems.length > 0 && (
-                  <div className="hidden md:block">
+                  <>
                     <DropdownMenuSeparator />
                     {userDropdownItems.map((item) => (
                       <DropdownMenuItem key={item.href} asChild>
@@ -242,7 +242,7 @@ export default function StudentLayout({
                         </Link>
                       </DropdownMenuItem>
                     ))}
-                  </div>
+                  </>
                 )}
 
                 <DropdownMenuSeparator />

@@ -68,10 +68,16 @@ export default function CourseDetailPage() {
     );
   }
 
-  const displayPrice = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(course.price);
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+
+  const originalPriceFormatted = formatPrice(course.price);
+  const discountedPriceFormatted = course.discount_price
+    ? formatPrice(course.discount_price)
+    : null;
 
   return (
     <div className="bg-slate-50">
@@ -147,7 +153,20 @@ export default function CourseDetailPage() {
                 />
               </CardHeader>
               <CardContent className="p-6">
-                <p className="text-3xl font-bold mb-4">{displayPrice}</p>
+                <div className="mb-4">
+                  {course.discount_price ? (
+                    <div className="flex flex-col">
+                      <p className="text-gray-500 line-through text-lg">
+                        {originalPriceFormatted}
+                      </p>
+                      <p className="text-3xl font-bold text-red-600">
+                        {discountedPriceFormatted}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-3xl font-bold">{originalPriceFormatted}</p>
+                  )}
+                </div>
                 <PurchaseButton
                   courseId={course.course_id}
                   price={course.price}

@@ -8,7 +8,10 @@ import { XCircle } from "lucide-react";
 import { paymentService } from "@/lib/api/paymentService";
 import { toast } from "sonner";
 
-export default function PaymentCancelPage() {
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
+
+function PaymentCancelContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("transaction_id");
@@ -27,8 +30,8 @@ export default function PaymentCancelPage() {
   }, [transactionId]);
 
   return (
-    <div className="container max-w-2xl py-16">
-      <Card>
+    <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-4rem)] py-8">
+      <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-red-100 flex items-center justify-center">
             <XCircle className="h-10 w-10 text-red-600" />
@@ -58,5 +61,13 @@ export default function PaymentCancelPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function PaymentCancelPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-16"><Loader2 className="animate-spin h-8 w-8 text-red-600" /></div>}>
+      <PaymentCancelContent />
+    </Suspense>
   );
 }
